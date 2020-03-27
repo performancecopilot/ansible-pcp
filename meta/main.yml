@@ -3,6 +3,7 @@ dependencies: []
 galaxy_info:
   author: performancecopilot
   description: Performance Co-Pilot
+  role_name: pcp
   company: pcp.io
   license: "license (MIT)"
   min_ansible_version: 2.9
@@ -22,6 +23,7 @@ galaxy_info:
   galaxy_tags:
     - metrics
     - analysis
+    - monitoring
     - timeseries
     - performance
     - lightweight
