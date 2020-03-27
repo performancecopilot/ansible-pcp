@@ -1,0 +1,7 @@
+---
+- hosts: monitoring
+  roles:
+    - role: performancecopilot.pcp
+      vars:
+        pcp_pmlogger_interval: 10
+        pcp_target_hosts: [slick, shard]

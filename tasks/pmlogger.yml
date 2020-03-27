@@ -1,0 +1,33 @@
+---
+- name: Ensure metric log location is configured.
+  lineinfile: 
+    path: /etc/pcp.conf
+    regexp: '^PCP_ARCHIVE_DIR='
+    line: PCP_ARCHIVE_DIR={{ pcp_archive_dir }}
+  become: yes
+  notify:
+    - restart pmlogger
+    - restart pmproxy
+
+- name: Ensure performance metric logging is configured.
+  template:
+    src: pmlogger.defaults.j2
+    dest: "{{ pcp_pmlogger_defaults_path }}"
+    mode: 0644
+  become: yes
+  notify: restart pmlogger
+
+- name: Ensure performance metric logging is enabled for targetted hosts.
+  template:
+    src: pmlogger.target.j2
+    dest: "{{ pcp_pmlogger_control_path }}/{{ item }}"
+  loop: "{{ pcp_target_hosts|default([]) }}"
+  become: yes
+  notify: restart pmlogger
+
+- name: Ensure performance metric logging is running and enabled on boot.
+  service:
+    name: pmlogger
+    state: started
+    enabled: yes
+  become: yes

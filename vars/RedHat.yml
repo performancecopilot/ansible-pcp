@@ -1,0 +1,6 @@
+---
+pcp_pmcd_defaults_path: /etc/sysconfig/pmcd
+pcp_pmproxy_defaults_path: /etc/sysconfig/pmproxy
+pcp_pmlogger_defaults_path: /etc/sysconfig/pmlogger
+pcp_pmlogger_control_path: /etc/pcp/pmlogger/control.d
+pcp_pmie_control_path: /etc/pcp/pmie/control.d

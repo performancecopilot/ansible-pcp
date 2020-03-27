@@ -1,0 +1,15 @@
+---
+- name: Ensure performance metric inference is enabled for targetted hosts.
+  template:
+    src: pmie.target.j2
+    dest: "{{ pcp_pmie_control_path }}/{{ item }}"
+  loop: "{{ pcp_target_hosts|default([]) }}"
+  become: yes
+  notify: restart pmie
+
+- name: Ensure performance metric inference is running and enabled on boot.
+  service:
+    name: pmie
+    state: started
+    enabled: yes
+  become: yes

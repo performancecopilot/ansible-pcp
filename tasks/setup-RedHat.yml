@@ -1,0 +1,10 @@
+---
+- name: Ensure Performance Co-Pilot is installed.
+  package:
+    name:
+      - pcp
+      - pcp-doc
+      - pcp-system-tools
+    state: present
+    enablerepo: "{{ pcp_enablerepo | default(omit, true) }}"
+  become: yes

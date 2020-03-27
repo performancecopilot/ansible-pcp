@@ -1,0 +1,25 @@
+---
+- name: Ensure optional metric collection agents are enabled.
+  file:
+    path: /var/lib/pcp/pmdas/{{ item }}/.NeedInstall
+    mode: u=rw,g=r,o=r
+    state: touch
+  loop: "{{ pcp_optional_agents|default([]) }}"
+  when: pmcd_conf.stdout.find(item) == -1
+  become: yes
+  notify: restart pmcd
+
+- name: Ensure performance metric collector is configured.
+  template:
+    src: pmcd.defaults.j2
+    dest: "{{ pcp_pmcd_defaults_path }}"
+    mode: 0644
+  become: yes
+  notify: restart pmcd
+
+- name: Ensure performance metric collector is running and enabled on boot.
+  service:
+    name: pmcd
+    state: started
+    enabled: yes
+  become: yes

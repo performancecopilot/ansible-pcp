@@ -1,0 +1,20 @@
+---
+- name: restart pmcd
+  service:
+    name: pmcd
+    state: restarted
+
+- name: restart pmie
+  service:
+    name: pmie
+    state: restarted
+
+- name: restart pmproxy
+  service:
+    name: pmproxy
+    state: restarted
+
+- name: restart pmlogger
+  service:
+    name: pmlogger
+    state: restarted
