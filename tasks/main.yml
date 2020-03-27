@@ -18,4 +18,4 @@
 - include_tasks: pmlogger.yml
 
 - include_tasks: pmproxy.yml
-  when: pcp_rest_api == true
+  when: pcp_rest_api == 'true'
