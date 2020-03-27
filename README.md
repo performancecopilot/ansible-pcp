@@ -26,15 +26,15 @@ Default location for [pmlogger(1)](http://man7.org/linux/man-pages/man1/pmlogger
 
     pcp_pmcd_localonly: 0
 
-Enable remote host connections to the [pmcd(1)]http://man7.org/linux/man-pages/man1/pmcd.1.html] service.  This affects most PMAPI client tools accessing live data such as including *pmlogger*, *pmchart*, *pmrep*, *pmie*, *pcp-dstat*, and so on
+Enable remote host connections to the [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) service.  This affects most PMAPI client tools accessing live data such as including *pmlogger*, *pmchart*, *pmrep*, *pmie*, *pcp-dstat*, and so on
 
     pcp_pmproxy_localonly: 0
 
-Enable remote host connections to the [pmproxy(1)]http://man7.org/linux/man-pages/man1/pmproxy.1.html] service.  This affects client tools using the REST API such as [grafana-pcp](https://grafana-pcp.readthedocs.io/) and PMAPI client tools using the protocol proxying features of *pmproxy*.
+Enable remote host connections to the [pmproxy(1)](http://man7.org/linux/man-pages/man1/pmproxy.1.html) service.  This affects client tools using the REST API such as [grafana-pcp](https://grafana-pcp.readthedocs.io/) and PMAPI client tools using the protocol proxying features of *pmproxy*.
 
     pcp_pmlogger_localonly: 1
 
-Enable remote host connections to the [pmlogger(1)]http://man7.org/linux/man-pages/man1/pmlogger.1.html] service.  This affects the optional [pmlc(1)](http://man7.org/linux/man-pages/man1/pmlc.1.html) utility.
+Enable remote host connections to the [pmlogger(1)](http://man7.org/linux/man-pages/man1/pmlogger.1.html) service.  This affects the optional [pmlc(1)](http://man7.org/linux/man-pages/man1/pmlc.1.html) utility.
 
 Dependencies
 ------------
@@ -51,7 +51,6 @@ Basic PCP setup with monitoring suited for a single host.
         - role: performancecopilot.pcp
           vars:
             pcp_pmlogger_interval: 10
-            pcp_from_bintray: true
 
 Central PCP setup for monitoring of several remote hosts.
 
