@@ -1,12 +1,11 @@
+# SPDX-License-Identifier: MIT
 ---
 dependency:
   name: galaxy
 driver:
   name: docker
-lint: |
-  set -e
-  yamllint .
-  ansible-lint
+lint:
+  name: yamllint
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
@@ -17,5 +16,8 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  log: true
+  lint:
+    name: ansible-lint
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
