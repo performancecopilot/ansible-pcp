@@ -17,6 +17,14 @@
   become: yes
   notify: restart pmlogger
 
+- name: Ensure performance metric logging retention period is set.
+  template:
+    src: pmlogger.timers.j2
+    dest: "{{ pcp_pmlogger_timers_path }}"
+    mode: 0644
+  become: yes
+  notify: restart pmlogger
+
 - name: Ensure performance metric logging is enabled for targetted hosts.
   template:
     src: pmlogger.target.j2

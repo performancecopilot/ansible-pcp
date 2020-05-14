@@ -16,9 +16,13 @@ Role Variables
 Enable the PCP REST APIs and log discovery via the [pmproxy(1)](http://man7.org/linux/man-pages/man1/pmproxy.1.html) service.
 Default: false
 
-    pcp_pmlogger_interval: 10
+    pcp_pmlogger_interval: 60
 
 Default logging interval for [pmlogger(1)](http://man7.org/linux/man-pages/man1/pmlogger.1.html) archives for logging groups that do not set an explicit sampling interval.
+
+    pcp_pmlogger_discard: 14
+
+After some period, old PCP archives are discarded.  This period is 14 days by default, but may be changed using this variable.  Some special values are recognized for the period, namely '0' to keep no archives beyond the current one, and 'forever' or never to prevent any archives being discarded.  Note that the semantics of discard are that it is measured from the time of last modification of each archive, and not from the current day.
 
     pcp_archive_dir: /var/log/pcp/pmlogger
 
@@ -36,6 +40,19 @@ Enable remote host connections to the [pmproxy(1)](http://man7.org/linux/man-pag
 
 Enable remote host connections to the [pmlogger(1)](http://man7.org/linux/man-pages/man1/pmlogger.1.html) service.  This affects the optional [pmlc(1)](http://man7.org/linux/man-pages/man1/pmlc.1.html) utility.
 
+    pcp_optional_agents: []
+
+Additional performance metrics domain agents (PMDAs) that should be installed, beyond the default set, to enable additional metrics.  The array provided should contain shortened names for each PMDA to be enabled, such as "kvm".
+
+    pcp_explicit_labels:
+      environment: "production"
+
+    pcp_implicit_labels:
+      deployment: "2020-08-17"
+      commitid: "efbd2a331"
+
+Additional metadata can be associated with performance metrics from the [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) service.  These are typically name=value pairs.  Explicit labels will be used in calculating time series identifiers seen by the [pmseries(1)](http://man7.org/linux/man-pages/man1/pmseries.1.html) command and [grafana-pcp](https://grafana-pcp.readthedocs.io/en/latest/index.html), and implicit labels will not.
+
 Dependencies
 ------------
 
@@ -52,6 +69,8 @@ Basic PCP setup with monitoring suited for a single host.
           vars:
             pcp_pmlogger_interval: 10
             pcp_optional_agents: [dm, nfsclient, openmetrics]
+            pcp_explicit_labels:
+              environment: "production"
 
 Central PCP setup for monitoring of several remote hosts.
 
@@ -60,6 +79,7 @@ Central PCP setup for monitoring of several remote hosts.
         - role: performancecopilot.pcp
           vars:
             pcp_pmlogger_interval: 10
+            pcp_pmlogger_discard: 5
             pcp_target_hosts: [slip, slop, slap]
             pcp_rest_apis: true
 

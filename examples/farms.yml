@@ -3,5 +3,7 @@
   roles:
     - role: performancecopilot.pcp
       vars:
+        pcp_rest_apis: true
         pcp_pmlogger_interval: 10
+        pcp_pmlogger_discard: 5
         pcp_target_hosts: [slick, shard]

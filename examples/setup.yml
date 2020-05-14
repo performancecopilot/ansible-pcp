@@ -4,3 +4,6 @@
     - role: performancecopilot.pcp
       vars:
         pcp_pmlogger_interval: 10
+        pcp_optional_agents: ['dm', 'nfsclient', 'openmetrics']
+        pcp_explicit_labels:
+          environment: "production"
