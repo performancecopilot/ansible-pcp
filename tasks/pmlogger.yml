@@ -1,7 +1,7 @@
 ---
 - name: Ensure metric log location is configured.
   lineinfile:
-    path: /etc/pcp.conf
+    path: {{ pcp_conf }}
     regexp: '^PCP_ARCHIVE_DIR='
     line: PCP_ARCHIVE_DIR={{ pcp_archive_dir }}
   become: yes

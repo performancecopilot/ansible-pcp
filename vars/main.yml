@@ -1,4 +1,5 @@
 ---
+pcp_conf: /etc/pcp.conf
 pcp_pmcd_conf: /etc/pcp/pmcd/pmcd.conf
 pcp_pmie_control_path: /etc/pcp/pmie/control.d
 pcp_pmlogger_control_path: /etc/pcp/pmlogger/control.d
