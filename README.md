@@ -81,7 +81,7 @@ Central PCP setup for monitoring of several remote hosts.
             pcp_pmlogger_interval: 10
             pcp_pmlogger_discard: 5
             pcp_target_hosts: [slip, slop, slap]
-            pcp_rest_apis: true
+            pcp_rest_api: true
 
 License
 -------
