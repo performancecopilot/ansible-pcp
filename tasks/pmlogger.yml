@@ -1,7 +1,7 @@
 ---
 - name: Ensure metric log location is configured.
   lineinfile:
-    path: {{ pcp_conf }}
+    path: "{{ pcp_conf }}"
     regexp: '^PCP_ARCHIVE_DIR='
     line: PCP_ARCHIVE_DIR={{ pcp_archive_dir }}
   become: yes
@@ -25,9 +25,9 @@
   become: yes
   notify: restart pmlogger
 
-- name: Ensure performance metric logging is enabled for targetted hosts.
+- name: Ensure performance metric logging is enabled for targeted hosts.
   template:
-    src: pmlogger.target.j2
+    src: pmlogger.control.j2
     dest: "{{ pcp_pmlogger_control_path }}/{{ item }}"
   loop: "{{ pcp_target_hosts|default([]) }}"
   become: yes

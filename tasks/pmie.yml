@@ -1,7 +1,7 @@
 ---
-- name: Ensure performance metric inference is enabled for targetted hosts.
+- name: Ensure performance metric inference is enabled for targeted hosts.
   template:
-    src: pmie.target.j2
+    src: pmie.control.j2
     dest: "{{ pcp_pmie_control_path }}/{{ item }}"
   loop: "{{ pcp_target_hosts|default([]) }}"
   become: yes
