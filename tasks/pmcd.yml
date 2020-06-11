@@ -7,7 +7,7 @@
 - name: Extract metric collection configuration file content.
   command: "cat {{ pcp_pmcd_conf }}"
   register: pmcd_conf
-  changed_when: False
+  changed_when: false
 
 - name: Ensure optional metric collection agents are enabled.
   file:
