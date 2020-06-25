@@ -11,10 +11,9 @@ Uses features of PCP v5 and later.
 Role Variables
 --------------
 
-    pcp_rest_api: true
+    pcp_rest_api: yes
 
-Enable the PCP REST APIs and log discovery via the [pmproxy(1)](http://man7.org/linux/man-pages/man1/pmproxy.1.html) service.
-Default: false
+Enable the PCP REST APIs and log discovery via the [pmproxy(1)](http://man7.org/linux/man-pages/man1/pmproxy.1.html) service.  Default: no.
 
     pcp_pmlogger_interval: 60
 
@@ -81,7 +80,7 @@ Central PCP setup for monitoring of several remote hosts.
             pcp_pmlogger_interval: 10
             pcp_pmlogger_discard: 5
             pcp_target_hosts: [slip, slop, slap]
-            pcp_rest_api: true
+            pcp_rest_api: yes
 
 License
 -------
