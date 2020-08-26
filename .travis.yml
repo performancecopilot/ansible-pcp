@@ -1,29 +1,29 @@
+# SPDX-License-Identifier: MIT
 ---
+dist: bionic
 language: python
-python: "2.7"
+env:
+  global:
+    - LSR_ANSIBLES='ansible==2.7.* ansible==2.8.* ansible==2.9.*'
+    - LSR_MSCENARIOS='default'
+matrix:
+  include:
+    - python: 2.6
+      dist: trusty
+    - python: 2.7
+    - python: 3.6
+    - python: 3.7
+    - python: 3.8
+    - python: 3.8-dev
 
-# Use the new container infrastructure
-sudo: false
+services:
+  - docker
 
-# Install ansible
-addons:
-  apt:
-    packages:
-      - python-pip
+before_install:
+  - ./.travis/preinstall
 
 install:
-  # Install ansible
-  - pip install ansible
-
-  # Check ansible version
-  - ansible --version
-
-  # Create ansible.cfg with correct roles_path
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - pip install tox tox-travis
 
 script:
-  # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
-
-notifications:
-  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+  - ./.travis/runtox
