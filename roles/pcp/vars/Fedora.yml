@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: MIT
 ---
-# Put internal variables here with Red Hat specific values.
+# Put internal variables here with Fedora specific values.
+
+__pcp_packages_extra:
+  - pcp-zeroconf
 
 __pcp_pmcd_defaults_path: /etc/sysconfig/pmcd
 __pcp_pmproxy_defaults_path: /etc/sysconfig/pmproxy

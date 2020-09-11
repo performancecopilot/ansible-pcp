@@ -1,8 +1,0 @@
----
-- name: Ensure Performance Co-Pilot is installed.
-  package:
-    name:
-      - pcp
-      - pcp-doc
-    state: present
-  become: yes

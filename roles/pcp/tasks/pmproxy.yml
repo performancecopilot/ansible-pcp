@@ -1,8 +1,10 @@
+# SPDX-License-Identifier: MIT
 ---
+
 - name: Ensure REST API, proxy and metric log discovery is configured.
   template:
     src: pmproxy.defaults.j2
-    dest: "{{ pcp_pmproxy_defaults_path }}"
+    dest: "{{ __pcp_pmproxy_defaults_path }}"
     mode: 0644
   become: yes
   notify: restart pmproxy

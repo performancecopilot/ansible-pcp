@@ -1,17 +1,19 @@
+# SPDX-License-Identifier: MIT
 ---
+
 - name: List optional metric collection agents to be enabled.
   debug:
     msg: "NeedInstall agent: {{ item }} from {{ pcp_optional_agents }}"
   loop: "{{ pcp_optional_agents|default([]) }}"
 
 - name: Extract metric collection configuration file content.
-  command: "cat {{ pcp_pmcd_conf }}"
+  command: "cat {{ __pcp_pmcd_conf }}"
   register: pmcd_conf
   changed_when: false
 
 - name: Ensure optional metric collection agents are enabled.
   file:
-    path: "{{ pcp_agents_path }}/{{ item }}/.NeedInstall"
+    path: "{{ __pcp_agents_path }}/{{ item }}/.NeedInstall"
     mode: u=rw,g=r,o=r
     state: touch
   loop: "{{ pcp_optional_agents|default([]) }}"
@@ -21,7 +23,7 @@
 
 - name: Ensure explicit metric label path exists.
   file:
-    path: "{{ pcp_explicit_labels_path }}"
+    path: "{{ __pcp_explicit_labels_path }}"
     state: directory
     mode: 0755
     owner: root
@@ -30,7 +32,7 @@
 
 - name: Ensure implicit metric label path exists.
   file:
-    path: "{{ pcp_implicit_labels_path }}"
+    path: "{{ __pcp_implicit_labels_path }}"
     state: directory
     mode: 0755
     owner: root
@@ -40,7 +42,7 @@
 - name: Ensure any explicit metric labels are configured.
   template:
     src: pmcd.explicit.labels.j2
-    dest: "{{ pcp_explicit_labels_path }}/ansible-managed"
+    dest: "{{ __pcp_explicit_labels_path }}/ansible-managed"
     mode: 0644
   become: yes
   notify: restart pmcd
@@ -48,7 +50,7 @@
 - name: Ensure any implicit metric labels are configured.
   template:
     src: pmcd.implicit.labels.j2
-    dest: "{{ pcp_implicit_labels_path }}/ansible-managed"
+    dest: "{{ __pcp_implicit_labels_path }}/ansible-managed"
     mode: 0644
   become: yes
   notify: restart pmcd
@@ -56,7 +58,7 @@
 - name: Ensure performance metric collector is configured.
   template:
     src: pmcd.defaults.j2
-    dest: "{{ pcp_pmcd_defaults_path }}"
+    dest: "{{ __pcp_pmcd_defaults_path }}"
     mode: 0644
   become: yes
   notify: restart pmcd
