@@ -4,10 +4,10 @@ name: performancecopilot
 version: 1.0.0
 readme: README.md
 authors:
-- Jan Kurik <jkurik@redhat.com>
-- Nathan Scott <nathans@redhat.com>
-- Peter Portante <portante@redhat.com>
-- Andreas Gerstmayr <agerstmayr@redhat.com>
+  - Jan Kurik <jkurik@redhat.com>
+  - Nathan Scott <nathans@redhat.com>
+  - Peter Portante <portante@redhat.com>
+  - Andreas Gerstmayr <agerstmayr@redhat.com>
 
 ### OPTIONAL
 description: Performance Co-Pilot Ansible collection
