@@ -1,7 +1,7 @@
 ---
 - hosts: all
   roles:
-    - role: performancecopilot.pcp
+    - role: fedora.performancecopilot.pcp
       vars:
         pcp_pmlogger_interval: 10
         pcp_optional_agents: ['dm', 'nfsclient', 'openmetrics']

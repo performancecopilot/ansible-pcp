@@ -1,0 +1,20 @@
+### REQUIRED
+namespace: fedora
+name: performancecopilot
+version: 1.0.0
+readme: README.md
+authors:
+  - Jan Kurik <jkurik@redhat.com>
+  - Nathan Scott <nathans@redhat.com>
+  - Peter Portante <portante@redhat.com>
+  - Andreas Gerstmayr <agerstmayr@redhat.com>
+
+### OPTIONAL
+description: Performance Co-Pilot Ansible collection
+license_file: 'LICENSE-pcp'
+tags: [performance, analysis, visualization, pcp, redis, grafana]
+dependencies: {}
+repository: https://github.com/performancecopilot/ansible-pcp
+documentation: https://pcp.io/documentation.html
+homepage: https://pcp.io
+issues: https://github.com/issue/tracker
