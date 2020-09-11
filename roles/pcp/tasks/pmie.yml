@@ -1,8 +1,10 @@
+# SPDX-License-Identifier: MIT
 ---
+
 - name: Ensure performance metric inference is enabled for targeted hosts.
   template:
     src: pmie.control.j2
-    dest: "{{ pcp_pmie_control_path }}/{{ item }}"
+    dest: "{{ __pcp_pmie_control_path }}/{{ item }}"
   loop: "{{ pcp_target_hosts|default([]) }}"
   become: yes
   notify: restart pmie

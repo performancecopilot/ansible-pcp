@@ -1,7 +1,9 @@
+# SPDX-License-Identifier: MIT
 ---
+
 - name: Ensure metric log location is configured.
   lineinfile:
-    path: "{{ pcp_conf }}"
+    path: "{{ __pcp_conf }}"
     regexp: '^PCP_ARCHIVE_DIR='
     line: PCP_ARCHIVE_DIR={{ pcp_archive_dir }}
   become: yes
@@ -12,7 +14,7 @@
 - name: Ensure performance metric logging is configured.
   template:
     src: pmlogger.defaults.j2
-    dest: "{{ pcp_pmlogger_defaults_path }}"
+    dest: "{{ __pcp_pmlogger_defaults_path }}"
     mode: 0644
   become: yes
   notify: restart pmlogger
@@ -20,7 +22,7 @@
 - name: Ensure performance metric logging retention period is set.
   template:
     src: pmlogger.timers.j2
-    dest: "{{ pcp_pmlogger_timers_path }}"
+    dest: "{{ __pcp_pmlogger_timers_path }}"
     mode: 0644
   become: yes
   notify: restart pmlogger
@@ -28,8 +30,8 @@
 - name: Ensure performance metric logging is enabled for targeted hosts.
   template:
     src: pmlogger.control.j2
-    dest: "{{ pcp_pmlogger_control_path }}/{{ item }}"
-  loop: "{{ pcp_target_hosts|default([]) }}"
+    dest: "{{ __pcp_pmlogger_control_path }}/{{ item }}"
+  loop: "{{ __pcp_target_hosts|default([]) }}"
   become: yes
   notify: restart pmlogger
 

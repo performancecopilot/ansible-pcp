@@ -1,16 +1,20 @@
+# SPDX-License-Identifier: MIT
 ---
-# Variable setup.
-- name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
 
-# Setup/install tasks.
-- include_tasks: setup-RedHat.yml
-  when: ansible_os_family == 'RedHat'
+- name: Set platform/version specific variables
+  include_vars: "{{ item }}"
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: item is file
 
-- include_tasks: setup-Debian.yml
-  when: ansible_os_family == 'Debian'
+- name: Install base packages
+  package:
+    name: "{{ __pcp_packages + __pcp_packages_extra }}"
+    state: present
 
-# Configuration tasks.
 - include_tasks: pmcd.yml
 
 - include_tasks: pmie.yml
