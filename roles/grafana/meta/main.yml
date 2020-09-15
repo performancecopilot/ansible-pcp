@@ -1,0 +1,32 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: performancecopilot
+  description: Performance Co-Pilot Grafana role
+  role_name: grafana
+  company: pcp.io
+  license: "license (MIT)"
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+  galaxy_tags:
+    - pcp
+    - graph
+    - redis
+    - vector
+    - grafana
+    - metrics
+    - analysis
+    - bpftrace
+    - monitoring
+    - timeseries
+    - performance
+    - lightweight
+    - visualization
+    - instrumentation

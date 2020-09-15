@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+---
+
+__grafana_user: admin
+__grafana_password: admin
+__grafana_server: localhost:3000
+__grafana_pmproxy_server: localhost:44322
+__grafana_provisioning_path: /usr/share/grafana/conf/provisioning
