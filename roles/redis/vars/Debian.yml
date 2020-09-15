@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with Debian specific values.
+
+__redis_conf: /etc/redis/redis.conf
+
+__redis_packages:
+  - redis-tools
+  - redis-server
+
+__redis_packages_extra:
+  - redis-redisearch
+
+__redis_loaded_modules:
+  - "loadmodule /usr/lib/redis/modules/redisearch.so"
