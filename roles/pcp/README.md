@@ -1,15 +1,12 @@
-Role Name
-=========
+# performancecopilot.pcp
 
 Installs and configures the [Performance Co-Pilot](https://pcp.io/) toolkit.
 
-Requirements
-------------
+## Requirements
 
 Uses features of PCP v5 and later.
 
-Role Variables
---------------
+## Role Variables
 
     pcp_rest_api: yes
 
@@ -43,51 +40,53 @@ Enable remote host connections to the [pmlogger(1)](http://man7.org/linux/man-pa
 
 Additional performance metrics domain agents (PMDAs) that should be installed, beyond the default set, to enable additional metrics.  The array provided should contain shortened names for each PMDA to be enabled, such as "kvm".
 
-    pcp_explicit_labels:
-      environment: "production"
+```yaml
+pcp_explicit_labels:
+ environment: "production"
 
-    pcp_implicit_labels:
-      deployment: "2020-08-17"
-      commitid: "efbd2a331"
+pcp_implicit_labels:
+  deployment: "2020-08-17"
+  commitid: "efbd2a331"
+```
 
 Additional metadata can be associated with performance metrics from the [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) service.  These are typically name=value pairs.  Explicit labels will be used in calculating time series identifiers seen by the [pmseries(1)](http://man7.org/linux/man-pages/man1/pmseries.1.html) command and [grafana-pcp](https://grafana-pcp.readthedocs.io/en/latest/index.html), and implicit labels will not.
 
-Dependencies
-------------
+## Dependencies
 
 None.
 
-Example Playbooks
------------------
+## Example Playbooks
 
 Basic PCP setup with monitoring suited for a single host.
 
-    - hosts: all
-      roles:
-        - role: fedora.performancecopilot.pcp
-          vars:
-            pcp_pmlogger_interval: 10
-            pcp_optional_agents: [dm, nfsclient, openmetrics]
-            pcp_explicit_labels:
-              environment: "production"
+```yaml
+- hosts: all
+  roles:
+    - role: fedora.performancecopilot.pcp
+      vars:
+        pcp_pmlogger_interval: 10
+        pcp_optional_agents: [dm, nfsclient, openmetrics]
+        pcp_explicit_labels:
+          environment: "production"
+```
 
 Central PCP setup for monitoring of several remote hosts.
 
-    - hosts: monitoring
-      roles:
-        - role: fedora.performancecopilot.pcp
-          vars:
-            pcp_pmlogger_interval: 10
-            pcp_pmlogger_discard: 5
-            pcp_target_hosts: [slip, slop, slap]
-            pcp_rest_api: yes
+```yaml
+- hosts: monitoring
+  roles:
+    - role: fedora.performancecopilot.pcp
+      vars:
+        pcp_pmlogger_interval: 10
+        pcp_pmlogger_discard: 5
+        pcp_target_hosts: [slip, slop, slap]
+        pcp_rest_api: yes
+```
 
-License
--------
+## License
 
 MIT
 
-Author Information
-------------------
+## Author Information
 
 Official role for PCP, maintained by the PCP developers <pcp@groups.io>
