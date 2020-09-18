@@ -10,9 +10,9 @@
     - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
   when: item is file
 
-- name: Install base packages
+- name: Install Performance Co-Pilot packages
   package:
-    name: "{{ __pcp_packages + __pcp_packages_extra }}"
+    name: "{{ __pcp_packages + __pcp_packages_extra + pcp_optional_packages }}"
     state: present
 
 - include_tasks: pmcd.yml

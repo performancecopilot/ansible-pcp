@@ -40,6 +40,10 @@ Enable remote host connections to the [pmlogger(1)](http://man7.org/linux/man-pa
 
 Additional performance metrics domain agents (PMDAs) that should be installed, beyond the default set, to enable additional metrics.  The array provided should contain shortened names for each PMDA to be enabled, such as "kvm".
 
+    pcp_optional_packages: []
+
+Additional PCP packages that should be installed, beyond the default set, to enable additional metrics, export to alternate data sinks, and so on.
+
 ```yaml
 pcp_explicit_labels:
  environment: "production"

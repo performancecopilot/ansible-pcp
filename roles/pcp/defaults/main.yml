@@ -8,6 +8,7 @@ pcp_archive_dir: /var/log/pcp/pmlogger
 pcp_pmcd_localonly: 0
 pcp_pmproxy_localonly: 0
 pcp_pmlogger_localonly: 1
+pcp_optional_packages: []
 pcp_optional_agents: []
 pcp_target_hosts: []
 pcp_explicit_labels: {}
