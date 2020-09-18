@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+
+__mssql_conf: /etc/pcp/mssql/mssql.conf

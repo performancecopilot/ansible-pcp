@@ -1,0 +1,15 @@
+[connection]
+driver={ODBC Driver 17 for SQL Server}
+server=tcp:localhost
+timeout={{ mssql_timeout }}
+
+[authentication]
+## General reference on authentication options:
+#https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode
+
+# Option 1: Mixed mode authentication
+username={{ mssql_username }}
+password={{ mssql_password }}
+
+# Option 2: Windows authentication
+trusted={{ mssql_trusted }}

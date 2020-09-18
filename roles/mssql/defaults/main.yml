@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+
+mssql_trusted: yes
+mssql_username: ''
+mssql_password: ''
+mssql_timeout: 2

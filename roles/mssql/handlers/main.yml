@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: restart pmcd
+  service:
+    name: pmcd
+    state: restarted
