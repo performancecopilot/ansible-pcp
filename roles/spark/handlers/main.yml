@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: restart pcp2spark
+  service:
+    name: pcp2spark
+    state: restarted

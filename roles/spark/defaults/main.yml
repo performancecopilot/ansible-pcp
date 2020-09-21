@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+---
+
+spark_metrics_agent: yes
+spark_metrics_agent_url: http://localhost:4040/metrics/executors/prometheus
+spark_export_metrics: no
+spark_export_interval: 60
+spark_export_server: '127.0.0.1'
+spark_export_port: 44325

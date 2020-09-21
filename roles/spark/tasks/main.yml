@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: Set platform/version specific variables
+  include_vars: "{{ item }}.yml"
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: item is file
+
+- name: Ensure PCP OpenMetrics agent is configured for Spark
+  template:
+    src: spark.url.j2
+    dest: "{{ __spark_metrics_conf }}"
+    mode: 0600
+  become: yes
+  when:
+    - spark_metrics_agent | bool
+
+- name: Ensure PCP OpenMetrics agent is enabled with Spark endpoint
+  file:
+    src: "{{ __spark_metrics_conf }}"
+    dest: "{{ __spark_metrics_symlink }}"
+    state: link
+
+- name: Ensure PCP Spare metrics are available
+  import_role:
+    name: pcp
+  vars:
+    pcp_optional_agents: [openmetrics]
+    pcp_optional_packages: {{ __spark_packages_extra }}
+  when:
+    - spark_metrics_agent | bool
+
+- name: Install PCP Spark export package
+  package:
+    name: "{{ __spark_packages_export }}"
+  when:
+    - spark_export_metrics | bool
+    - __spark_packages_export | d([])
+
+- name: Ensure PCP Spark export service exists
+  template:
+    src: pcp2spark.service.j2
+    dest: "{{ __spark_service_path }}/pcp2spark.service"
+    mode: 0600
+  become: yes
+  when:
+    - spark_export_metrics | bool
+
+- name: Ensure PCP Spark export is running and enabled on boot.
+  service:
+    name: pcp2spark
+    state: started
+    enabled: yes
+  become: yes
+  when:
+    - spark_export_metrics | bool
