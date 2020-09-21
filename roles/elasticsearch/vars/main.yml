@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: MIT
+---
+
+__elasticsearch_conf: /etc/pcp/elasticsearch/elasticsearch.conf
+__elasticsearch_export_conf: /etc/pcp/pcp2elasticsearch.conf

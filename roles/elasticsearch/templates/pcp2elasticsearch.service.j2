@@ -1,0 +1,18 @@
+[Unit]
+Description=pcp-to-elasticsearch metrics export service
+Documentation=man:pcp2elasticsearch(1)
+After=network-online.target pmcd.service
+
+[Service]
+TimeoutSec=10
+ExecStartPre=/usr/bin/pmrepconf \
+             --option interval={{ elasticsearch_export_interval }} \
+             --option es_index={{ elasticsearch_export_index }} \
+             --option es_hostid={{ elasticsearch_export_hostid }} \
+             --option es_server={{ elasticsearch_export_server }} \
+             --option es_search_type={{ elasticsearch_export_type }} \
+             {{ __elasticsearch_export_conf }}
+ExecStart=/usr/bin/pcp2elasticsearch :metrics
+
+[Install]
+WantedBy=multi-user.target

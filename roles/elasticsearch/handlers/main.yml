@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: restart pcp2elasticsearch
+  service:
+    name: pcp2elasticsearch
+    state: restarted

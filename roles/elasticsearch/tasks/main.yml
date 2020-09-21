@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: Set platform/version specific variables
+  include_vars: "{{ item }}.yml"
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: item is file
+
+- name: Ensure PCP Elasticsearch agent is configured
+  template:
+    src: elasticsearch.conf.j2
+    dest: "{{ __elasticsearch_conf }}"
+    mode: 0600
+  become: yes
+  when:
+    - elasticsearch_agent | bool
+
+- name: Ensure PCP Elasticsearch metrics are available
+  import_role:
+    name: pcp
+  vars:
+    pcp_optional_agents: [elasticsearch]
+    pcp_optional_packages: {{ __elasticsearch_packages_extra }}
+  when:
+    - elasticsearch_agent | bool
+
+- name: Install PCP Elasticsearch export package
+  package:
+    name: "{{ __elasticsearch_packages_export }}"
+  when:
+    - elasticsearch_export_metrics | bool
+    - __elasticsearch_packages_export | d([])
+
+- name: Ensure PCP Elasticsearch export service exists
+  template:
+    src: pcp2elasticsearch.service.j2
+    dest: "{{ __elasticsearch_service_path }}/pcp2elasticsearch.service"
+    mode: 0600
+  become: yes
+  when:
+    - elasticsearch_export_metrics | bool
+
+- name: Ensure PCP Elasticsearch export is running and enabled on boot.
+  service:
+    name: pcp2elasticsearch
+    state: started
+    enabled: yes
+  become: yes
+  when:
+    - elasticsearch_export_metrics | bool
