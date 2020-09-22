@@ -12,7 +12,7 @@ ExecStartPre=/usr/bin/pmrepconf \
              --option es_server={{ elasticsearch_export_server }} \
              --option es_search_type={{ elasticsearch_export_type }} \
              {{ __elasticsearch_export_conf }}
-ExecStart=/usr/bin/pcp2elasticsearch :metrics
+ExecStart=/usr/bin/pcp2elasticsearch --include-labels :metrics
 
 [Install]
 WantedBy=multi-user.target

@@ -10,7 +10,7 @@ ExecStartPre=/usr/bin/pmrepconf \
              --option spark_server={{ spark_export_server }} \
              --option spark_port={{ spark_export_port }} \
              {{ __spark_export_conf }}
-ExecStart=/usr/bin/pcp2spark :metrics
+ExecStart=/usr/bin/pcp2spark --include-labels :metrics
 
 [Install]
 WantedBy=multi-user.target
