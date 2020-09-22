@@ -21,8 +21,8 @@ Setup PCP and Grafana for graphing live metrics locally using Vector.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.grafana
-    - role: fedora.performancecopilot.pcp
+    - role: community.performancecopilot.grafana
+    - role: community.performancecopilot.pcp
       vars:
         pcp_rest_api: yes
 ```

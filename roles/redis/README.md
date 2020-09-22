@@ -21,8 +21,8 @@ Central PCP setup for monitoring of several remote hosts with fast, scalable que
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.redis
-    - role: fedora.performancecopilot.pcp
+    - role: community.performancecopilot.redis
+    - role: community.performancecopilot.pcp
       vars:
         pcp_target_hosts: [slip, slop, slap]
         pcp_rest_api: yes

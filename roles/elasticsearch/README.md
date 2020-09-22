@@ -59,7 +59,7 @@ Make local Elasticsearch metrics available to PCP analysis tools.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.elasticsearch
+    - role: community.performancecopilot.elasticsearch
       vars:
         elasticsearch_agent_port: 9200
 ```
@@ -69,7 +69,7 @@ Setup export of PCP metrics to a remote Elasticsearch server.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.elasticsearch
+    - role: community.performancecopilot.elasticsearch
       vars:
         elasticsearch_export_server: 'http://elastic.example.com:9200'
         elasticsearch_export_authname: 'metrics'

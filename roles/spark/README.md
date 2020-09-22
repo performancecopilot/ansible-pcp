@@ -43,7 +43,7 @@ Make local Spark executor metrics available to PCP analysis tools.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.spark
+    - role: community.performancecopilot.spark
 ```
 
 Setup export of PCP metrics to a Spark worker thread.
@@ -51,7 +51,7 @@ Setup export of PCP metrics to a Spark worker thread.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.spark
+    - role: community.performancecopilot.spark
       vars:
         spark_export_port: 44388
 ```

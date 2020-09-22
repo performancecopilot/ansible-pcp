@@ -37,7 +37,7 @@ Setup PCP SQL Server metrics using Windows Authentication mode.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.mssql
+    - role: community.performancecopilot.mssql
       vars:
         mssql_agent_timeout: 5
 ```
@@ -47,7 +47,7 @@ Setup PCP SQL Server metrics using SQL Server Authentication.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.mssql
+    - role: community.performancecopilot.mssql
       vars:
         mssql_agent_username: sa
         mssql_agent_password: xxx
