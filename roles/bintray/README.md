@@ -4,12 +4,7 @@ Installs and configures the [bintray](https://bintray.com/pcp) package repositor
 
 ## Requirements
 
-On Debian/Ubuntu systems, the following packages are needed on the host that executes this module:
-
-- python-apt (python 2)
-- python3-apt (python 3)
-
-
+None.
 
 ## Role Variables
 
