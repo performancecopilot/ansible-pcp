@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with Red Hat specific values.
+
+__bintray_distro_name: el{{ ansible_distribution_major_version }}

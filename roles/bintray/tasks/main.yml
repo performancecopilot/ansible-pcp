@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: Set platform/version specific variables
+  include_vars: "{{ item }}.yml"
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: item is file
+
+- name: Ensure PCP bintray repo is configured for RPMs
+  template:
+    src: bintray.rpms.j2
+    dest: /etc/yum.repos.d/bintray-pcp.repo
+    mode: 0600
+  become: yes
+  when:
+    - ansible_os_family == 'RedHat'
+
+- name: Ensure PCP bintray repo is configured for DEBs
+  file:
+    src: bintray.debs.j2
+    dest: /etc/apt/sources.list.d/bintray-pcp.sources
+    mode: 0600
+  become: yes
+  when:
+    - ansible_os_family == 'Debian'

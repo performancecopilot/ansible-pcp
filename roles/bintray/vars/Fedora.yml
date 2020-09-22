@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with Fedora specific values.
+
+__bintray_distro_name: f{{ ansible_distribution_major_version }}
