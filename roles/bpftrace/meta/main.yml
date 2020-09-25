@@ -1,0 +1,35 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: performancecopilot
+  description: Performance Co-Pilot bpftrace role
+  role_name: bpftrace
+  company: pcp.io
+  license: "license (MIT)"
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - pcp
+    - ebpf
+    - metrics
+    - bpftrace
+    - analysis
+    - monitoring
+    - timeseries
+    - performance
+    - lightweight
+    - visualization
+    - instrumentation

@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: Set platform/version specific variables
+  include_vars: "{{ item }}.yml"
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: item is file
+
+- name: Ensure PCP bpftrace agent is configured
+  template:
+    src: bpftrace.conf.j2
+    dest: "{{ __bpftrace_conf }}"
+    mode: 0600
+  become: yes
+
+- name: Ensure PCP bpftrace metrics are available
+  import_role:
+    name: pcp
+  vars:
+    pcp_sasl_users: {{ bpftrace_users }}
+    pcp_optional_agents: ['bpftrace']
+    pcp_optional_packages: {{ __bpftrace_packages_extra }}
