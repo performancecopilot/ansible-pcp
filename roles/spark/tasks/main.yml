@@ -37,6 +37,7 @@
 - name: Install PCP Spark export package
   package:
     name: "{{ __spark_packages_export }}"
+    state: present
   when:
     - spark_export_metrics | bool
     - __spark_packages_export | d([])
