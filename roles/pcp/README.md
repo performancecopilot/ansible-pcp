@@ -55,6 +55,16 @@ pcp_implicit_labels:
 
 Additional metadata can be associated with performance metrics from the [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) service.  These are typically name=value pairs.  Explicit labels will be used in calculating time series identifiers seen by the [pmseries(1)](http://man7.org/linux/man-pages/man1/pmseries.1.html) command and [grafana-pcp](https://grafana-pcp.readthedocs.io/en/latest/index.html), and implicit labels will not.
 
+```yaml
+pcp_sasl_accounts:
+  - username: metrics
+    password: p4ssw0rd
+  - username: nathans
+    password: adm1n!
+```
+
+Enable SASL (Simple Authentication and Security Layer) support in PCP daemons for authenticating certain user interactions.  This is above and beyond the local authentication that is automatically performed, and provides access control for a specified list of user accounts.  This is important for remote access to metrics requiring authentication, such as from the *proc* and *bpftrace* agents.
+
 ## Dependencies
 
 None.

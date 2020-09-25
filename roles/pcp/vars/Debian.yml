@@ -6,3 +6,7 @@ __pcp_pmcd_defaults_path: /etc/default/pmcd
 __pcp_pmproxy_defaults_path: /etc/default/pmproxy
 __pcp_pmlogger_defaults_path: /etc/default/pmlogger
 __pcp_pmlogger_timers_path: /etc/default/pmlogger_timers
+
+__pcp_sasl_packages:
+  - sasl2-bin
+  - libsasl2-modules-gssapi-mit

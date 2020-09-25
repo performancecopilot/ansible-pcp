@@ -15,6 +15,14 @@
     name: "{{ __pcp_packages + __pcp_packages_extra + pcp_optional_packages }}"
     state: present
 
+- name: Install authentication packages
+  package:
+    name: "{{ __pcp_sasl_packages }}"
+    state: present
+  when:
+    - __pcp_sasl_packages | d([])
+    - pcp_sasl_accounts | d([])
+
 - include_tasks: pmcd.yml
 
 - include_tasks: pmie.yml

@@ -4,3 +4,7 @@
 
 __pcp_packages_extra:
   - pcp-zeroconf
+
+__pcp_sasl_packages:
+  - cyrus-sasl-lib
+  - cyrus-sasl-scram

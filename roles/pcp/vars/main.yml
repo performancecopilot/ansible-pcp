@@ -8,6 +8,8 @@ __pcp_packages_extra: []
 
 __pcp_conf: /etc/pcp.conf
 __pcp_pmcd_conf: /etc/pcp/pmcd/pmcd.conf
+__pcp_pmcd_sasldb_path: /etc/pcp/passwd.db
+__pcp_pmcd_saslconf_path: /etc/sasl2/pmcd.conf
 __pcp_pmie_control_path: /etc/pcp/pmie/control.d
 __pcp_pmlogger_control_path: /etc/pcp/pmlogger/control.d
 __pcp_explicit_labels_path: /etc/pcp/labels
