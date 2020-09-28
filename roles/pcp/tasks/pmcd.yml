@@ -76,11 +76,14 @@
     set -o pipefail
     sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.0.username }}@"
     [ $? -eq 0 ] && exit 0
+    echo "Creating new account for {{ item.0.username }} in {{ __pcp_pmcd_sasldb_path }}"
     echo "{{ item.1.password }}" | saslpasswd2 -na pmcd "{{ item.0.username }}"
     chown root:pcp "{{ __pcp_pmcd_sasldb_path }}"
     chmod 640 "{{ __pcp_pmcd_sasldb_path }}"
     exit 0
   become: yes
+  register: ensure_accounts_configured
+  changed_when: "'Creating new account' in ensure_accounts_configured.stdout"
   with_subelements:
     - "{{ pcp_sasl_accounts }}"
 
