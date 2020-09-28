@@ -73,6 +73,9 @@
 
 - name: Ensure performance metric collector accounts are configured.
   shell: |
+    set -o pipefail
+    sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.0.username }}@"
+    [ $? -eq 0 ] && exit 0
     echo "{{ item.1.password }}" | saslpasswd2 -na pmcd "{{ item.0.username }}"
     chown root:pcp "{{ __pcp_pmcd_sasldb_path }}"
     chmod 640 "{{ __pcp_pmcd_sasldb_path }}"
