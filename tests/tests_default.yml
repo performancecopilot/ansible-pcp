@@ -1,5 +1,10 @@
 ---
 - name: Ensure that the role runs with default parameters
   hosts: all
-  roles:
-    - community.performancecopilot.pcp
+
+  collections:
+    - community.performancecopilot
+
+  tasks:
+    - import_role:
+      name: pcp
