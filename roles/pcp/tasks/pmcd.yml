@@ -70,6 +70,7 @@
   become: yes
   with_subelements:
     - "{{ pcp_sasl_accounts }}"
+    - username
 
 - name: Ensure performance metric collector accounts are configured.
   shell: |
@@ -86,6 +87,7 @@
   changed_when: "'Creating new account' in ensure_accounts_configured.stdout"
   with_subelements:
     - "{{ pcp_sasl_accounts }}"
+    - username
 
 - name: Ensure performance metric collector authentication is configured.
   template:
