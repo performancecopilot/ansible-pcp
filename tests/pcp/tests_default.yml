@@ -4,4 +4,4 @@
   hosts: all
 
   roles:
-    - fedora.performancecopilot.pcp
+    - community.performancecopilot.pcp

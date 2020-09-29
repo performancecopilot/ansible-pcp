@@ -2,4 +2,4 @@
 - name: Ensure that the role runs with default parameters
   hosts: all
   roles:
-    - fedora.performancecopilot.pcp
+    - community.performancecopilot.pcp

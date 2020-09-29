@@ -1,7 +1,7 @@
 ---
 - hosts: monitoring
   roles:
-    - role: fedora.performancecopilot.pcp
+    - role: community.performancecopilot.pcp
       vars:
         pcp_rest_api: yes
         pcp_pmlogger_interval: 10
