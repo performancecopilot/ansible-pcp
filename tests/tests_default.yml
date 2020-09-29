@@ -1,10 +1,11 @@
+# SPDX-License-Identifier: MIT
 ---
-- name: Ensure that the role runs with default parameters
+
+- name: Ensure that the pcp role runs with default parameters
   hosts: all
 
   collections:
     - community.performancecopilot
 
-  tasks:
-    - import_role:
-      name: pcp
+  roles:
+    - community.performancecopilot.pcp
