@@ -3,9 +3,5 @@
 
 - name: Ensure that the pcp role runs with default parameters
   hosts: all
-
-  collections:
-    - community.performancecopilot
-
   roles:
     - community.performancecopilot.pcp
