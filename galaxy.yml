@@ -1,5 +1,5 @@
 ### REQUIRED
-namespace: fedora
+namespace: community
 name: performancecopilot
 version: 1.0.0
 readme: README.md
