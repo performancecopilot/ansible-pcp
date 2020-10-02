@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if Redis works
+  command: redis-cli PING | grep PONG

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure that the bpftrace role runs
+  hosts: all
+
+  roles:
+    - role: community.performancecopilot.bpftrace
+
+  pre_tasks:
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Check if elasticsearch role setup works
+      include_tasks: "{{ item }}"
+      loop:
+        - check_pmdabpftrace.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml

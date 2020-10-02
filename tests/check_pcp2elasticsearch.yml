@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if pcp2elasticsearch is running
+  command: systemctl is-active pcp2elasticsearch

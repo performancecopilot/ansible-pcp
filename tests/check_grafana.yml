@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if Grafana works
+  uri:
+    url: http://{{ __metrics_grafana_server }}/login
+    method: GET
+    status_code: 200

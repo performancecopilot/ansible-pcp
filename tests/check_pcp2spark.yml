@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if pcp2spark is running
+  command: systemctl is-active pcp2spark

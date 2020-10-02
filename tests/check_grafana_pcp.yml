@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if grafana-pcp is installed
+  shell: /usr/sbin/grafana-cli plugins ls | grep performancecopilot

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if pmproxy works
+  uri:
+    url: http://localhost:44322/series/ping
+    method: GET
+    status_code: 200

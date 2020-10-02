@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure that the mssql role runs
+  hosts: all
+
+  roles:
+    - role: community.performancecopilot.mssql
+
+  pre_tasks:
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Check if elasticsearch role setup works
+      include_tasks: "{{ item }}"
+      loop:
+        - check_pmdamssql.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml

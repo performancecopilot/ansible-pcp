@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if primary pmie is running
+  shell: pmprobe -I pmcd.pmie.pmcd_host | grep '"primary"'

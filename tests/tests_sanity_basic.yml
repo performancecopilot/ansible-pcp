@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure that the basic pcp role runs
+  hosts: all
+
+  roles:
+    - role: community.performancecopilot.pcp
+
+  pre_tasks:
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Check if basic pcp role setup works
+      include_tasks: "{{ item }}"
+      loop:
+        - check_pcp.yml
+        - check_pmie.yml
+        - check_pmlogger.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml

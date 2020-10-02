@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if openmetrics PMDA is installed in the filesystem
+  command: test -d "/var/lib/pcp/pmdas/openmetrics"
+
+- name: Check if openmetrics PMDA is registered with pmcd
+  shell: pmprobe -I pmcd.agent.status | grep '"openmetrics"'

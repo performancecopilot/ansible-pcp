@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure that the spark role runs
+  hosts: all
+
+  roles:
+    - role: community.performancecopilot.pcp
+    - role: community.performancecopilot.spark
+
+  pre_tasks:
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Check if spark role setup works
+      include_tasks: "{{ item }}"
+      loop:
+        - check_pcp2spark.yml
+        - check_pmdaopenmetrics.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml
