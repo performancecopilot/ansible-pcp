@@ -1,0 +1,7 @@
+---
+- hosts: monitoring
+  roles:
+    - role: community.performancecopilot.spark
+      vars:
+        spark_metrics_agent: yes
+        spark_export_metrics: yes

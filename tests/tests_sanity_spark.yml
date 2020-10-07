@@ -4,8 +4,9 @@
   hosts: all
 
   roles:
-    - role: community.performancecopilot.pcp
     - role: community.performancecopilot.spark
+      vars:
+        spark_export_metrics: yes
 
   pre_tasks:
     - name: Save state of services
