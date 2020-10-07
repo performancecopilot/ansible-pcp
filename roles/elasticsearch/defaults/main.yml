@@ -9,5 +9,5 @@ elasticsearch_export_metrics: no
 elasticsearch_export_interval: 60
 elasticsearch_export_server: 'http://localhost:9200'
 elasticsearch_export_index: 'pcp'
-elasticsearch_export_hostid: []
+elasticsearch_export_hostid: ''
 elasticsearch_export_type: 'pcp-metric'

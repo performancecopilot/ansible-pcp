@@ -1,0 +1,7 @@
+---
+- hosts: monitoring
+  roles:
+    - role: community.performancecopilot.elasticsearch
+      vars:
+        elasticsearch_agent: yes
+        elasticsearch_export_metrics: yes

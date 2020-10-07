@@ -4,8 +4,9 @@
   hosts: all
 
   roles:
-    - role: community.performancecopilot.pcp
     - role: community.performancecopilot.elasticsearch
+      vars:
+        elasticsearch_export_metrics: yes
 
   pre_tasks:
     - name: Save state of services
