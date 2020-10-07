@@ -2,7 +2,7 @@
 ---
 
 - name: Set platform/version specific variables
-  include_vars: "{{ item }}.yml"
+  include_vars: "{{ item }}"
   loop:
     - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
     - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
