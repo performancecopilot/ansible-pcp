@@ -1,0 +1,5 @@
+---
+- hosts: all
+  roles:
+    - role: community.performancecopilot.bintray
+    - role: community.performancecopilot.pcp
