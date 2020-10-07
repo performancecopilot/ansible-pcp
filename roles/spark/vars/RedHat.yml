@@ -4,6 +4,6 @@
 
 __spark_service_path: /usr/lib/systemd/system
 __spark_packages_extra:
-  - pcp-pmda-spark
+  - pcp-pmda-openmetrics
 __spark_packages_export:
   - pcp-export-pcp2spark
