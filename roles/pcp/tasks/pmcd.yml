@@ -63,31 +63,29 @@
   become: yes
   notify: restart pmcd
 
-- name: Ensure performance metric collector accounts are created.
+- name: Ensure performance metric collector system accounts are configured.
   user:
-    name: "{{ item.0.username }}"
+    name: "{{ item.user }}"
     system: yes
+  when: item.user is defined
   become: yes
-  with_subelements:
-    - "{{ pcp_sasl_accounts }}"
-    - username
+  with_items: "{{ pcp_accounts }}"
 
-- name: Ensure performance metric collector accounts are configured.
+- name: Ensure performance metric collector SASL accounts are configured.
   shell: |
     set -o pipefail
-    sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.0.username }}@"
+    sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.saslname }}@"
     [ $? -eq 0 ] && exit 0
-    echo "Creating new account for {{ item.0.username }} in {{ __pcp_pmcd_sasldb_path }}"
-    echo "{{ item.1.password }}" | saslpasswd2 -na pmcd "{{ item.0.username }}"
+    echo "Creating new {{ item.saslname }} user in {{ __pcp_pmcd_sasldb_path }}"
+    echo "{{ item.saslpassword }}" | saslpasswd2 -na pmcd "{{ item.saslname }}"
     chown root:pcp "{{ __pcp_pmcd_sasldb_path }}"
     chmod 640 "{{ __pcp_pmcd_sasldb_path }}"
     exit 0
   become: yes
-  register: ensure_accounts_configured
-  changed_when: "'Creating new account' in ensure_accounts_configured.stdout"
-  with_subelements:
-    - "{{ pcp_sasl_accounts }}"
-    - username
+  register: ensure_sasl_configured
+  changed_when: "'Creating new SASL account' in ensure_sasl_configured.stdout"
+  when: item.saslname is defined
+  with_items: "{{ pcp_accounts }}"
 
 - name: Ensure performance metric collector authentication is configured.
   template:

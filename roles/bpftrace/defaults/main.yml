@@ -2,5 +2,4 @@
 ---
 
 bpftrace_users:
-  - username: metrics
-    password: admin
+  - { user: metrics, sasluser: metrics, saslpassword: admin }

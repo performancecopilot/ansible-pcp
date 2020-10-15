@@ -1,0 +1,8 @@
+---
+- hosts: monitoring
+  roles:
+    - role: community.performancecopilot.pcp
+      vars:
+        pcp_accounts:
+          - { user: metrics, sasluser: metrics, saslpassword: p4ssw0rd }
+          - { sasluser: nathans, saslpassword: "adm1n!" }

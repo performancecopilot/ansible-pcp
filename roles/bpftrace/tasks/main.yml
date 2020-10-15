@@ -21,6 +21,6 @@
   import_role:
     name: pcp
   vars:
-    pcp_sasl_users: {{ bpftrace_users }}
+    pcp_accounts: {{ bpftrace_users }}
     pcp_optional_agents: ['bpftrace']
     pcp_optional_packages: {{ __bpftrace_packages_extra }}
