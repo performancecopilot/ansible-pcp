@@ -94,7 +94,7 @@
     mode: 0644
   become: yes
   notify: restart pmcd
-  when: pcp_sasl_accounts | d([])
+  when: pcp_accounts | d([])
 
 - name: Ensure performance metric collector is running and enabled on boot.
   service:

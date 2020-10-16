@@ -12,5 +12,5 @@ pcp_optional_packages: []
 pcp_optional_agents: []
 pcp_explicit_labels: {}
 pcp_implicit_labels: {}
-pcp_sasl_accounts: []
 pcp_target_hosts: []
+pcp_accounts: []
