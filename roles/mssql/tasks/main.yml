@@ -22,4 +22,4 @@
     name: pcp
   vars:
     pcp_optional_agents: [mssql]
-    pcp_optional_packages: {{ __mssql_packages_extra }}
+    pcp_optional_packages: "{{ __mssql_packages_extra }}"

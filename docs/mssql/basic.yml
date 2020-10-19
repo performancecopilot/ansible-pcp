@@ -1,0 +1,8 @@
+---
+- hosts: monitoring
+  roles:
+    - role: community.performancecopilot.mssql
+      vars:
+        mssql_agent_trusted: no
+        mssql_agent_username: sa
+        mssql_agent_password: admin
