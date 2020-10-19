@@ -10,11 +10,10 @@ Uses features of PCP v5.1 and later, and makes use of Cyrus SASL (Simple Authent
 
 ```yaml
 bpftrace_users:
-- username: metrics
-  password: admin
+  - { user: metrics, sasluser: metrics, saslpassword: p4ssw0rd }
 ```
 
-Local system accounts that are able to load new bpftrace scripts.  These accounts will be able to load eBPF code into the running kernel, which is a privileged operation.  The mandatory value for the variable is an array of username-to-password mappings.
+Local system accounts that are able to load new bpftrace scripts.  These accounts will be able to load eBPF code into the running kernel, which is a privileged operation.  The mandatory value for the variable is an array of username-to-password mappings.  SASL accounts can also be configured using this mechanism, for remote [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) authentication.
 
 ## Dependencies
 

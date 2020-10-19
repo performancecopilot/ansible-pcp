@@ -1,0 +1,7 @@
+---
+- hosts: monitoring
+  roles:
+    - role: community.performancecopilot.bpftrace
+      vars:
+        bpftrace_users:
+          - { user: metrics, sasluser: metrics, saslpassword: p4ssw0rd }
