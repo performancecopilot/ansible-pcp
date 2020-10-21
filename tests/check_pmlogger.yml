@@ -1,4 +1,4 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Check if pmlogger is running
+- name: Check if primary pmlogger is running
   shell: pmprobe -I pmcd.pmlogger.pmcd_host | grep '"primary"'
