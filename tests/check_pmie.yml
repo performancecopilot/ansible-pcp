@@ -2,3 +2,6 @@
 ---
 - name: Check if primary pmie is running
   shell: pmprobe -I pmcd.pmie.pmcd_host | grep '"primary"'
+  when: (ansible_distribution in ['RedHat', 'CentOS'] and
+         ansible_distribution_major_version|int > 6) or
+         ansible_distribution not in ['Fedora', 'RedHat', 'CentOS']
