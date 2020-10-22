@@ -6,4 +6,4 @@ __redis_packages_extra:
   - RediSearch
 
 __redis_loaded_modules:
-  - "loadmodule /usr/lib64/redis/modules/redisearch.so"
+  - /usr/lib64/redis/modules/redisearch.so

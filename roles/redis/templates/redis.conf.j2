@@ -37,7 +37,9 @@
 #
 # loadmodule /path/to/my_module.so
 # loadmodule /path/to/other_module.so
-{{ __redis_loaded_modules }}
+{% for module in __redis_loaded_modules %}
+loadmodule {{ module }}
+{% endfor %}
 
 ################################## NETWORK #####################################
 

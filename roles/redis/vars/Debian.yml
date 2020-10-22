@@ -12,4 +12,4 @@ __redis_packages_extra:
   - redis-redisearch
 
 __redis_loaded_modules:
-  - "loadmodule /usr/lib/redis/modules/redisearch.so"
+  - /usr/lib/redis/modules/redisearch.so
