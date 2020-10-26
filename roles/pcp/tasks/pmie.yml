@@ -1,6 +1,40 @@
 # SPDX-License-Identifier: MIT
 ---
 
+- name: Ensure extra performance rule group directories exist.
+  file:
+    path: "{{ __pcp_pmieconf_path }}/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop: "{{ __pcp_pmieconf_groups|default([]) }}"
+
+- name: Ensure extra performance rule group link directories exist.
+  file:
+    path: "{{ __pcp_pmieconf_link_path }}/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop: "{{ __pcp_pmieconf_groups|default([]) }}"
+
+- name: Ensure extra performance rules are installed for targeted hosts.
+  copy:
+    src: "files/{{ item }}"
+    dest: "{{ __pcp_pmieconf_path }}/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ __pcp_pmieconf_rules|default([]) }}"
+
+- name: Ensure extra rules symlinks have been created for targeted hosts.
+  file:
+    src: "{{ __pcp_pmieconf_path }}/{{ item }}"
+    dest: "{{ __pcp_pmieconf_link_path }}/{{ item }}"
+    state: link
+  loop: "{{ __pcp_pmieconf_rules|default([]) }}"
+
 - name: Ensure performance metric inference is enabled for targeted hosts.
   template:
     src: pmie.control.j2
