@@ -1,4 +1,4 @@
-# performancecopilot.pcp
+# performancecopilot.metrics.pcp
 
 Installs and configures the [Performance Co-Pilot](https://pcp.io/) toolkit.
 
@@ -74,7 +74,7 @@ Basic PCP setup with monitoring suited for a single host.
 ```yaml
 - hosts: all
   roles:
-    - role: community.performancecopilot.pcp
+    - role: performancecopilot.metrics.pcp
       vars:
         pcp_pmlogger_interval: 10
         pcp_optional_agents: [dm, nfsclient, openmetrics]
@@ -87,7 +87,7 @@ Central PCP setup for monitoring of several remote hosts.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.pcp
+    - role: performancecopilot.metrics.pcp
       vars:
         pcp_pmlogger_interval: 10
         pcp_pmlogger_discard: 5

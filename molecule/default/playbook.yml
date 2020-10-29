@@ -5,4 +5,4 @@
   hosts: all
 
   collections:
-    - community.performancecopilot
+    - performancecopilot.metrics

@@ -1,4 +1,4 @@
-# performancecopilot.bpftrace
+# performancecopilot.metrics.bpftrace
 
 Installs and configures [bpftrace](https://github.com/iovisor/bpftrace) metrics from the [Performance Co-Pilot](https://pcp.io/) toolkit.
 
@@ -26,7 +26,7 @@ Make bpftrace metrics available to PCP analysis tools, and allow the local *graf
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.bpftrace
+    - role: performancecopilot.metrics.bpftrace
       vars:
         bpftrace_users:
         - username: metrics

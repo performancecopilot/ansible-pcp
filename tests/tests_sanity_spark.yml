@@ -4,7 +4,7 @@
   hosts: all
 
   roles:
-    - role: community.performancecopilot.spark
+    - role: performancecopilot.metrics.spark
       vars:
         spark_export_metrics: yes
 

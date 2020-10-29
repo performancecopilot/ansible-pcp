@@ -1,4 +1,4 @@
-# performancecopilot.spark
+# performancecopilot.metrics.bintray
 
 Installs and configures the [bintray](https://bintray.com/pcp) package repositories to get the very latest [Performance Co-Pilot](https://pcp.io/) toolkit releases.
 
@@ -21,7 +21,7 @@ Ensure latest upstream PCP packages are available for installation.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.bintray
+    - role: performancecopilot.metrics.bintray
 ```
 
 ## License

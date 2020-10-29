@@ -3,4 +3,4 @@
 - name: Ensure that the pcp role runs with default parameters
   hosts: all
   roles:
-    - community.performancecopilot.pcp
+    - performancecopilot.metrics.pcp

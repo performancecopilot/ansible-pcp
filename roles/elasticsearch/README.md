@@ -1,4 +1,4 @@
-# performancecopilot.elasticsearch
+# performancecopilot.metrics.elasticsearch
 
 Installs and configures [Elasticsearch](https://www.elastic.co/elasticsearch) metrics from the [Performance Co-Pilot](https://pcp.io/) toolkit, and optional exporting of PCP metrics to Elasticsearch.
 
@@ -59,7 +59,7 @@ Make local Elasticsearch metrics available to PCP analysis tools.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.elasticsearch
+    - role: performancecopilot.metrics.elasticsearch
       vars:
         elasticsearch_agent_port: 9200
 ```
@@ -69,7 +69,7 @@ Setup export of PCP metrics to a remote Elasticsearch server.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.elasticsearch
+    - role: performancecopilot.metrics.elasticsearch
       vars:
         elasticsearch_export_server: 'http://elastic.example.com:9200'
         elasticsearch_export_authname: 'metrics'

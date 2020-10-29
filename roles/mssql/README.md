@@ -1,4 +1,4 @@
-# performancecopilot.mssql
+# performancecopilot.metrics.mssql
 
 Installs and configures Microsoft [SQL Server](https://docs.microsoft.com/en-us/sql/) metrics from the [Performance Co-Pilot](https://pcp.io/) toolkit.
 
@@ -37,7 +37,7 @@ Setup PCP SQL Server metrics using Windows Authentication mode.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.mssql
+    - role: performancecopilot.metrics.mssql
       vars:
         mssql_agent_timeout: 5
 ```
@@ -47,7 +47,7 @@ Setup PCP SQL Server metrics using SQL Server Authentication.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.mssql
+    - role: performancecopilot.metrics.mssql
       vars:
         mssql_agent_trusted: no
         mssql_agent_username: sa

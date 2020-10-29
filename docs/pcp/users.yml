@@ -1,7 +1,7 @@
 ---
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.pcp
+    - role: performancecopilot.metrics.pcp
       vars:
         pcp_accounts:
           - { user: metrics, sasluser: metrics, saslpassword: p4ssw0rd }

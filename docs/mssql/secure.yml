@@ -1,4 +1,4 @@
 ---
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.mssql
+    - role: performancecopilot.metrics.mssql

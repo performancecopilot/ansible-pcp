@@ -4,7 +4,7 @@
   hosts: all
 
   roles:
-    - role: community.performancecopilot.pcp
+    - role: performancecopilot.metrics.pcp
 
   pre_tasks:
     - name: Save state of services

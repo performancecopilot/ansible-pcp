@@ -1,4 +1,4 @@
-# performancecopilot.grafana
+# performancecopilot.metrics.grafana
 
 Installs and configures [Grafana](https://grafana.com) for use with the [Performance Co-Pilot](https://pcp.io/) toolkit.
 
@@ -21,8 +21,8 @@ Setup PCP and Grafana for graphing live metrics locally using Vector.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.grafana
-    - role: community.performancecopilot.pcp
+    - role: performancecopilot.metrics.grafana
+    - role: performancecopilot.metrics.pcp
       vars:
         pcp_rest_api: yes
 ```

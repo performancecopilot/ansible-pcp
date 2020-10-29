@@ -1,4 +1,4 @@
-# performancecopilot.spark
+# performancecopilot.metrics.spark
 
 Installs and configures [Apache Spark](https://spark.apache.org/) metrics from the [Performance Co-Pilot](https://pcp.io/) toolkit, and optional exporting of PCP metrics to Spark.
 
@@ -43,7 +43,7 @@ Make local Spark executor metrics available to PCP analysis tools.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.spark
+    - role: performancecopilot.metrics.spark
 ```
 
 Setup export of PCP metrics to a Spark worker thread.
@@ -51,7 +51,7 @@ Setup export of PCP metrics to a Spark worker thread.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: community.performancecopilot.spark
+    - role: performancecopilot.metrics.spark
       vars:
         spark_export_port: 44388
 ```

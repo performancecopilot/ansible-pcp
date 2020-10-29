@@ -4,7 +4,7 @@
   hosts: all
 
   roles:
-    - role: community.performancecopilot.elasticsearch
+    - role: performancecopilot.metrics.elasticsearch
       vars:
         elasticsearch_export_metrics: yes
 

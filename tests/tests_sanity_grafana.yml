@@ -4,11 +4,11 @@
   hosts: all
 
   roles:
-    - role: community.performancecopilot.pcp
+    - role: performancecopilot.metrics.pcp
       vars:
         pcp_rest_api: yes
         pcp_pmproxy_localonly: 1
-    - role: community.performancecopilot.grafana
+    - role: performancecopilot.metrics.grafana
 
   pre_tasks:
     - meta: end_host
