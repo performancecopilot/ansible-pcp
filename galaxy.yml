@@ -1,7 +1,7 @@
 ### REQUIRED
 namespace: performancecopilot
 name: metrics
-version: 2.0.1
+version: 2.0.2
 readme: README.md
 authors:
   - Jan Kurik <jkurik@redhat.com>
@@ -11,7 +11,7 @@ authors:
 
 ### OPTIONAL
 description: Performance Co-Pilot Ansible collection
-license_file: 'LICENSE-pcp'
+license_file: 'LICENSE'
 tags: [performance, analysis, metrics, visualization, pcp, redis, grafana]
 dependencies: {}
 repository: https://github.com/performancecopilot/ansible-pcp

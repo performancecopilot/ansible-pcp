@@ -36,7 +36,7 @@ The collection is arranged as follows:
 - performancecopilot.metrics.bpftrace
 
   A role that extends the core PCP role, providing metrics from
-  bftrace scripts (using the Linux kernel eBPF facilities).
+  bpftrace scripts (using the Linux kernel eBPF facilities).
   Configuring authentication of a local user capable of running
   bpftrace scripts via the PCP agent is a key task of this role.
 
