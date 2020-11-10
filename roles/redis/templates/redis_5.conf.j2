@@ -166,7 +166,7 @@ loglevel notice
 # Specify the log file name. Also the empty string can be used to force
 # Redis to log on the standard output. Note that if you use standard
 # output for logging but daemonize, logs will be sent to /dev/null
-logfile ""
+logfile /var/log/redis/redis.log
 
 # To enable logging to the system logger, just set 'syslog-enabled' to yes,
 # and optionally update the other syslog parameters to suit your needs.
@@ -1231,7 +1231,7 @@ hz 10
 # offers, and enables by default, the ability to use an adaptive HZ value
 # which will temporary raise when there are many connected clients.
 #
-# When dynamic HZ is enabled, the actual configured HZ will be used as
+# When dynamic HZ is enabled, the actual configured HZ will be used
 # as a baseline, but multiples of the configured HZ value will be actually
 # used as needed once more clients are connected. In this way an idle
 # instance will use very little CPU time while a busy instance will be
@@ -1303,10 +1303,6 @@ rdb-save-incremental-fsync yes
 # lfu-decay-time 1
 
 ########################### ACTIVE DEFRAGMENTATION #######################
-#
-# WARNING THIS FEATURE IS EXPERIMENTAL. However it was stress tested
-# even in production and manually tested by multiple engineers for some
-# time.
 #
 # What is active defragmentation?
 # -------------------------------

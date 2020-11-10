@@ -23,8 +23,8 @@
     owner: redis
     group: root
   with_first_found:
-    - "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'] }}-redis.conf.j2"
-    - "{{ ansible_facts['distribution'] }}-redis.conf.j2"
+    - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}_redis.conf.j2"
+    - "{{ ansible_facts['distribution'] }}_redis.conf.j2"
     - "redis.conf.j2"
   become: yes
   notify: restart redis
