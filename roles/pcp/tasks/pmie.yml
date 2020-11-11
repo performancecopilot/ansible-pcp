@@ -40,6 +40,7 @@
   template:
     src: pmie.control.j2
     dest: "{{ __pcp_pmie_control_path }}/{{ item }}"
+    mode: 0644
   loop: "{{ pcp_target_hosts|default([]) }}"
   become: yes
   notify: restart pmie
