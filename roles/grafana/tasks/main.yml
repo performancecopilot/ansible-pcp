@@ -15,6 +15,14 @@
     name: "{{ __grafana_packages + __grafana_packages_extra }}"
     state: present
 
+- name: Template Grafana configuration
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    mode: 0640
+  become: yes
+  notify: restart grafana
+
 - name: Ensure Grafana service is configured with datasources
   template:
     src: grafana-pcp-datasources.yaml.j2
