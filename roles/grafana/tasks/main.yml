@@ -18,7 +18,7 @@
 - name: Template Grafana configuration
   template:
     src: grafana.ini.j2
-    dest: /etc/grafana/grafana.ini
+    dest: "{{ __grafana_conf }}"
     mode: 0640
   become: yes
   notify: restart grafana
