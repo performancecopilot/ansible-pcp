@@ -2,7 +2,7 @@
 ---
 - name: Check if grafana-pcp datasources are configured
   uri:
-    url: "http://admin:admin@localhost:44322/api/datasources/name/PCP%20{{ item }}"
+    url: "http://admin:admin@localhost:3000/api/datasources/name/PCP%20{{ item }}"
     force_basic_auth: yes
     headers:
       Content-Type: application/json
