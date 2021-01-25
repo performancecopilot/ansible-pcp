@@ -2,6 +2,8 @@
 skip_list:
 - '106'
 - '208'
+- '301'  # Commands should not change things if nothing needs doing
+- '303'  # Using command rather than module for yum/dnf
 - '306'
 - '403'
 - '502'
