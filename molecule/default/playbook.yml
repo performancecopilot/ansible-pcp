@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: MIT
----
-
-- name: Converge
-  hosts: all
-
-  collections:
-    - performancecopilot.metrics
