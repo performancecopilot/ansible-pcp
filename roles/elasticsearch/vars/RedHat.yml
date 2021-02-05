@@ -5,5 +5,3 @@
 __elasticsearch_service_path: /usr/lib/systemd/system
 __elasticsearch_packages_pcp:
   - pcp-pmda-elasticsearch
-__elasticsearch_packages_export_pcp:
-  - pcp-export-pcp2elasticsearch
