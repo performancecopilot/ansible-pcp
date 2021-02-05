@@ -24,7 +24,7 @@ logs = /var/log/grafana
 plugins = /var/lib/grafana/plugins
 
 # folder that contains provisioning config files that grafana will apply on startup and while running.
-provisioning = /etc/grafana/provisioning
+provisioning = {{ __grafana_provisioning_path }}
 
 #################################### Server ##############################
 [server]
