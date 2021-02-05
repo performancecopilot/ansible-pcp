@@ -3,5 +3,7 @@
 # Put internal variables here with Debian specific values.
 
 __spark_service_path: /lib/systemd/system
-__spark_packages_extra: []
-__spark_packages_export: []
+__spark_packages_pcp:
+  - pcp
+__spark_packages_export_pcp:
+  - pcp

@@ -10,36 +10,41 @@
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
   when: item is file
 
+- name: Establish Spark metrics package names
+  set_fact:
+    __spark_packages_extra: "{{ __spark_packages_extra + __spark_packages_pcp }}"
+  when:
+    - spark_metrics_provider == 'pcp'
+    - spark_metrics_agent|d(false)|bool
+
+- name: Establish Spark metrics export package names
+  set_fact:
+    __spark_packages_extra: "{{ __spark_packages_extra + __spark_packages_export_pcp }}"
+  when:
+    - spark_metrics_provider == 'pcp'
+    - spark_export_metrics | bool
+
+- name: Install needed Spark metrics packages
+  package:
+    name: "{{ __spark_packages_extra }}"
+    state: present
+
 - name: Ensure PCP OpenMetrics agent is configured for Spark
   template:
     src: spark.url.j2
     dest: "{{ __spark_metrics_conf }}"
     mode: 0600
   when:
-    - spark_metrics_agent | bool
+    - spark_metrics_provider == 'pcp'
+    - spark_metrics_agent|d(false)|bool
 
 - name: Ensure PCP OpenMetrics agent is enabled with Spark endpoint
   file:
     src: "{{ __spark_metrics_conf }}"
     dest: "{{ __spark_metrics_symlink }}"
     state: link
-
-- name: Ensure PCP Spare metrics are available
-  import_role:
-    name: pcp
-  vars:
-    pcp_optional_agents: [openmetrics]
-    pcp_optional_packages: "{{ __spark_packages_extra }}"
-  when:
-    - spark_metrics_agent | bool
-
-- name: Install PCP Spark export package
-  package:
-    name: "{{ __spark_packages_export }}"
-    state: present
-  when:
-    - spark_export_metrics | bool
-    - __spark_packages_export | d([])
+    - spark_metrics_provider == 'pcp'
+    - spark_metrics_agent|d(false)|bool
 
 - name: Ensure PCP Spark export service exists
   template:
@@ -47,7 +52,8 @@
     dest: "{{ __spark_service_path }}/pcp2spark.service"
     mode: 0600
   when:
-    - spark_export_metrics | bool
+    - spark_metrics_provider == 'pcp'
+    - spark_export_metrics|d(false)|bool
 
 - name: Ensure PCP Spark export is running and enabled on boot
   service:
@@ -59,4 +65,5 @@
   # having to install our service ignoring any errors.
   ignore_errors: yes
   when:
-    - spark_export_metrics | bool
+    - spark_metrics_provider == 'pcp'
+    - spark_export_metrics|d(false)|bool

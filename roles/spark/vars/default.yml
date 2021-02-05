@@ -1,2 +1,4 @@
 # SPDX-License-Identifier: MIT
 ---
+
+spark_metrics_provider: 'pcp'

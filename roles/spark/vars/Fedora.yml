@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with Fedora specific values.
+
+__spark_packages_export_pcp:
+  - pcp-export-pcp2spark
+  - pcp-system-tools

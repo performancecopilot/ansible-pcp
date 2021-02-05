@@ -3,7 +3,5 @@
 # Put internal variables here with Red Hat specific values.
 
 __spark_service_path: /usr/lib/systemd/system
-__spark_packages_extra:
+__spark_packages_pcp:
   - pcp-pmda-openmetrics
-__spark_packages_export:
-  - pcp-export-pcp2spark
