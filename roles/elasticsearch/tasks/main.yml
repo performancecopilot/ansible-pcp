@@ -59,6 +59,10 @@
     name: pcp2elasticsearch
     state: started
     enabled: yes
+  # Elasticsearch server may be running remotely or presently down
+  # but since a playbook has explicitly asked us for it, we end up
+  # having to install our service ignoring any errors.
+  ignore_errors: yes
   when:
     - elasticsearch_metrics_provider == 'pcp'
     - elasticsearch_export_metrics|d(false)|bool
