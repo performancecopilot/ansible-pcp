@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Test authentication
+  hosts: all
+  vars:
+    __test_uname: pcptest
+    __test_pswd: t;dlen;dle
+
+  roles:
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_accounts:
+          - { user: "{{ __test_uname }}", sasluser: "{{ __test_uname }}", saslpassword: "{{ __test_pswd }}" }
+
+  pre_tasks:
+    - meta: end_host
+      when: (ansible_distribution in ['RedHat', 'CentOS'] and
+             ansible_distribution_major_version|int < 8) or
+             ansible_distribution not in ['Fedora', 'RedHat', 'CentOS']
+
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Restart PMCD
+      shell: systemctl restart pmcd && sleep 5
+
+    - name: Check if SASL works
+      include_tasks: "{{ item }}"
+      loop:
+        - check_sasl.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml

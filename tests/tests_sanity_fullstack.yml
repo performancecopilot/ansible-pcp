@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Test the full PCP/Redis/Grafana stack
+  hosts: all
+
+  roles:
+    - performancecopilot.metrics.pcp
+    - performancecopilot.metrics.redis
+    - performancecopilot.metrics.grafana
+
+  pre_tasks:
+    - meta: end_host
+      when: (ansible_distribution in ['RedHat', 'CentOS'] and
+             ansible_distribution_major_version|int < 8) or
+             ansible_distribution not in ['Fedora', 'RedHat', 'CentOS']
+
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Check if all services work
+      include_tasks: "{{ item }}"
+      loop:
+        - check_pcp.yml
+        - check_pmlogger.yml
+        - check_pmie.yml
+        - check_redis.yml
+        - check_pmproxy.yml
+        - check_grafana.yml
+        - check_grafanapcp.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml

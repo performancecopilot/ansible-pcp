@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Ensure that the basic pcp role runs
+- name: Test basic services of the pcp role are installed and running
   hosts: all
 
   roles:
