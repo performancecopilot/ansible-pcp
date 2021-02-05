@@ -1,13 +1,12 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Test installation and configuration of MSSQL agent
+- name: Test import to Elasticsearch
   hosts: all
 
   roles:
-    - role: performancecopilot.metrics.mssql
-    - role: performancecopilot.metrics.pcp
+    - role: performancecopilot.metrics.elasticsearch
       vars:
-        pcp_optional_agents: ['mssql']
+        elasticsearch_export_metrics: yes
 
   pre_tasks:
     - meta: end_host
@@ -18,16 +17,9 @@
     - name: Save state of services
       import_tasks: get_services_state.yml
 
-    - name: Ensure python3-pyodbc is installed
-      package:
-        name: python3-pyodbc
-        state: present
-
   tasks:
-    - name: Check MSSQL functionality
-      include_tasks: "{{ item }}"
-      loop:
-        - check_mssql.yml
+    - name: Check if import to Elasticsearch works
+      include_tasks: check_into_elasticsearch.yml
 
   post_tasks:
     - name: Restore state of services

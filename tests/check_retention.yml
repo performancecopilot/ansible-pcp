@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check if retention period is set
+  command: grep -e '--discard {{ __test_retention }}' /etc/sysconfig/pmlogger_timers

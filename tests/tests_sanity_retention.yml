@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Test configuration of retention period
+  hosts: all
+  vars:
+    __test_retention: 137
+
+  roles:
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_pmlogger_discard: "{{ __test_retention }}"
+
+  pre_tasks:
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Check basic services and the retention
+      include_tasks: "{{ item }}"
+      loop:
+        - check_pcp.yml
+        - check_pmlogger.yml
+        - check_pmie.yml
+        - check_retention.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml

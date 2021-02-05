@@ -1,20 +1,37 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Ensure that the bpftrace role runs
+- name: Test BPFTrace with SASL auth
   hosts: all
+  vars:
+    __test_uname: pcptest
+    __test_pswd: t;dlen;dle
 
   roles:
     - role: performancecopilot.metrics.bpftrace
+      vars:
+        bpftrace_accounts:
+          - { user: "{{ __test_uname }}" }
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_optional_agents: ['bpftrace']
+        pcp_accounts:
+          - { user: "{{ __test_uname }}", sasluser: "{{ __test_uname }}", saslpassword: "{{ __test_pswd }}" }
 
   pre_tasks:
+    - meta: end_host
+      when: (ansible_distribution in ['RedHat', 'CentOS'] and
+             ansible_distribution_major_version|int < 8) or
+             ansible_distribution not in ['Fedora', 'RedHat', 'CentOS']
+
     - name: Save state of services
       import_tasks: get_services_state.yml
 
   tasks:
-    - name: Check if elasticsearch role setup works
+    - name: Check if BPFTrace & SASL works
       include_tasks: "{{ item }}"
       loop:
-        - check_pmdabpftrace.yml
+        - check_bpftrace.yml
+        - check_sasl.yml
 
   post_tasks:
     - name: Restore state of services
