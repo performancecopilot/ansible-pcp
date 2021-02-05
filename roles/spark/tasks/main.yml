@@ -15,7 +15,6 @@
     src: spark.url.j2
     dest: "{{ __spark_metrics_conf }}"
     mode: 0600
-  become: yes
   when:
     - spark_metrics_agent | bool
 
@@ -47,7 +46,6 @@
     src: pcp2spark.service.j2
     dest: "{{ __spark_service_path }}/pcp2spark.service"
     mode: 0600
-  become: yes
   when:
     - spark_export_metrics | bool
 
@@ -56,6 +54,5 @@
     name: pcp2spark
     state: started
     enabled: yes
-  become: yes
   when:
     - spark_export_metrics | bool

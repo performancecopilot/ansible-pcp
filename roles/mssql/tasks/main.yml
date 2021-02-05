@@ -15,7 +15,6 @@
     src: mssql.conf.j2
     dest: "{{ __mssql_conf }}"
     mode: 0600
-  become: yes
 
 - name: Ensure PCP SQL Server metrics are available
   import_role:

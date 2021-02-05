@@ -42,7 +42,6 @@
     dest: "{{ __pcp_pmie_control_path }}/{{ item }}"
     mode: 0644
   loop: "{{ pcp_target_hosts|default([]) }}"
-  become: yes
   notify: restart pmie
 
 - name: Ensure performance metric inference is running and enabled on boot.
@@ -50,4 +49,3 @@
     name: pmie
     state: started
     enabled: yes
-  become: yes

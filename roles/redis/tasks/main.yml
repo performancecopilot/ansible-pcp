@@ -26,7 +26,6 @@
     - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}_redis.conf.j2"
     - "{{ ansible_facts['distribution'] }}_redis.conf.j2"
     - "redis.conf.j2"
-  become: yes
   notify: restart redis
 
 - name: Ensure Redis service is running and enabled on boot
@@ -34,4 +33,3 @@
     name: redis
     state: started
     enabled: yes
-  become: yes

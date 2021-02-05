@@ -20,7 +20,6 @@
     src: bpftrace.conf.j2
     dest: "{{ __bpftrace_conf }}"
     mode: 0600
-  become: yes
 
 - name: Ensure PCP bpftrace metrics are available
   import_role:

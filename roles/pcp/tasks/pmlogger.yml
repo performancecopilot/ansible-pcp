@@ -6,7 +6,6 @@
     path: "{{ __pcp_conf }}"
     regexp: '^PCP_ARCHIVE_DIR='
     line: PCP_ARCHIVE_DIR={{ pcp_archive_dir }}
-  become: yes
   notify:
     - restart pmlogger
     - restart pmproxy
@@ -16,7 +15,6 @@
     src: pmlogger.defaults.j2
     dest: "{{ __pcp_pmlogger_defaults_path }}"
     mode: 0644
-  become: yes
   notify: restart pmlogger
 
 - name: Ensure performance metric logging retention period is set.
@@ -24,7 +22,6 @@
     src: pmlogger.timers.j2
     dest: "{{ __pcp_pmlogger_timers_path }}"
     mode: 0644
-  become: yes
   notify: restart pmlogger
 
 - name: Ensure performance metric logging is enabled for targeted hosts.
@@ -33,7 +30,6 @@
     dest: "{{ __pcp_pmlogger_control_path }}/{{ item }}"
     mode: 0644
   loop: "{{ __pcp_target_hosts|default([]) }}"
-  become: yes
   notify: restart pmlogger
 
 - name: Ensure performance metric logging is running and enabled on boot.
@@ -41,4 +37,3 @@
     name: pmlogger
     state: started
     enabled: yes
-  become: yes

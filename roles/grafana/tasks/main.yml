@@ -20,7 +20,6 @@
     src: grafana.ini.j2
     dest: "{{ __grafana_conf }}"
     mode: 0640
-  become: yes
   notify: restart grafana
 
 - name: Ensure Grafana service is configured with datasources
@@ -29,7 +28,6 @@
     dest: "{{ __grafana_provisioning_path }}/datasources/grafana-pcp.yaml"
 
     mode: 0644
-  become: yes
   notify: restart grafana
 
 - name: Ensure graphing service is running and enabled on boot
@@ -37,7 +35,6 @@
     name: grafana-server
     state: started
     enabled: yes
-  become: yes
 
 - name: Ensure graphing service runtime settings are configured
   uri:
