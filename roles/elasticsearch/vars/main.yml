@@ -5,3 +5,4 @@ __elasticsearch_packages_extra: []
 __elasticsearch_conf_dir: /etc/pcp/elasticsearch
 __elasticsearch_conf: "{{ __elasticsearch_conf_dir }}/elasticsearch.conf"
 __elasticsearch_export_conf: /etc/pcp/pcp2elasticsearch.conf
+__elasticsearch_packages_export_pcp: []
