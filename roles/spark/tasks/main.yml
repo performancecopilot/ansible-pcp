@@ -43,6 +43,7 @@
     src: "{{ __spark_metrics_conf }}"
     dest: "{{ __spark_metrics_symlink }}"
     state: link
+  when:
     - spark_metrics_provider == 'pcp'
     - spark_metrics_agent|d(false)|bool
 
