@@ -9,6 +9,8 @@ __pcp_sasl_packages:
   - cyrus-sasl-lib
   - cyrus-sasl-scram
 
+__pcp_sasl_mechlist: scram-sha-256
+
 __pcp_pmcd_defaults_path: /etc/sysconfig/pmcd
 __pcp_pmproxy_defaults_path: /etc/sysconfig/pmproxy
 __pcp_pmlogger_defaults_path: /etc/sysconfig/pmlogger

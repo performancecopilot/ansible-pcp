@@ -6,3 +6,9 @@ __pcp_packages_extra:
   - pcp-pmda-dm
   - pcp-pmda-nfsclient
   - pcp-system-tools
+
+__pcp_sasl_packages:
+  - cyrus-sasl-lib
+  - cyrus-sasl-md5
+
+__pcp_sasl_mechlist: digest-md5

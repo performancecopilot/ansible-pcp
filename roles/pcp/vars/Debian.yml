@@ -10,3 +10,5 @@ __pcp_pmlogger_timers_path: /etc/default/pmlogger_timers
 __pcp_sasl_packages:
   - sasl2-bin
   - libsasl2-modules-gssapi-mit
+
+__pcp_sasl_mechlist: scram-sha-256

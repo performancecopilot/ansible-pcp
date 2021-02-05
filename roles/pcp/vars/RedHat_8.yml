@@ -4,3 +4,9 @@
 
 __pcp_packages_extra:
   - pcp-zeroconf
+
+__pcp_sasl_packages:
+  - cyrus-sasl-lib
+  - cyrus-sasl-scram
+
+__pcp_sasl_mechlist: scram-sha-256

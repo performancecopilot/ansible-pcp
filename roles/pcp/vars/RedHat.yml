@@ -6,7 +6,3 @@ __pcp_pmcd_defaults_path: /etc/sysconfig/pmcd
 __pcp_pmproxy_defaults_path: /etc/sysconfig/pmproxy
 __pcp_pmlogger_defaults_path: /etc/sysconfig/pmlogger
 __pcp_pmlogger_timers_path: /etc/sysconfig/pmlogger_timers
-
-__pcp_sasl_packages:
-  - cyrus-sasl-lib
-  - cyrus-sasl-scram

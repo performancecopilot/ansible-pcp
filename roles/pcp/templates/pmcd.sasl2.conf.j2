@@ -3,7 +3,7 @@
 # by adding e.g. '?authmech=gssapi' to their host specification.
 # For other options, refer to SASL pluginviewer command output.
 #mech_list: plain login digest-md5 gssapi
-mech_list: scram-sha-256
+mech_list: {{ __pcp_sasl_mechlist }}
 
 # If deferring to the SASL auth daemon (runs as root, can do PAM
 # login using regular user accounts, unprivileged daemons cannot).
