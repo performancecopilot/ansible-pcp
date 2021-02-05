@@ -2,4 +2,5 @@
 ---
 # Put internal variables here with CentOS 6 specific values.
 
+__elasticsearch_conf_dir: /var/lib/pcp/pmdas/elasticsearch
 __elasticsearch_packages_export_pcp: []
