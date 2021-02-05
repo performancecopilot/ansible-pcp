@@ -3,8 +3,8 @@ dependencies: []
 
 galaxy_info:
   author: performancecopilot
-  description: Performance Co-Pilot bintray role
-  role_name: bintray
+  description: Performance Co-Pilot repository role
+  role_name: repository
   company: pcp.io
   license: "license (MIT)"
   min_ansible_version: 2.9
@@ -23,7 +23,7 @@ galaxy_info:
         - all
   galaxy_tags:
     - pcp
-    - bintray
+    - metrics
     - packages
     - packaging
     - monitoring

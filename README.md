@@ -32,11 +32,11 @@ The collection is arranged as follows:
   role.  The PCP REST API service (from the core PCP role) must
   be configured in order to use this role.
 
-- performancecopilot.metrics.bintray
+- performancecopilot.metrics.repository
 
   A role configuring an additional PCP packaging repository -
-  bintray.com/pcp - for installation of the latest releases of
-  PCP from the Performance Co-Pilot development community.
+  for installation of the latest (upstream) releases of the PCP
+  packages from the Performance Co-Pilot development community.
 
 - performancecopilot.metrics.bpftrace
 

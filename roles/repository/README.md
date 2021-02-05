@@ -1,6 +1,6 @@
-# performancecopilot.metrics.bintray
+# performancecopilot.metrics.repository
 
-Installs and configures the [bintray](https://bintray.com/pcp) package repositories to get the very latest [Performance Co-Pilot](https://pcp.io/) toolkit releases.
+Installs and configures the upstream package repositories - currently hosted at [bintray](https://bintray.com/pcp) - to get the very latest [Performance Co-Pilot](https://pcp.io/) toolkit releases.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ Ensure latest upstream PCP packages are available for installation.
 ```yaml
 - hosts: monitoring
   roles:
-    - role: performancecopilot.metrics.bintray
+    - role: performancecopilot.metrics.repository
 ```
 
 ## License

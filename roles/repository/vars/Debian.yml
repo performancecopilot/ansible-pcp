@@ -2,4 +2,4 @@
 ---
 # Put internal variables here with Debian specific values.
 
-__bintray_distro_name: "{{ ansible_facts['distribution_release'] }}"
+__repository_distro_name: "{{ ansible_facts['distribution_release'] }}"

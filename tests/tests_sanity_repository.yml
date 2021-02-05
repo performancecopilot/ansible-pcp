@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Ensure that the bintray role runs
+- name: Ensure that the repository role runs
   hosts: all
 
   roles:
-    - role: performancecopilot.metrics.bintray
+    - role: performancecopilot.metrics.repository
     - role: performancecopilot.metrics.pcp
 
   pre_tasks:
