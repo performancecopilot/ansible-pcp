@@ -22,6 +22,14 @@
     mode: 0640
   notify: restart grafana
 
+- name: Ensure Grafana configuration directory exists
+  file:
+    path: "{{ __grafana_provisioning_path }}/datasources"
+    state: directory
+    group: grafana
+    owner: root
+    mode: 0750
+
 - name: Ensure Grafana service is configured with datasources
   template:
     src: grafana-pcp-datasources.yaml.j2

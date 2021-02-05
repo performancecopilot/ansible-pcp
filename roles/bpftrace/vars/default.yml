@@ -1,2 +1,4 @@
 # SPDX-License-Identifier: MIT
 ---
+
+bpftrace_metrics_provider: 'pcp'

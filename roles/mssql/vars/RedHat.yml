@@ -2,5 +2,5 @@
 ---
 # Put internal variables here with Red Hat specific values.
 
-__mssql_packages_extra:
+__mssql_packages_pcp:
   - pcp-pmda-mssql

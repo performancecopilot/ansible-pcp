@@ -3,5 +3,7 @@
 # Put internal variables here with Debian specific values.
 
 __elasticsearch_service_path: /lib/systemd/system
-__elasticsearch_packages_extra: []
-__elasticsearch_packages_export: []
+__elasticsearch_packages_pcp:
+  - pcp
+__elasticsearch_packages_export_pcp:
+  - pcp

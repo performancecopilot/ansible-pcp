@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: MIT
 ---
 
-- name: List optional metric collection agents to be enabled.
+- name: List optional metric collection agents to be enabled
   debug:
     msg: "NeedInstall agent: {{ item }} from {{ pcp_optional_agents }}"
   loop: "{{ pcp_optional_agents|default([]) }}"
 
-- name: Extract metric collection configuration file content.
+- name: Extract metric collection configuration file content
   command: "cat {{ __pcp_pmcd_conf }}"
   register: pmcd_conf
   changed_when: false
 
-- name: Ensure optional metric collection agents are enabled.
+- name: Ensure optional metric collection agents are enabled
   file:
     path: "{{ __pcp_agents_path }}/{{ item }}/.NeedInstall"
     mode: u=rw,g=r,o=r
@@ -20,7 +20,7 @@
   when: pmcd_conf.stdout.find(item) == -1
   notify: restart pmcd
 
-- name: Ensure explicit metric label path exists.
+- name: Ensure explicit metric label path exists
   file:
     path: "{{ __pcp_explicit_labels_path }}"
     state: directory
@@ -28,7 +28,7 @@
     owner: root
     group: root
 
-- name: Ensure implicit metric label path exists.
+- name: Ensure implicit metric label path exists
   file:
     path: "{{ __pcp_implicit_labels_path }}"
     state: directory
@@ -36,58 +36,58 @@
     owner: root
     group: root
 
-- name: Ensure any explicit metric labels are configured.
+- name: Ensure any explicit metric labels are configured
   template:
     src: pmcd.explicit.labels.j2
     dest: "{{ __pcp_explicit_labels_path }}/ansible-managed"
     mode: 0644
   notify: restart pmcd
 
-- name: Ensure any implicit metric labels are configured.
+- name: Ensure any implicit metric labels are configured
   template:
     src: pmcd.implicit.labels.j2
     dest: "{{ __pcp_implicit_labels_path }}/ansible-managed"
     mode: 0644
   notify: restart pmcd
 
-- name: Ensure performance metric collector is configured.
+- name: Ensure performance metric collector is configured
   template:
     src: pmcd.defaults.j2
     dest: "{{ __pcp_pmcd_defaults_path }}"
     mode: 0644
   notify: restart pmcd
 
-- name: Ensure performance metric collector system accounts are configured.
+- name: Ensure performance metric collector system accounts are configured
   user:
     name: "{{ item.user }}"
     system: yes
   when: item.user is defined
   with_items: "{{ pcp_accounts }}"
 
-- name: Ensure performance metric collector SASL accounts are configured.
+- name: Ensure performance metric collector SASL accounts are configured
   shell: |
     set -o pipefail
-    sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.saslname }}@"
+    sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.sasluser }}@"
     [ $? -eq 0 ] && exit 0
-    echo "Creating new {{ item.saslname }} user in {{ __pcp_pmcd_sasldb_path }}"
-    echo "{{ item.saslpassword }}" | saslpasswd2 -na pmcd "{{ item.saslname }}"
+    echo "Creating new {{ item.sasluser }} user in {{ __pcp_pmcd_sasldb_path }}"
+    echo "{{ item.saslpassword }}" | saslpasswd2 -a pmcd "{{ item.sasluser }}"
     chown root:pcp "{{ __pcp_pmcd_sasldb_path }}"
     chmod 640 "{{ __pcp_pmcd_sasldb_path }}"
     exit 0
   register: ensure_sasl_configured
   changed_when: "'Creating new SASL account' in ensure_sasl_configured.stdout"
-  when: item.saslname is defined
+  when: item.sasluser is defined
   with_items: "{{ pcp_accounts }}"
 
-- name: Ensure performance metric collector authentication is configured.
+- name: Ensure performance metric collector authentication is configured
   template:
     src: pmcd.sasl2.conf.j2
     dest: "{{ __pcp_pmcd_saslconf_path }}"
     mode: 0644
   notify: restart pmcd
-  when: pcp_accounts | d([])
+  when: pcp_accounts|d([])
 
-- name: Ensure performance metric collector is running and enabled on boot.
+- name: Ensure performance metric collector is running and enabled on boot
   service:
     name: pmcd
     state: started

@@ -1,2 +1,4 @@
 # SPDX-License-Identifier: MIT
 ---
+
+elasticsearch_metrics_provider: 'pcp'

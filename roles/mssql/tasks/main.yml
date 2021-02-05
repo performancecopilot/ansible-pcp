@@ -10,21 +10,27 @@
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
   when: item is file
 
-- name: Ensure PCP SQL Server agent config dir exists
+- name: Establish SQL Server metrics package names
+  set_fact:
+    __mssql_packages_extra: "{{ __mssql_packages_pcp }}"
+  when: mssql_metrics_provider == 'pcp'
+
+- name: Install needed SQL Server metrics packages
+  package:
+    name: "{{ __mssql_packages_extra }}"
+    state: present
+  when: __mssql_packages_extra|d([])
+
+- name: Ensure PCP SQL Server agent configuration directory exists
   file:
     path: "{{ __mssql_conf_dir }}"
     state: directory
     mode: 0755
+  when: mssql_metrics_provider == 'pcp'
 
 - name: Ensure PCP SQL Server agent is configured
   template:
     src: mssql.conf.j2
     dest: "{{ __mssql_conf }}"
     mode: 0600
-
-- name: Ensure PCP SQL Server metrics are available
-  import_role:
-    name: pcp
-  vars:
-    pcp_optional_agents: [mssql]
-    pcp_optional_packages: "{{ __mssql_packages_extra }}"
+  when: mssql_metrics_provider == 'pcp'

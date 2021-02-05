@@ -20,8 +20,8 @@
     name: "{{ __pcp_sasl_packages }}"
     state: present
   when:
-    - __pcp_sasl_packages | d([])
-    - pcp_sasl_accounts | d([])
+    - __pcp_sasl_packages|d([])
+    - pcp_accounts|d({})
 
 - include_tasks: pmcd.yml
 
@@ -30,4 +30,4 @@
 - include_tasks: pmlogger.yml
 
 - include_tasks: pmproxy.yml
-  when: pcp_rest_api | bool
+  when: pcp_rest_api|d(false)|bool

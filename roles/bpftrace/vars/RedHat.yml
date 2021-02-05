@@ -2,5 +2,10 @@
 ---
 # Put internal variables here with Red Hat specific values.
 
-__bpftrace_packages_extra:
+__bpftrace_packages:
+  - bpftrace
+
+__bpftrace_packages_extra: []
+
+__bpftrace_packages_pcp:
   - pcp-pmda-bpftrace
