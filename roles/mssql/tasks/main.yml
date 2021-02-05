@@ -10,6 +10,12 @@
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
   when: item is file
 
+- name: Ensure PCP SQL Server agent config dir exists
+  file:
+    path: "{{ __mssql_conf_dir }}"
+    state: directory
+    mode: 0755
+
 - name: Ensure PCP SQL Server agent is configured
   template:
     src: mssql.conf.j2

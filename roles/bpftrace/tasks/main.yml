@@ -15,6 +15,12 @@
     __bpftrace_usernames: "{{ __bpftrace_usernames }},{{ item.user }}"
   with_items: "{{ bpftrace_users }}"
 
+- name: Ensure PCP bpftrace agent config dir exists
+  file:
+    path: "{{ __bpftrace_conf_dir }}"
+    state: directory
+    mode: 0755
+
 - name: Ensure PCP bpftrace agent is configured
   template:
     src: bpftrace.conf.j2

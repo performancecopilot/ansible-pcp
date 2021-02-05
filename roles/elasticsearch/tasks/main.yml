@@ -10,6 +10,12 @@
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
   when: item is file
 
+- name: Ensure PCP Elasticsearch agent config dir exists
+  file:
+    path: "{{ __elasticsearch_conf_dir }}"
+    state: directory
+    mode: 0755
+
 - name: Ensure PCP Elasticsearch agent is configured
   template:
     src: elasticsearch.conf.j2
