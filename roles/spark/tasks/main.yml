@@ -49,10 +49,14 @@
   when:
     - spark_export_metrics | bool
 
-- name: Ensure PCP Spark export is running and enabled on boot.
+- name: Ensure PCP Spark export is running and enabled on boot
   service:
     name: pcp2spark
     state: started
     enabled: yes
+  # A given Spark server may be running remotely or presently down
+  # but since a playbook has explicitly asked us for it, we end up
+  # having to install our service ignoring any errors.
+  ignore_errors: yes
   when:
     - spark_export_metrics | bool
