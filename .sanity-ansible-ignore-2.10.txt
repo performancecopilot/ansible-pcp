@@ -1,0 +1,6 @@
+tests/metrics/roles/bpftrace symlinks
+tests/metrics/roles/elasticsearch symlinks
+tests/metrics/roles/grafana symlinks
+tests/metrics/roles/mssql symlinks
+tests/metrics/roles/pcp symlinks
+tests/metrics/roles/redis symlinks
