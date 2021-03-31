@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: MIT
 ---
 - name: Check if bpftrace PMDA is registered
-  shell: pmprobe -I pmcd.agent.status | grep -w '"bpftrace"'
+  shell: |-
+    set -euo pipefail
+    pmprobe -I pmcd.agent.status | grep -w '"bpftrace"'
+  changed_when: false
 
 - name: Check if allowed users of bpftrace are configured
   shell: >-

@@ -2,3 +2,4 @@
 ---
 - name: Check if export to Elasticsearch is installed
   command: test -x /usr/bin/pcp2elasticsearch
+  changed_when: false

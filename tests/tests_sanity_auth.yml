@@ -26,6 +26,7 @@
   tasks:
     - name: Restart PMCD
       shell: systemctl restart pmcd && sleep 5
+      changed_when: false
 
     - name: Check if SASL works
       include_tasks: "{{ item }}"

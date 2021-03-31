@@ -4,4 +4,7 @@
   command: test -d "/var/lib/pcp/pmdas/elasticsearch"
 
 - name: Check if elasticsearch PMDA is registered with pmcd
-  shell: pmprobe -I pmcd.agent.status | grep '"elasticsearch"'
+  shell: |-
+    set -euo pipefail
+    pmprobe -I pmcd.agent.status | grep '"elasticsearch"'
+  changed_when: false

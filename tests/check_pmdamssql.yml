@@ -4,4 +4,7 @@
   command: test -d "/var/lib/pcp/pmdas/mssql"
 
 - name: Check if mssql PMDA is registered with pmcd
-  shell: pmprobe -I pmcd.agent.status | grep '"mssql"'
+  shell: |-
+    set -euo pipefail
+    pmprobe -I pmcd.agent.status | grep '"mssql"'
+  changed_when: false

@@ -1,4 +1,7 @@
 # SPDX-License-Identifier: MIT
 ---
 - name: Check if Elasticsearch PMDA is registered
-  shell: pmprobe -I pmcd.agent.status | grep -w '"elasticsearch"'
+  shell: |-
+    set -euo pipefail
+    pmprobe -I pmcd.agent.status | grep -w '"elasticsearch"'
+  changed_when: false
