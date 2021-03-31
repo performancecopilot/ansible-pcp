@@ -6,6 +6,7 @@
     __test_uname: pcptest
     __test_pswd: t;dlen;dle
 
+  # yamllint disable rule:line-length
   roles:
     - role: performancecopilot.metrics.bpftrace
       vars:
@@ -16,6 +17,7 @@
         pcp_optional_agents: ['bpftrace']
         pcp_accounts:
           - { user: "{{ __test_uname }}", sasluser: "{{ __test_uname }}", saslpassword: "{{ __test_pswd }}" }
+  # yamllint enable rule:line-length
 
   pre_tasks:
     - meta: end_host

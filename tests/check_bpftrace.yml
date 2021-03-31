@@ -4,4 +4,7 @@
   shell: pmprobe -I pmcd.agent.status | grep -w '"bpftrace"'
 
 - name: Check if allowed users of bpftrace are configured
-  shell: grep -w '^allowed_users' /var/lib/pcp/pmdas/bpftrace/bpftrace.conf | grep -wq '{{ __test_uname }}'
+  shell: >-
+    set -euo pipefail;
+    grep -w '^allowed_users' /var/lib/pcp/pmdas/bpftrace/bpftrace.conf
+    | grep -wq '{{ __test_uname }}'

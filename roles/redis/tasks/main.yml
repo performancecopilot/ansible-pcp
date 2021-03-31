@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-
+# yamllint disable rule:line-length
 - name: Set platform/version specific variables
   include_vars: "{{ item }}"
   loop:
@@ -9,12 +9,14 @@
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
   when: item is file
+# yamllint enable rule:line-length
 
 - name: Install Redis packages
   package:
     name: "{{ __redis_packages + __redis_packages_extra }}"
     state: present
 
+# yamllint disable rule:line-length
 - name: Ensure Redis service is configured
   template:
     src: "{{ item }}"
@@ -27,6 +29,7 @@
     - "{{ ansible_facts['distribution'] }}_redis.conf.j2"
     - "redis.conf.j2"
   notify: restart redis
+# yamllint enable rule:line-length
 
 - name: Ensure Redis service is running and enabled on boot
   service:

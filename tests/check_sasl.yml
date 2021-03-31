@@ -6,5 +6,7 @@
 - name: Check if password is configured
   shell: sasldblistusers2 -f /etc/pcp/passwd.db | grep -wq "{{ __test_uname }}"
 
+# yamllint disable rule:line-length
 - name: Check if a client can access metrics
   command: pminfo -f -h "pcp://127.0.0.1?username={{ __test_uname }}&password={{ __test_pswd }}" disk.dev.read
+# yamllint enable rule:line-length

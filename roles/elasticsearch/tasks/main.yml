@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-
+# yamllint disable rule:line-length
 - name: Set platform/version specific variables
   include_vars: "{{ item }}"
   loop:
@@ -9,17 +9,20 @@
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
     - "{{ role_path }}/vars/{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
   when: item is file
+# yamllint enable rule:line-length
 
 - name: Establish Elasticsearch metrics package names
   set_fact:
-    __elasticsearch_packages_extra: "{{ __elasticsearch_packages_extra + __elasticsearch_packages_pcp }}"
+    __elasticsearch_packages_extra: "{{ __elasticsearch_packages_extra +
+                                     __elasticsearch_packages_pcp }}"
   when:
     - elasticsearch_metrics_provider == 'pcp'
     - elasticsearch_agent|d(false)|bool
 
 - name: Establish Elasticsearch metrics export package names
   set_fact:
-    __elasticsearch_packages_extra: "{{ __elasticsearch_packages_extra + __elasticsearch_packages_export_pcp }}"
+    __elasticsearch_packages_extra: "{{ __elasticsearch_packages_extra +
+                                     __elasticsearch_packages_export_pcp }}"
   when:
     - elasticsearch_metrics_provider == 'pcp'
     - elasticsearch_export_metrics|d(false)|bool

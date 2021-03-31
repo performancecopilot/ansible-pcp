@@ -64,9 +64,10 @@
   when: item.user is defined
   with_items: "{{ pcp_accounts }}"
 
+# yamllint disable rule:line-length
 - name: Ensure performance metric collector SASL accounts are configured
   shell: |
-    set -o pipefail
+    set -euo pipefail
     sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.sasluser }}@"
     [ $? -eq 0 ] && exit 0
     echo "Creating new {{ item.sasluser }} user in {{ __pcp_pmcd_sasldb_path }}"
@@ -78,6 +79,7 @@
   changed_when: "'Creating new SASL account' in ensure_sasl_configured.stdout"
   when: item.sasluser is defined
   with_items: "{{ pcp_accounts }}"
+# yamllint enable rule:line-length
 
 - name: Ensure performance metric collector authentication is configured
   template:
@@ -98,6 +100,7 @@
        __pcp_register_changed_authentication is changed)
     }}"
 
+# yamllint disable rule:line-length
 - name: Report performance metric collector restart state
   debug:
     msg:
@@ -107,6 +110,7 @@
       - "defaults_config: {{ __pcp_register_changed_defaults_config is changed }}"
       - "authentication: {{ (__pcp_register_changed_authentication is defined and __pcp_register_changed_authentication is changed) }}"
       - "restart_pmcd: {{ __pcp_restart_pmcd | bool }}"
+# yamllint enable rule:line-length
 
 - name: Ensure performance metric collector is running and enabled on boot
   service:

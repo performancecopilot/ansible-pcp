@@ -5,6 +5,7 @@
   service_facts:
   register: final_state
 
+# yamllint disable rule:line-length
 - name: Restore state of services
   tags: tests::cleanup
   service:
@@ -20,3 +21,4 @@
     - pmproxy
     - redis
     - grafana-server
+# yamllint enable rule:line-length
