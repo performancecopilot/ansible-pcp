@@ -35,3 +35,40 @@
     dest: "{{ __mssql_conf }}"
     mode: 0600
   when: mssql_metrics_provider == 'pcp'
+
+- name: Ensure SQL Server performance rule group directory exists
+  file:
+    path: "{{ __mssql_pmieconf_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: mssql_metrics_provider == 'pcp'
+
+- name: Ensure SQL Server performance rule group link directory exists
+  file:
+    path: "{{ __mssql_pmieconf_link_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: mssql_metrics_provider == 'pcp'
+
+- name: Ensure SQL Server performance rules are installed for targeted hosts
+  copy:
+    src: "files/{{ item }}"
+    dest: "{{ __mssql_pmieconf_path }}/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ __mssql_pmieconf_rules|default([]) }}"
+  when: mssql_metrics_provider == 'pcp'
+
+- name: Ensure SQL Server rules symlinks have been created for targeted hosts
+  file:
+    src: "{{ __mssql_pmieconf_path }}/{{ item }}"
+    dest: "{{ __mssql_pmieconf_link_path }}/{{ item }}"
+    state: link
+    force: yes
+  loop: "{{ __mssql_pmieconf_rules|default([]) }}"
+  when: mssql_metrics_provider == 'pcp'
