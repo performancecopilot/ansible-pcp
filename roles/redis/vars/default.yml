@@ -4,4 +4,3 @@
 __redis_conf_path: /etc/redis
 __redis_conf_file: redis.conf
 __redis_conf_link: /etc
-
