@@ -2,4 +2,4 @@
 ---
 # Put internal variables here with Red Hat specific values.
 
-__repository_distro_name: "el{{ ansible_facts['distribution_major_version'] }}"
+__repository_distro_name: "centos"

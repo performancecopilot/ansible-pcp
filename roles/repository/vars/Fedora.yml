@@ -2,4 +2,4 @@
 ---
 # Put internal variables here with Fedora specific values.
 
-__repository_distro_name: "f{{ ansible_facts['distribution_major_version'] }}"
+__repository_distro_name: "fedora"

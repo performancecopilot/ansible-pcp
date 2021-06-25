@@ -11,18 +11,18 @@
   when: item is file
 # yamllint enable rule:line-length
 
-- name: Ensure PCP bintray repo is configured for RPMs
+- name: Ensure PCP package repository is configured for RPMs
   template:
-    src: bintray.rpms.j2
-    dest: /etc/yum.repos.d/bintray-pcp.repo
+    src: artifactory.rpms.j2
+    dest: /etc/yum.repos.d/performancecopilot.repo
     mode: 0600
   when:
     - ansible_facts['os_family'] == 'RedHat'
 
-- name: Ensure PCP bintray repo is configured for DEBs
+- name: Ensure PCP package repository is configured for DEBs
   file:
-    src: bintray.debs.j2
-    dest: /etc/apt/sources.list.d/bintray-pcp.sources
+    src: artifactory.debs.j2
+    dest: /etc/apt/sources.list.d/performancecopilot.sources
     mode: 0600
   when:
     - ansible_facts['os_family'] == 'Debian'
