@@ -10,7 +10,7 @@
   roles:
     - role: performancecopilot.metrics.bpftrace
       vars:
-        bpftrace_accounts:
+        bpftrace_users:
           - { user: "{{ __test_uname }}" }
     - role: performancecopilot.metrics.pcp
       vars:
