@@ -2,8 +2,6 @@
 ---
 # Put internal variables here with Red Hat specific values.
 
-__redis_conf: /etc/redis.conf
-
 __redis_packages:
   - redis
   - redis-doc

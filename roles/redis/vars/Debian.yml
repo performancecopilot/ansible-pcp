@@ -2,8 +2,6 @@
 ---
 # Put internal variables here with Debian specific values.
 
-__redis_conf: /etc/redis/redis.conf
-
 __redis_packages:
   - redis-tools
   - redis-server
