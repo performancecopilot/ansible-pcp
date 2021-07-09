@@ -6,6 +6,3 @@ __bpftrace_packages:
   - bpftrace
 
 __bpftrace_packages_extra: []
-
-__bpftrace_packages_pcp:
-  - pcp-pmda-bpftrace
