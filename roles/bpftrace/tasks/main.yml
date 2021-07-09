@@ -12,11 +12,17 @@
   when: item is file
 # yamllint enable rule:line-length
 
-- name: Establish bpftrace metrics package names
+- name: Establish bpftrace package names
   set_fact:
     __bpftrace_packages_extra: "{{ __bpftrace_packages +
-                                __bpftrace_packages_pcp }}"
-  when: bpftrace_metrics_provider == 'pcp'
+                                __bpftrace_packages_extra }}"
+  when: bpftrace_metrics_provider == 'pcp' and __bpftrace_packages|d([])
+
+- name: Establish bpftrace metrics package names
+  set_fact:
+    __bpftrace_packages_extra: "{{ __bpftrace_packages_pcp +
+                                __bpftrace_packages_extra }}"
+  when: bpftrace_metrics_provider == 'pcp' and __bpftrace_packages_pcp|d([])
 
 - name: Install needed bpftrace metrics packages
   package:
