@@ -15,3 +15,4 @@ do
 done
 
 ansible-galaxy collection build --force
+git checkout -f  # remove sed changes
