@@ -3,3 +3,6 @@
 # Put internal variables here with Red Hat Enterprise Linux 8 specific values.
 
 __mssql_conf_dir: /var/lib/pcp/pmdas/mssql
+
+__mssql_packages_pcp:
+  - pcp-pmda-mssql

@@ -3,3 +3,5 @@
 # Put internal variables here with CentOS 7 specific values.
 
 __mssql_conf_dir: /var/lib/pcp/pmdas/mssql
+
+__mssql_packages_pcp:
