@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: MIT
 ---
 
+__bpftrace_packages_extra: []
+
 __bpftrace_usernames: root
+
 __bpftrace_conf_dir: /etc/pcp/bpftrace
 __bpftrace_conf: "{{ __bpftrace_conf_dir }}/bpftrace.conf"

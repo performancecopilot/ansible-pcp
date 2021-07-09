@@ -32,6 +32,7 @@
   package:
     name: "{{ __elasticsearch_packages_extra }}"
     state: present
+  when: __elasticsearch_packages_extra|d([])
 
 - name: Ensure PCP Elasticsearch agent configuration directory exists
   file:

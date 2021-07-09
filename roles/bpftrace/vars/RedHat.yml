@@ -4,5 +4,3 @@
 
 __bpftrace_packages:
   - bpftrace
-
-__bpftrace_packages_extra: []

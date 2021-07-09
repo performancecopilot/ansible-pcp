@@ -14,13 +14,15 @@
 
 - name: Establish bpftrace metrics package names
   set_fact:
-    __bpftrace_packages_extra: "{{ __bpftrace_packages_pcp }}"
+    __bpftrace_packages_extra: "{{ __bpftrace_packages +
+                                __bpftrace_packages_pcp }}"
   when: bpftrace_metrics_provider == 'pcp'
 
 - name: Install needed bpftrace metrics packages
   package:
-    name: "{{ __bpftrace_packages + __bpftrace_packages_extra }}"
+    name: "{{ __bpftrace_packages_extra }}"
     state: present
+  when: __bpftrace_packages_extra|d([])
 
 - name: Extract allowed bpftrace user accounts
   set_fact:
