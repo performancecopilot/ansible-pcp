@@ -3,3 +3,5 @@
 # Put internal variables here with Red Hat Enterprise Linux 7 specific values.
 
 __bpftrace_packages_pcp:
+
+__bpftrace_packages:

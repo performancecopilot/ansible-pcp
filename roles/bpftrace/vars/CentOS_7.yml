@@ -3,3 +3,5 @@
 # Put internal variables here with CentOS 7 specific values.
 
 __bpftrace_packages_pcp:
+
+__bpftrace_packages:
