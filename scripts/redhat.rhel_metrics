@@ -1,0 +1,17 @@
+#!/bin/sh
+
+collection_namespace=redhat
+collection_name=rhel_metrics
+
+sed -i \
+    -e "s/^name: .*/name: ${collection_name}/g" \
+    -e "s/^namespace: .*/namespace: ${collection_namespace}/g" \
+    galaxy.yml
+find . -name \*.yml -o -name \*.md | while read file
+do
+    sed -i \
+        -e "s/performancecopilot.metrics/${collection_namespace}.${collection_name}/g" \
+    $file
+done
+
+ansible-galaxy collection build --force
