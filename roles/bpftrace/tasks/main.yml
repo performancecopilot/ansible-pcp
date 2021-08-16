@@ -48,4 +48,5 @@
     src: bpftrace.conf.j2
     dest: "{{ __bpftrace_conf }}"
     mode: 0600
+    follow: yes
   when: bpftrace_metrics_provider == 'pcp'
