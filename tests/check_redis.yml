@@ -1,4 +1,4 @@
 # SPDX-License-Identifier: MIT
 ---
 - name: Check if Redis responds
-  command: redis-cli PING | grep PONG
+  shell: redis-cli PING | grep PONG

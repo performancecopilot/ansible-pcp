@@ -4,9 +4,12 @@
   hosts: all
 
   roles:
-    - performancecopilot.metrics.pcp
-    - performancecopilot.metrics.redis
-    - performancecopilot.metrics.grafana
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_rest_api: yes
+        pcp_pmproxy_localonly: 1
+    - role: performancecopilot.metrics.redis
+    - role: performancecopilot.metrics.grafana
 
   pre_tasks:
     - meta: end_host
@@ -27,7 +30,7 @@
         - check_redis.yml
         - check_pmproxy.yml
         - check_grafana.yml
-        - check_grafanapcp.yml
+        - check_grafana_pcp.yml
 
   post_tasks:
     - name: Restore state of services
