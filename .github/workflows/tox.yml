@@ -5,6 +5,8 @@ on:  # yamllint disable-line rule:truthy
   - push
 env:
   TOX_LSR: "git+https://github.com/linux-system-roles/tox-lsr@2.7.1"
+  LSR_ROLE2COLL_NAMESPACE: "performancecopilot"
+  LSR_ROLE2COLL_NAME: "metrics"
   LSR_ANSIBLE_TEST_DOCKER: "true"
   LSR_ANSIBLES: 'ansible==2.9.*'
   LSR_MSCENARIOS: default
