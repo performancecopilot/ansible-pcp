@@ -4,7 +4,7 @@ on:  # yamllint disable-line rule:truthy
   - pull_request
   - push
 env:
-  TOX_LSR: "git+https://github.com/linux-system-roles/tox-lsr@2.7.1"
+  TOX_LSR: "git+https://github.com/linux-system-roles/tox-lsr@2.8.0"
   LSR_ROLE2COLL_NAMESPACE: "performancecopilot"
   LSR_ROLE2COLL_NAME: "metrics"
   LSR_ANSIBLE_TEST_DOCKER: "true"
