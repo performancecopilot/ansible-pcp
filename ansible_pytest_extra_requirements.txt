@@ -3,4 +3,4 @@
 # ansible and dependencies for all supported platforms
 ansible ; python_version > "2.6"
 idna<2.8 ; python_version < "2.7"
-PyYAML<5.1 ; python_version < "2.7"
+PyYAML>=5.4 ; python_version < "2.7"
