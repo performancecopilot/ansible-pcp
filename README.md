@@ -58,6 +58,11 @@ The collection is arranged as follows:
   a SQL Server database.  Configuring authentication of the PCP
   mssql metric agent is a key task of this role.
 
+- performancecopilot.metrics.postfix
+
+  A role that extends the core PCP role, providing metrics from
+  a Postfix mail server.
+
 - performancecopilot.metrics.spark
 
   A role that extends the core PCP role, exporting metrics from

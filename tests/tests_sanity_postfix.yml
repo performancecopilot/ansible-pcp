@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Test installation and configuration of Postfix agent
+  hosts: all
+
+  roles:
+    - role: performancecopilot.metrics.postfix
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_optional_agents: ['postfix']
+
+  pre_tasks:
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+    - name: Ensure Postfix is installed
+      package:
+        name: postfix
+        state: present
+
+  tasks:
+    - name: Check Postfix functionality
+      include_tasks: "{{ item }}"
+      loop:
+        - check_postfix.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml
