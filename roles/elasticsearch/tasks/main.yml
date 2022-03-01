@@ -45,6 +45,7 @@
   template:
     src: elasticsearch.conf.j2
     dest: "{{ __elasticsearch_conf }}"
+    follow: yes
     mode: 0600
   when:
     - elasticsearch_metrics_provider == 'pcp'

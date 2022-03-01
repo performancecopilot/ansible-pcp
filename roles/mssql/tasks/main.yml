@@ -34,6 +34,7 @@
   template:
     src: mssql.conf.j2
     dest: "{{ __mssql_conf }}"
+    follow: yes
     mode: 0600
   when: mssql_metrics_provider == 'pcp'
 
