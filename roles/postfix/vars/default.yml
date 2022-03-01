@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+
+postfix_metrics_provider: 'pcp'
