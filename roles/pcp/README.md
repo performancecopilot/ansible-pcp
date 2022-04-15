@@ -28,6 +28,10 @@ Default location for [pmlogger(1)](http://man7.org/linux/man-pages/man1/pmlogger
 
 An optional list of remote hostnames for which metric recording and inference rules should be installed, to be monitored from the host running the playbook.  By default, all performance rules evaluating to true will be logged to the local system log (for both the local host and remote hosts in the target hosts list), and daily archives will be created below *pcp_archive_dir*/*hostname* locally, again for each host listed in the target hosts list.
 
+    pcp_single_control: 0
+
+Specifies whether the pcp_target_hosts configuration file(s) for pmie and pmlogger are in control.d form (the default) or in the single file form where /*etc*/*pcp*/*pmlogger*/*control* and /*etc*/*pcp*/*pmie*/*control* are used to setup the target hosts list for monitoring.
+
     pcp_pmcd_localonly: 0
 
 Enable remote host connections to the [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) service.  This affects most PMAPI client tools accessing live data such as including *pmlogger*, *pmchart*, *pmrep*, *pmie*, *pcp-dstat*, and so on

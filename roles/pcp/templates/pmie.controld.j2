@@ -1,6 +1,4 @@
 {{ ansible_managed | comment }}
 $version=1.1
 #Host		P?  S?	Directory				  Arguments
-{% for item in pcp_target_hosts %}
 {{ item }}	n   n	PCP_LOG_DIR/pmie/{{ item }}/pmie.log	  -c config.{{ item }}
-{% endfor %}

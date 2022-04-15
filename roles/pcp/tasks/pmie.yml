@@ -36,13 +36,26 @@
     force: yes
   loop: "{{ __pcp_pmieconf_rules|default([]) }}"
 
-- name: Ensure performance metric inference is enabled for targeted hosts
+- name: Enable performance metric inference for targeted hosts (with control.d)
   template:
-    src: pmie.control.j2
-    dest: "{{ __pcp_pmie_control_path }}/{{ item }}"
+    src: pmie.controld.j2
+    dest: "{{ __pcp_pmie_control_d_path }}/{{ item }}"
     mode: 0644
   loop: "{{ pcp_target_hosts|default([]) }}"
   notify: restart pmie
+  when:
+    - pcp_single_control|d(false)|bool is false
+    - pcp_target_hosts|d([])
+
+- name: Enable performance metric inference for targeted hosts (single control)
+  template:
+    src: pmie.control.j2
+    dest: "{{ __pcp_pmie_control_path }}"
+    mode: 0644
+  notify: restart pmie
+  when:
+    - pcp_single_control|d(true)|bool
+    - pcp_target_hosts|d([])
 
 - name: Ensure performance metric inference is running and enabled on boot
   service:

@@ -12,5 +12,6 @@ pcp_optional_packages: []
 pcp_optional_agents: []
 pcp_explicit_labels: {}
 pcp_implicit_labels: {}
+pcp_single_control: 0
 pcp_target_hosts: []
 pcp_accounts: []

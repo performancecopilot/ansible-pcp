@@ -1,6 +1,4 @@
 {{ ansible_managed | comment }}
 $version=1.1
 #Host		P? S?	directory			args
-{% for item in pcp_target_hosts %}
 {{ item }}	n  n	PCP_ARCHIVE_DIR/{{ item }}	-r -T24h10m -c config.{{ item }} -v 100Mb
-{% endfor %}
