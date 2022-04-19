@@ -4,7 +4,10 @@
   shell: |-
     set -euo pipefail
     pmprobe -I pmcd.agent.status | grep -w '"bpftrace"'
-  changed_when: false
+  register: result
+  until: result.stdout.find("bpftrace") != -1
+  retries: 10
+  delay: 1
 
 - name: Check if allowed users of bpftrace are configured
   shell: >-

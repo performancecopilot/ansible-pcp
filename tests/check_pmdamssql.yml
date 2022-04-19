@@ -7,4 +7,7 @@
   shell: |-
     set -euo pipefail
     pmprobe -I pmcd.agent.status | grep '"mssql"'
-  changed_when: false
+  register: result
+  until: result.stdout.find("mssql") != -1
+  retries: 10
+  delay: 1

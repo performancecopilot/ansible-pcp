@@ -4,4 +4,7 @@
   shell: |-
     set -euo pipefail
     pmprobe -I pmcd.agent.status | grep -w '"postfix"'
-  changed_when: false
+  register: result
+  until: result.stdout.find("postfix") != -1
+  retries: 10
+  delay: 1

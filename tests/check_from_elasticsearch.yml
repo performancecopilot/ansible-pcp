@@ -4,4 +4,7 @@
   shell: |-
     set -euo pipefail
     pmprobe -I pmcd.agent.status | grep -w '"elasticsearch"'
-  changed_when: false
+  register: result
+  until: result.stdout.find("elasticsearch") != -1
+  retries: 10
+  delay: 1
