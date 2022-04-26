@@ -32,7 +32,7 @@
   loop: "{{ pcp_target_hosts|default([]) }}"
   notify: restart pmlogger
   when:
-    - pcp_single_control|d(false)|bool is false
+    - not pcp_single_control|d(false)|bool
     - pcp_target_hosts|d([])
 
 - name: Enable performance metric logging for targeted hosts (single control)
