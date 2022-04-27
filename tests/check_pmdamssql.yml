@@ -4,10 +4,8 @@
   command: test -d "/var/lib/pcp/pmdas/mssql"
 
 - name: Check if mssql PMDA is registered with pmcd
-  shell: |-
-    set -euo pipefail
-    pmprobe -I pmcd.agent.status | grep '"mssql"'
-  register: result
-  until: result.stdout.find("mssql") != -1
+  command: pmprobe -I pmcd.agent.status
+  register: status
+  until: status.stdout.find("mssql") != -1
   retries: 10
   delay: 1

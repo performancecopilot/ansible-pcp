@@ -4,10 +4,8 @@
   command: test -d "/var/lib/pcp/pmdas/bpftrace"
 
 - name: Check if bpftrace PMDA is registered with pmcd
-  shell: |-
-    set -euo pipefail
-    pmprobe -I pmcd.agent.status | grep '"bpftrace"'
-  register: result
-  until: result.stdout.find("bpftrace") != -1
+  command: pmprobe -I pmcd.agent.status
+  register: status
+  until: status.stdout.find("bpftrace") != -1
   retries: 10
   delay: 1

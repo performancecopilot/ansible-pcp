@@ -4,10 +4,8 @@
   command: test -d "/var/lib/pcp/pmdas/openmetrics"
 
 - name: Check if openmetrics PMDA is registered with pmcd
-  shell: |-
-    set -euo pipefail
-    pmprobe -I pmcd.agent.status | grep '"openmetrics"'
-  register: result
-  until: result.stdout.find("openmetrics") != -1
+  command: pmprobe -I pmcd.agent.status
+  register: status
+  until: status.stdout.find("openmetrics") != -1
   retries: 10
   delay: 1
