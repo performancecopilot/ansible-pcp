@@ -65,7 +65,7 @@
     name: pcp2elasticsearch
     state: started
     enabled: yes
-  ignore_errors: yes
+  ignore_errors: yes  # noqa ignore-errors
   # Elasticsearch server may be running remotely or presently down
   # but since a playbook has explicitly asked us for it, we end up
   # having to install our service ignoring any errors.
