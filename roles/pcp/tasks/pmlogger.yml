@@ -6,8 +6,8 @@
     path: "{{ __pcp_conf }}"
     regexp: '^PCP_ARCHIVE_DIR='
     line: PCP_ARCHIVE_DIR={{ pcp_archive_dir }}
+  register: __pcp_register_changed_log_location
   notify:
-    - restart pmlogger
     - restart pmproxy
 
 - name: Ensure performance metric logging is configured
@@ -15,13 +15,14 @@
     src: pmlogger.defaults.j2
     dest: "{{ __pcp_pmlogger_defaults_path }}"
     mode: 0644
-  notify: restart pmlogger
+  register: __pcp_register_changed_config_pmlogger
 
 - name: Ensure performance metric logging retention period is set
   template:
     src: pmlogger.timers.j2
     dest: "{{ __pcp_pmlogger_timers_path }}"
     mode: 0644
+  register: __pcp_register_changed_logging_retention_period
   notify: restart pmlogger
 
 - name: Enable performance metric logging for targeted hosts (with control.d)
@@ -30,6 +31,7 @@
     dest: "{{ __pcp_pmlogger_control_d_path }}/{{ item }}"
     mode: 0644
   loop: "{{ pcp_target_hosts|default([]) }}"
+  register: __pcp_register_changed_targeted_hosts_controld
   notify: restart pmlogger
   when:
     - not pcp_single_control|d(false)|bool
@@ -40,13 +42,31 @@
     src: pmlogger.control.j2
     dest: "{{ __pcp_pmlogger_control_path }}"
     mode: 0644
-  notify: restart pmlogger
+  register: __pcp_register_changed_targeted_hosts_single
   when:
     - pcp_single_control|d(true)|bool
     - pcp_target_hosts|d([])
+
+- name: Set variable to do pmlogger restart if needed
+  set_fact:
+    __pcp_restart_pmlogger: "{{
+      __pcp_register_changed_log_location is changed or
+      __pcp_register_changed_config_pmlogger is changed or
+      __pcp_register_changed_logging_retention_period is changed or
+      __pcp_register_changed_targeted_hosts_controld is changed or
+      __pcp_register_changed_targeted_hosts_single is changed
+    }}"
 
 - name: Ensure performance metric logging is running and enabled on boot
   service:
     name: pmlogger
     state: started
     enabled: yes
+  when: not __pcp_restart_pmlogger | bool
+
+- name: Ensure performance metric logging is restarted and enabled on boot
+  service:
+    name: pmlogger
+    state: restarted
+    enabled: yes
+  when: __pcp_restart_pmlogger | bool
