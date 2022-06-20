@@ -69,7 +69,7 @@
   # A given Spark server may be running remotely or presently down
   # but since a playbook has explicitly asked us for it, we end up
   # having to install our service ignoring any errors.
-  ignore_errors: yes
+  ignore_errors: yes  # noqa ignore-errors
   when:
     - spark_metrics_provider == 'pcp'
     - spark_export_metrics|d(false)|bool
