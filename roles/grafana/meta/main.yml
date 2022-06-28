@@ -9,7 +9,7 @@ galaxy_info:
   role_name: grafana
   company: pcp.io
   license: "license (MIT)"
-  min_ansible_version: 2.9
+  min_ansible_version: "2.9"
   platforms:
     - name: EL
       versions:
