@@ -25,7 +25,7 @@
   set_fact:
     grafana_version: "{{ ansible_facts.packages.grafana[0].version }}"
 
-- name: Template Grafana v7 configuration
+- name: Template Grafana v8 and earlier configuration
   template:
     src: grafana_7.ini.j2
     dest: "{{ __grafana_conf }}"
@@ -33,7 +33,7 @@
   notify: restart grafana
   when: grafana_version is version('9.0.0', '<')
 
-- name: Template Grafana v9 configuration
+- name: Template Grafana v9 and later onfiguration
   template:
     src: grafana_9.ini.j2
     dest: "{{ __grafana_conf }}"
