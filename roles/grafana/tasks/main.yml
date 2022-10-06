@@ -17,12 +17,29 @@
     name: "{{ __grafana_packages + __grafana_packages_extra }}"
     state: present
 
-- name: Template Grafana configuration
+- name: Get package facts now that Grafana is installed
+  package_facts:
+    manager: "auto"
+
+- name: Get Grafana version number from installed packages
+  set_fact:
+    grafana_version: "{{ ansible_facts.packages.grafana[0].version }}"
+
+- name: Template Grafana v7 configuration
   template:
-    src: grafana.ini.j2
+    src: grafana_7.ini.j2
     dest: "{{ __grafana_conf }}"
     mode: 0640
   notify: restart grafana
+  when: grafana_version is version('9.0.0', '<')
+
+- name: Template Grafana v9 configuration
+  template:
+    src: grafana_9.ini.j2
+    dest: "{{ __grafana_conf }}"
+    mode: 0640
+  notify: restart grafana
+  when: grafana_version is version('9.0.0', '>=')
 
 - name: Ensure Grafana configuration directory exists
   file:
@@ -45,14 +62,6 @@
     name: grafana-server
     state: started
     enabled: yes
-
-- name: Get package facts now that Grafana is installed
-  package_facts:
-    manager: "auto"
-
-- name: Get Grafana version number from installed packages
-  set_fact:
-    grafana_version: "{{ ansible_facts.packages.grafana[0].version }}"
 
 # yamllint disable rule:line-length
 - name: Ensure graphing service settings are configured by HTTP POST
