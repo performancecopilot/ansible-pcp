@@ -34,3 +34,4 @@ __pcp_pmieconf_rules:
   - network/tcpqfulldrops
   - power/thermal_throttle
   - zeroconf/all_threads
+  - filesys/vfs_rules
