@@ -32,11 +32,18 @@ tags:
   - redis
   - pcp
 build_ignore:
+  - .ansible-lint
   - .github
   - .gitignore
-  - .ansible-lint
-  - "*.yml"
-  - ".*.yaml"
+  - .lgtm.yml
+  - .yamllint.yml
+  - .yamllint_defaults.yml
+  - ansible_pytest_extra_requirements.txt
+  - custom_requirements.txt
+  - molecule_extra_requirements.txt
+  - pylint_extra_requirements.txt
+  - pytest_extra_requirements.txt
   - tests
+  - tox.ini
 
 dependencies: {}
