@@ -31,5 +31,12 @@ tags:
   - grafana
   - redis
   - pcp
+build_ignore:
+  - .github
+  - .gitignore
+  - .ansible-lint
+  - "*.yml"
+  - ".*.yaml"
+  - tests
 
 dependencies: {}
