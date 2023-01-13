@@ -37,7 +37,7 @@
     - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}_redis.conf.j2"
     - "{{ ansible_facts['distribution'] }}_redis.conf.j2"
     - "redis.conf.j2"
-  notify: restart redis
+  notify: Restart redis
 # yamllint enable rule:line-length
 
 - name: Ensure Redis configuration symlink exists
@@ -45,10 +45,10 @@
     src: "{{ __redis_conf_path }}/{{ __redis_conf_file }}"
     dest: "{{ __redis_conf_link }}/{{ __redis_conf_file }}"
     state: link
-    force: yes
+    force: true
 
 - name: Ensure Redis service is running and enabled on boot
   service:
     name: redis
     state: started
-    enabled: yes
+    enabled: true

@@ -2,3 +2,4 @@
 ---
 - name: Check if PCP works
   command: pcp
+  changed_when: false

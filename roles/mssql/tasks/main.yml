@@ -21,7 +21,7 @@
   package:
     name: "{{ __mssql_packages_extra }}"
     state: present
-  when: __mssql_packages_extra|d([])
+  when: __mssql_packages_extra | d([])
 
 - name: Ensure PCP SQL Server agent configuration directory exists
   file:
@@ -34,7 +34,7 @@
   template:
     src: mssql.conf.j2
     dest: "{{ __mssql_conf }}"
-    follow: yes
+    follow: true
     mode: 0600
   when: mssql_metrics_provider == 'pcp'
 
@@ -63,7 +63,7 @@
     owner: root
     group: root
     mode: '0644'
-  loop: "{{ __mssql_pmieconf_rules|default([]) }}"
+  loop: "{{ __mssql_pmieconf_rules | default([]) }}"
   when: mssql_metrics_provider == 'pcp'
 
 - name: Ensure SQL Server rules symlinks have been created for targeted hosts
@@ -71,6 +71,6 @@
     src: "{{ __mssql_pmieconf_path }}/{{ item }}"
     dest: "{{ __mssql_pmieconf_link_path }}/{{ item }}"
     state: link
-    force: yes
-  loop: "{{ __mssql_pmieconf_rules|default([]) }}"
+    force: true
+  loop: "{{ __mssql_pmieconf_rules | default([]) }}"
   when: mssql_metrics_provider == 'pcp'

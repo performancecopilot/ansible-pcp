@@ -6,15 +6,16 @@
   roles:
     - role: performancecopilot.metrics.elasticsearch
       vars:
-        elasticsearch_agent: yes
+        elasticsearch_agent: true
     - role: performancecopilot.metrics.pcp
       vars:
         pcp_optional_agents: ['elasticsearch']
 
   pre_tasks:
-    - meta: end_host
-      when: (ansible_distribution in ['RedHat', 'CentOS' ] and
-             ansible_distribution_major_version|int < 7) or
+    - name: Skip test if not supported by platform
+      meta: end_host
+      when: (ansible_distribution in ['RedHat', 'CentOS'] and
+             ansible_distribution_major_version | int < 7) or
              ansible_distribution not in ['Fedora', 'RedHat', 'CentOS']
 
     - name: Save state of services

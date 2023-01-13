@@ -4,7 +4,7 @@
 - name: List optional metric collection agents to be enabled
   debug:
     msg: "NeedInstall agent: {{ item }} from {{ pcp_optional_agents }}"
-  loop: "{{ pcp_optional_agents|default([]) }}"
+  loop: "{{ pcp_optional_agents | default([]) }}"
 
 - name: Extract metric collection configuration file content
   command: "cat {{ __pcp_pmcd_conf }}"
@@ -16,7 +16,7 @@
     path: "{{ __pcp_agents_path }}/{{ item }}/.NeedInstall"
     mode: u=rw,g=r,o=r
     state: touch
-  loop: "{{ pcp_optional_agents|default([]) }}"
+  loop: "{{ pcp_optional_agents | default([]) }}"
   when: pmcd_conf.stdout.find(item) == -1
   register: __pcp_register_changed_optional_agents
 
@@ -60,14 +60,17 @@
 - name: Ensure performance metric collector system accounts are configured
   user:
     name: "{{ item.user }}"
-    system: yes
+    system: true
   when: item.user is defined
   with_items: "{{ pcp_accounts }}"
 
 # yamllint disable rule:line-length
 - name: Ensure performance metric collector SASL accounts are configured
   shell: |
-    set -euo pipefail
+    set -eu
+    if set -o | grep -q pipefail; then
+      set -o pipefail  # pipefail not supported on debian, some ubuntu
+    fi
     if ! sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.sasluser }}@"; then
       echo "Creating new {{ item.sasluser }} user in {{ __pcp_pmcd_sasldb_path }}"
       echo "{{ item.saslpassword }}" | saslpasswd2 -a pmcd "{{ item.sasluser }}"
@@ -86,7 +89,7 @@
     dest: "{{ __pcp_pmcd_saslconf_path }}"
     mode: 0644
   register: __pcp_register_changed_authentication
-  when: pcp_accounts|d([])
+  when: pcp_accounts | d([])
 
 - name: Set variable to do pmcd restart if needed
   set_fact:
@@ -96,8 +99,7 @@
       __pcp_register_changed_implicit_labels is changed or
       __pcp_register_changed_defaults_config is changed or
       (__pcp_register_changed_authentication is defined and
-       __pcp_register_changed_authentication is changed)
-    }}"
+       __pcp_register_changed_authentication is changed) }}"
 
 # yamllint disable rule:line-length
 - name: Report performance metric collector restart state
@@ -115,12 +117,12 @@
   service:
     name: pmcd
     state: started
-    enabled: yes
+    enabled: true
   when: not __pcp_restart_pmcd | bool
 
 - name: Ensure performance metric collector is restarted and enabled on boot
   service:
     name: pmcd
     state: restarted
-    enabled: yes
+    enabled: true
   when: __pcp_restart_pmcd | bool

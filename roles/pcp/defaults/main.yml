@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 ---
 
-pcp_rest_api: no
+pcp_rest_api: false
 pcp_pmlogger_discard: 14
 pcp_pmlogger_interval: 60
 pcp_archive_dir: /var/log/pcp/pmlogger

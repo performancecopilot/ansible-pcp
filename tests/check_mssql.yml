@@ -6,3 +6,4 @@
   until: status.stdout.find("mssql") != -1
   retries: 10
   delay: 1
+  changed_when: false

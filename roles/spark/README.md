@@ -8,7 +8,7 @@ Uses features of PCP v5.2.1 and later.
 
 ## Role Variables
 
-    spark_metrics_agent: yes
+    spark_metrics_agent: true
 
 Collect metrics from a Spark executor.
 
@@ -16,7 +16,7 @@ Collect metrics from a Spark executor.
 
 URL for the Prometheus (OpenMetrics) endpoint in the Spark UI.  This depends on the PrometheusServlet in the Spark UI, which is enabled via configuration parameter: spark.ui.prometheus.enabled=true (the default is false).  This role does not configure Spark itself, only PCP, so this must be already established before this role is used.
 
-    spark_export_metrics: no
+    spark_export_metrics: false
 
 Enable exporting of PCP metrics metadata and values to Spark via pcp2spark(1).
 

@@ -22,14 +22,18 @@
     name: "{{ __pcp_sasl_packages }}"
     state: present
   when:
-    - __pcp_sasl_packages|d([])
-    - pcp_accounts|d({})
+    - __pcp_sasl_packages | d([])
+    - pcp_accounts | d({})
 
-- include_tasks: pmcd.yml
+- name: Include pmcd
+  include_tasks: pmcd.yml
 
-- include_tasks: pmie.yml
+- name: Include pmie
+  include_tasks: pmie.yml
 
-- include_tasks: pmlogger.yml
+- name: Include pmlogger
+  include_tasks: pmlogger.yml
 
-- include_tasks: pmproxy.yml
-  when: pcp_rest_api|d(false)|bool
+- name: Include pmproxy
+  include_tasks: pmproxy.yml
+  when: pcp_rest_api | d(false) | bool

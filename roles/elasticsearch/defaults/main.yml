@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: MIT
 ---
 
-elasticsearch_agent: yes
+elasticsearch_agent: true
 elasticsearch_agent_port: 9200
 elasticsearch_agent_authname: ''
 elasticsearch_agent_password: ''
-elasticsearch_export_metrics: no
+elasticsearch_export_metrics: false
 elasticsearch_export_interval: 60
 elasticsearch_export_server: 'http://localhost:9200'
 elasticsearch_export_index: 'pcp'

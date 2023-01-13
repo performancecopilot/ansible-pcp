@@ -10,15 +10,15 @@ The SQL Server metrics are available from PCP v5.2 and later.
 
 ## Role Variables
 
-    mssql_agent_trusted: yes
+    mssql_agent_trusted: true
 
 Connect to SQL Server using [Windows Authentication mode](https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode?view=sql-server-ver15#connecting-through-windows-authentication)
 
-    mssql_agent_username: 'sa'
+    mssql_agent_username: sa
 
 Connect to SQL server using [SQL Server Authentication mode](https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode?view=sql-server-ver15#connecting-through-sql-server-authentication).  This is mutually exclusive with the mssql_agent_trusted authentication mode.
 
-    mssql_agent_password: 'admin'
+    mssql_agent_password: admin
 
 Sets the pass phrase associated with mssql_agent_username, for use when connecting with SQL Server Authentication mode (only).
 
@@ -49,7 +49,7 @@ Setup PCP SQL Server metrics using SQL Server Authentication.
   roles:
     - role: performancecopilot.metrics.mssql
       vars:
-        mssql_agent_trusted: no
+        mssql_agent_trusted: false
         mssql_agent_username: sa
         mssql_agent_password: admin
 ```

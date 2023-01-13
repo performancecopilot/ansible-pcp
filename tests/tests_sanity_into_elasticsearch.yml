@@ -6,12 +6,13 @@
   roles:
     - role: performancecopilot.metrics.elasticsearch
       vars:
-        elasticsearch_export_metrics: yes
+        elasticsearch_export_metrics: true
 
   pre_tasks:
-    - meta: end_host
+    - name: Skip test if not supported by platform
+      meta: end_host
       when: (ansible_distribution in ['RedHat'] and
-             ( ansible_facts['distribution_version'] is version('8.4', '<'))) or
+             (ansible_facts['distribution_version'] is version('8.4', '<'))) or
              ansible_distribution not in ['Fedora', 'RedHat']
 
     - name: Save state of services

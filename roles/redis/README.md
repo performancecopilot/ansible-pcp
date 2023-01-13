@@ -25,7 +25,7 @@ Central PCP setup for monitoring of several remote hosts with fast, scalable que
     - role: performancecopilot.metrics.pcp
       vars:
         pcp_target_hosts: [slip, slop, slap]
-        pcp_rest_api: yes
+        pcp_rest_api: true
 ```
 
 ## License

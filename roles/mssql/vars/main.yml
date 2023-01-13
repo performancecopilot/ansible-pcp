@@ -4,7 +4,7 @@
 __mssql_packages_extra: []
 
 __mssql_conf_dir: /etc/pcp/mssql
-__mssql_conf: "{{  __mssql_conf_dir  }}/mssql.conf"
+__mssql_conf: "{{ __mssql_conf_dir }}/mssql.conf"
 
 __mssql_pmieconf_path: /etc/pcp/pmieconf/mssql
 __mssql_pmieconf_link_path: /var/lib/pcp/config/pmieconf/mssql

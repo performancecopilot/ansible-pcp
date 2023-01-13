@@ -8,9 +8,9 @@ Uses features of PCP v5 and later.
 
 ## Role Variables
 
-    pcp_rest_api: yes
+    pcp_rest_api: true
 
-Enable the PCP REST APIs and log discovery via the [pmproxy(1)](http://man7.org/linux/man-pages/man1/pmproxy.1.html) service.  Default: no.
+Enable the PCP REST APIs and log discovery via the [pmproxy(1)](http://man7.org/linux/man-pages/man1/pmproxy.1.html) service.  Default: false.
 
     pcp_pmlogger_interval: 60
 
@@ -54,19 +54,19 @@ Additional PCP packages that should be installed, beyond the default set, to ena
 
 ```yaml
 pcp_explicit_labels:
- environment: "production"
+ environment: production
 
 pcp_implicit_labels:
-  deployment: "2020-08-17"
-  commitid: "efbd2a331"
+  deployment: 2020-08-17
+  commitid: efbd2a331
 ```
 
 Additional metadata can be associated with performance metrics from the [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) service.  These are typically name=value pairs.  Explicit labels will be used in calculating time series identifiers seen by the [pmseries(1)](http://man7.org/linux/man-pages/man1/pmseries.1.html) command and [grafana-pcp](https://grafana-pcp.readthedocs.io/en/latest/index.html), and implicit labels will not.
 
 ```yaml
 pcp_accounts:
-  - { user: metrics, sasluser: metrics, saslpassword: p4ssw0rd }
-  - { sasluser: nathans, saslpassword: "adm1n!" }
+  - {user: metrics, sasluser: metrics, saslpassword: p4ssw0rd}
+  - {sasluser: nathans, saslpassword: "adm1n!"}
 ```
 
 Configures access to system resources for accounts used by PCP.  The *user* setting configures a local user (system) account.  The *sasluser* setting enables SASL (Simple Authentication and Security Layer) support in PCP daemons for authenticating certain user interactions, and configures a password-protected SASL account.  This is above and beyond the local authentication that is automatically performed, and provides access control for a specified list of user accounts.  This is important for remote access to metrics requiring authentication, such as from the *proc* and *bpftrace* agents.
@@ -87,7 +87,7 @@ Basic PCP setup with monitoring suited for a single host.
         pcp_pmlogger_interval: 10
         pcp_optional_agents: [dm, nfsclient, openmetrics]
         pcp_explicit_labels:
-          environment: "production"
+          environment: production
 ```
 
 Central PCP setup for monitoring of several remote hosts.
@@ -100,7 +100,7 @@ Central PCP setup for monitoring of several remote hosts.
         pcp_pmlogger_interval: 10
         pcp_pmlogger_discard: 5
         pcp_target_hosts: [slip, slop, slap]
-        pcp_rest_api: yes
+        pcp_rest_api: true
 ```
 
 ## License

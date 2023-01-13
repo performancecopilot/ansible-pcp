@@ -18,7 +18,7 @@
                              __spark_packages_pcp }}"
   when:
     - spark_metrics_provider == 'pcp'
-    - spark_metrics_agent|d(false)|bool
+    - spark_metrics_agent | d(false) | bool
 
 - name: Establish Spark metrics export package names
   set_fact:
@@ -32,7 +32,7 @@
   package:
     name: "{{ __spark_packages_extra }}"
     state: present
-  when: __spark_packages_extra|d([])
+  when: __spark_packages_extra | d([])
 
 - name: Ensure PCP OpenMetrics agent is configured for Spark
   template:
@@ -41,7 +41,7 @@
     mode: 0600
   when:
     - spark_metrics_provider == 'pcp'
-    - spark_metrics_agent|d(false)|bool
+    - spark_metrics_agent | d(false) | bool
 
 - name: Ensure PCP OpenMetrics agent is enabled with Spark endpoint
   file:
@@ -50,7 +50,7 @@
     state: link
   when:
     - spark_metrics_provider == 'pcp'
-    - spark_metrics_agent|d(false)|bool
+    - spark_metrics_agent | d(false) | bool
 
 - name: Ensure PCP Spark export service exists
   template:
@@ -59,17 +59,17 @@
     mode: 0600
   when:
     - spark_metrics_provider == 'pcp'
-    - spark_export_metrics|d(false)|bool
+    - spark_export_metrics | d(false) | bool
 
 - name: Ensure PCP Spark export is running and enabled on boot
   service:
     name: pcp2spark
     state: started
-    enabled: yes
+    enabled: true
   # A given Spark server may be running remotely or presently down
   # but since a playbook has explicitly asked us for it, we end up
   # having to install our service ignoring any errors.
-  ignore_errors: yes  # noqa ignore-errors
+  ignore_errors: true  # noqa ignore-errors
   when:
     - spark_metrics_provider == 'pcp'
-    - spark_export_metrics|d(false)|bool
+    - spark_export_metrics | d(false) | bool
