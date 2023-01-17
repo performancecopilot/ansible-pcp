@@ -14,7 +14,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   python:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         pyver_os:
