@@ -27,6 +27,7 @@ __pcp_pmieconf_groups:
   - network
   - power
   - zeroconf
+  - filesys
 
 __pcp_pmieconf_rules:
   - network/tcplistenoverflows
@@ -34,4 +35,4 @@ __pcp_pmieconf_rules:
   - network/tcpqfulldrops
   - power/thermal_throttle
   - zeroconf/all_threads
-  - filesys/vfs_rules
+  - filesys/vfs_files
