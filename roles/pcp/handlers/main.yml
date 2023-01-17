@@ -1,22 +1,22 @@
 # SPDX-License-Identifier: MIT
 ---
 
-- name: restart pmcd
+- name: Restart pmcd
   service:
     name: pmcd
     state: restarted
 
-- name: restart pmie
+- name: Restart pmie
   service:
     name: pmie
     state: restarted
 
-- name: restart pmproxy
+- name: Restart pmproxy
   service:
     name: pmproxy
     state: restarted
 
-- name: restart pmlogger
+- name: Restart pmlogger
   service:
     name: pmlogger
     state: restarted

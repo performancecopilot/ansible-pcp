@@ -24,7 +24,7 @@ Setup PCP and Grafana for graphing live metrics locally using Vector.
     - role: performancecopilot.metrics.grafana
     - role: performancecopilot.metrics.pcp
       vars:
-        pcp_rest_api: yes
+        pcp_rest_api: true
 ```
 
 ## License

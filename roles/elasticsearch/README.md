@@ -8,7 +8,7 @@ Uses features of PCP v5.2.1 and later.
 
 ## Role Variables
 
-    elasticsearch_agent: yes
+    elasticsearch_agent: true
 
 Collect metrics from the local Elasticsearch server.
 
@@ -24,7 +24,7 @@ Sets the HTTP request username for Elasticsearch metric collection.
 
 Sets the HTTP request password for Elasticsearch metric collection.
 
-    elasticsearch_export_metrics: no
+    elasticsearch_export_metrics: false
 
 Enable exporting of PCP metrics metadata and values to Elasticsearch.
 
@@ -36,7 +36,7 @@ Sets the sampling interval for exporting metric values to Elasticsearch, in seco
 
 Elasticsearch server URL for PCP metric metadata and value exporting.
 
-    elasticsearch_export_index: 'pcp'
+    elasticsearch_export_index: pcp
 
 Elasticsearch index to use for PCP metric names.
 
@@ -44,7 +44,7 @@ Elasticsearch index to use for PCP metric names.
 
 Specify the Elasticsearch host-id for measurements, default is the PCP metrics source hostname.
 
-    elasticsearch_export_type: 'pcp-metric'
+    elasticsearch_export_type: pcp-metric
 
 Specify the Elasticsearch search type for measurements.
 
@@ -72,7 +72,7 @@ Setup export of PCP metrics to a remote Elasticsearch server.
     - role: performancecopilot.metrics.elasticsearch
       vars:
         elasticsearch_export_server: 'http://elastic.example.com:9200'
-        elasticsearch_export_authname: 'metrics'
+        elasticsearch_export_authname: metrics
         elasticsearch_export_password: 'xxxxxxx'
 ```
 

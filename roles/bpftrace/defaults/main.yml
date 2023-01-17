@@ -2,4 +2,4 @@
 ---
 
 bpftrace_users:
-  - { user: metrics }
+  - {user: metrics}

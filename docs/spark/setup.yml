@@ -3,5 +3,5 @@
   roles:
     - role: performancecopilot.metrics.spark
       vars:
-        spark_metrics_agent: yes
-        spark_export_metrics: yes
+        spark_metrics_agent: true
+        spark_export_metrics: true

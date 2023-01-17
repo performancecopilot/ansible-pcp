@@ -4,5 +4,5 @@
     - role: performancecopilot.metrics.pcp
       vars:
         pcp_accounts:
-          - { user: metrics, sasluser: metrics, saslpassword: p4ssw0rd }
-          - { sasluser: nathans, saslpassword: "adm1n!" }
+          - {user: metrics, sasluser: metrics, saslpassword: p4ssw0rd}
+          - {sasluser: nathans, saslpassword: "adm1n!"}

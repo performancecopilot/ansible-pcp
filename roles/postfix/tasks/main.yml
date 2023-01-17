@@ -21,4 +21,4 @@
   package:
     name: "{{ __postfix_packages_extra }}"
     state: present
-  when: __postfix_packages_extra|d([])
+  when: __postfix_packages_extra | d([])

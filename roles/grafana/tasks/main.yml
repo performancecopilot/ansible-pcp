@@ -19,7 +19,6 @@
 
 - name: Get package facts now that Grafana is installed
   package_facts:
-    manager: "auto"
 
 - name: Get Grafana version number from installed packages
   set_fact:
@@ -30,7 +29,7 @@
     src: grafana_7.ini.j2
     dest: "{{ __grafana_conf }}"
     mode: 0640
-  notify: restart grafana
+  notify: Restart grafana
   when: grafana_version is version('9.0.0', '<')
 
 - name: Template Grafana v9 and later onfiguration
@@ -38,7 +37,7 @@
     src: grafana_9.ini.j2
     dest: "{{ __grafana_conf }}"
     mode: 0640
-  notify: restart grafana
+  notify: Restart grafana
   when: grafana_version is version('9.0.0', '>=')
 
 - name: Ensure Grafana configuration directory exists
@@ -55,19 +54,19 @@
     dest: "{{ __grafana_provisioning_path }}/datasources/grafana-pcp.yaml"
 
     mode: 0644
-  notify: restart grafana
+  notify: Restart grafana
 
 - name: Ensure graphing service is running and enabled on boot
   service:
     name: grafana-server
     state: started
-    enabled: yes
+    enabled: true
 
 # yamllint disable rule:line-length
 - name: Ensure graphing service settings are configured by HTTP POST
   uri:
     url: "http://{{ __grafana_user }}:{{ __grafana_password }}@{{ __grafana_server }}/api/plugins/performancecopilot-pcp-app/settings"
-    force_basic_auth: yes
+    force_basic_auth: true
     headers:
       Content-Type: application/json
     method: POST

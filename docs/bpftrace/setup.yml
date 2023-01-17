@@ -4,4 +4,4 @@
     - role: performancecopilot.metrics.bpftrace
       vars:
         bpftrace_users:
-          - { user: metrics, sasluser: metrics, saslpassword: p4ssw0rd }
+          - {user: metrics, sasluser: metrics, saslpassword: p4ssw0rd}

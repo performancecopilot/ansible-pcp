@@ -9,7 +9,7 @@ Uses features of PCP v5.1 and later, and makes use of Cyrus SASL (Simple Authent
 ## Role Variables
 
 ```yaml
-bpftrace_metrics_provider: 'pcp'
+bpftrace_metrics_provider: pcp
 ```
 
 The metrics collector to use to provide metrics.
@@ -19,7 +19,7 @@ The default value 'pcp' configures bpftrace for use with Performance Co-Pilot.
 
 ```yaml
 bpftrace_users:
-  - { user: metrics }
+  - {user: metrics}
 ```
 
 Local user accounts that are allowed to load new bpftrace scripts.  These accounts will be able to load eBPF code into the running kernel, which is a privileged operation.  The mandatory value for the variable is an array of dictionaries containing account names under the 'user' key.  Other authentication mechanisms can share these dictionaries, e.g. for remote [pmcd(1)](http://man7.org/linux/man-pages/man1/pmcd.1.html) authentication with PCP using SASL.
@@ -38,8 +38,8 @@ Make bpftrace metrics available to PCP analysis tools, and allow the local *graf
     - role: performancecopilot.metrics.bpftrace
       vars:
         bpftrace_users:
-        - { user: 'grafana' }
-        - { user: 'metrics', sasluser: 'metrics', saslpassword: 'p4ssw0rd' }
+          - {user: 'grafana'}
+          - {user: 'metrics', sasluser: 'metrics', saslpassword: 'p4ssw0rd'}
 ```
 
 ## License

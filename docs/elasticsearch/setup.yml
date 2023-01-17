@@ -3,5 +3,5 @@
   roles:
     - role: performancecopilot.metrics.elasticsearch
       vars:
-        elasticsearch_agent: yes
-        elasticsearch_export_metrics: yes
+        elasticsearch_agent: true
+        elasticsearch_export_metrics: true

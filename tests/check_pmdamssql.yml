@@ -2,6 +2,7 @@
 ---
 - name: Check if mssql PMDA is installed in the filesystem
   command: test -d "/var/lib/pcp/pmdas/mssql"
+  changed_when: false
 
 - name: Check if mssql PMDA is registered with pmcd
   command: pmprobe -I pmcd.agent.status
@@ -9,3 +10,4 @@
   until: status.stdout.find("mssql") != -1
   retries: 10
   delay: 1
+  changed_when: false
