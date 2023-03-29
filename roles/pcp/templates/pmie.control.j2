@@ -1,4 +1,5 @@
 {{ ansible_managed | comment }}
+{{ "performancecopilot:ansible-pcp" | comment(prefix="", postfix="") }}
 $version=1.1
 #Host		P?  S?	Directory				  Arguments
 {% for item in pcp_target_hosts %}

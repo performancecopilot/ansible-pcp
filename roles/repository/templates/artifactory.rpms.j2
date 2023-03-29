@@ -1,4 +1,5 @@
 {{ ansible_managed | comment }}
+{{ "performancecopilot:ansible-pcp" | comment(prefix="", postfix="") }}
 [performancecpilot]
 name=Performance Co-Pilot
 baseurl=https://performancecopilot.jfrog.io/artifactory/pcp-rpm-release/{{ __repository_distro_name }}/$releasever/$basearch
