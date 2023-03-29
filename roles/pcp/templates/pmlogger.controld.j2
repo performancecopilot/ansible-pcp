@@ -1,4 +1,5 @@
 {{ ansible_managed | comment }}
+{{ "performancecopilot:ansible-pcp" | comment(prefix="", postfix="") }}
 $version=1.1
 #Host		P? S?	directory			args
 {{ item }}	n  n	PCP_ARCHIVE_DIR/{{ item }}	-r -T24h10m -c config.{{ item }} -v 100Mb
