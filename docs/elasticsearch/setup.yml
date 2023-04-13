@@ -1,5 +1,6 @@
 ---
-- hosts: monitoring
+- name: Example of elasticsearch
+  hosts: monitoring
   roles:
     - role: performancecopilot.metrics.elasticsearch
       vars:

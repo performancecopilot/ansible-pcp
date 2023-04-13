@@ -10,3 +10,4 @@
   when: (ansible_facts['distribution'] in ['RedHat', 'CentOS'] and
          ansible_facts['distribution_major_version'] | int > 6) or
          ansible_facts['distribution'] not in ['Fedora', 'RedHat', 'CentOS']
+  changed_when: false

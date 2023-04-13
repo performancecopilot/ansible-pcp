@@ -1,5 +1,6 @@
 ---
-- hosts: monitoring
+- name: Example of multiple target hosts
+  hosts: monitoring
   roles:
     - role: performancecopilot.metrics.pcp
       vars:
