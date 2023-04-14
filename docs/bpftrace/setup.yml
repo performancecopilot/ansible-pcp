@@ -1,5 +1,6 @@
 ---
-- hosts: monitoring
+- name: Example of bpftrace
+  hosts: monitoring
   roles:
     - role: performancecopilot.metrics.bpftrace
       vars:

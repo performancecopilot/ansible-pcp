@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Example of basic pcp setup
+  hosts: all
   roles:
     - role: performancecopilot.metrics.pcp
       vars:

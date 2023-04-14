@@ -1,4 +1,5 @@
 ---
-- hosts: monitoring
+- name: Example of secure Microsoft SQL
+  hosts: monitoring
   roles:
     - role: performancecopilot.metrics.mssql

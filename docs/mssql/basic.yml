@@ -1,5 +1,6 @@
 ---
-- hosts: monitoring
+- name: Example of basic Microsoft SQL
+  hosts: monitoring
   roles:
     - role: performancecopilot.metrics.mssql
       vars:

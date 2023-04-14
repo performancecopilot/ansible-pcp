@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Example of repository
+  hosts: all
   roles:
     - role: performancecopilot.metrics.repository
     - role: performancecopilot.metrics.pcp

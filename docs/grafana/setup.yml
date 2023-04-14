@@ -1,4 +1,5 @@
 ---
-- hosts: all
+- name: Example of grafana
+  hosts: all
   roles:
     - role: performancecopilot.metrics.grafana

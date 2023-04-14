@@ -1,5 +1,6 @@
 ---
-- hosts: monitoring
+- name: Example of spark
+  hosts: monitoring
   roles:
     - role: performancecopilot.metrics.spark
       vars:
