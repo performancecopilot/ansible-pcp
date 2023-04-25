@@ -4,6 +4,10 @@
   hosts: all
 
   roles:
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_rest_api: true
+        pcp_pmproxy_localonly: 1
     - role: performancecopilot.metrics.spark
       vars:
         spark_export_metrics: true
