@@ -33,6 +33,64 @@
         - check_grafana.yml
         - check_grafana_pcp.yml
 
+    - name: Check pmie config files
+      # noqa no-handler
+      when: __pcp_register_changed_target_hosts_controld is changed
+      block:
+        - name: Find pmie config files
+          find:
+            paths:
+              - "{{ __pcp_pmie_control_d_path }}"
+          register: __check_pmie_control_d
+
+        - name: Check headers for ansible_managed, fingerprint
+          include_tasks: check_header.yml
+          vars:
+            __fingerprint: "performancecopilot:ansible-pcp"
+          loop: "{{ __check_pmie_control_d.files | map(attribute='path') }}"
+          loop_control:
+            loop_var: __file
+
+    - name: Check pmlogger config files
+      # noqa no-handler
+      when: __pcp_register_changed_targeted_hosts_controld is changed
+      block:
+        - name: Find pmlogger config files
+          find:
+            paths:
+              - "{{ __pcp_pmlogger_control_d_path }}"
+          register: __check_pmlogger_control_d
+
+        - name: Check headers for ansible_managed, fingerprint
+          include_tasks: check_header.yml
+          vars:
+            __fingerprint: "performancecopilot:ansible-pcp"
+          loop: "{{ __check_pmlogger_control_d.files | map(attribute='path') }}"
+          loop_control:
+            loop_var: __file
+
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+        __file: "{{ __pcp_pmproxy_defaults_path }}"
+
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+        __file: "{{ __pcp_pmie_control_path }}"
+      # noqa no-handler
+      when: __pcp_register_changed_target_hosts_single is changed
+
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+        __file: "{{ __pcp_pmlogger_control_path }}"
+      # noqa no-handler
+      when: __pcp_register_changed_targeted_hosts_single is changed
+
   post_tasks:
     - name: Restore state of services
       import_tasks: restore_services_state.yml

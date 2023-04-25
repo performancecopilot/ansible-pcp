@@ -19,6 +19,12 @@
         - check_pcp2spark.yml
         - check_pmdaopenmetrics.yml
 
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+        __file: "{{ __spark_service_path }}/pcp2spark.service"
+
   post_tasks:
     - name: Restore state of services
       import_tasks: restore_services_state.yml

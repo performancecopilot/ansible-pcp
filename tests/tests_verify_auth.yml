@@ -35,6 +35,18 @@
       loop:
         - check_sasl.yml
 
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+      loop:
+        - "{{ __pcp_pmcd_defaults_path }}"
+        - "{{ __pcp_pmcd_saslconf_path }}"
+        - "{{ __pcp_pmlogger_defaults_path }}"
+        - "{{ __pcp_pmlogger_timers_path }}"
+      loop_control:
+        loop_var: __file
+
   post_tasks:
     - name: Restore state of services
       import_tasks: restore_services_state.yml

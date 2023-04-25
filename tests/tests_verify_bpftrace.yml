@@ -36,6 +36,12 @@
         - check_bpftrace.yml
         - check_sasl.yml
 
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __file: "{{ __bpftrace_conf }}"
+        __fingerprint: "performancecopilot:ansible-pcp"
+
   post_tasks:
     - name: Restore state of services
       import_tasks: restore_services_state.yml
