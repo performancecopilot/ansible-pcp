@@ -28,6 +28,16 @@
         - check_grafana_pcp.yml
         - check_default_datasources.yml
 
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+      loop:
+        - "{{ __grafana_conf }}"
+        - "{{ __grafana_provisioning_path }}/datasources/grafana-pcp.yaml"
+      loop_control:
+        loop_var: __file
+
   post_tasks:
     - name: Restore state of services
       import_tasks: restore_services_state.yml

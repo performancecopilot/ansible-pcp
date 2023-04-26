@@ -19,6 +19,13 @@
         - check_pmie.yml
         - check_pmlogger.yml
 
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+        __file: /etc/yum.repos.d/performancecopilot.repo
+      when: ansible_facts["os_family"] == "RedHat"
+
   post_tasks:
     - name: Restore state of services
       import_tasks: restore_services_state.yml

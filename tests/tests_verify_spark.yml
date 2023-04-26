@@ -4,6 +4,10 @@
   hosts: all
 
   roles:
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_rest_api: true
+        pcp_pmproxy_localonly: 1
     - role: performancecopilot.metrics.spark
       vars:
         spark_export_metrics: true
@@ -18,6 +22,12 @@
       loop:
         - check_pcp2spark.yml
         - check_pmdaopenmetrics.yml
+
+    - name: Check headers for ansible_managed, fingerprint
+      include_tasks: check_header.yml
+      vars:
+        __fingerprint: "performancecopilot:ansible-pcp"
+        __file: "{{ __spark_service_path }}/pcp2spark.service"
 
   post_tasks:
     - name: Restore state of services
