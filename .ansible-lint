@@ -2,8 +2,6 @@
 skip_list:
   - fqcn-builtins
   - galaxy[no-changelog]
-  - meta-unsupported-ansible
-  - meta-runtime[unsupported-version]
 exclude_paths:
   - tests/roles/
   - .github/
