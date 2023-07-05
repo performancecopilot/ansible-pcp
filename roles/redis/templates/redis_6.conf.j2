@@ -285,9 +285,13 @@ always-show-logo yes
 #
 #   save ""
 
+{% if redis_save_to_disk %}
 save 900 1
 save 300 10
 save 60 10000
+{% else %}
+save ""
+{% endif %}
 
 # By default Redis will stop accepting writes if RDB snapshots are enabled
 # (at least one save point) and the latest background save failed.
