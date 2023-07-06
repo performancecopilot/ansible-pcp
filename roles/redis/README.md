@@ -8,7 +8,9 @@ Uses features of Redis v5+.  If the target platform provides it, the RediSearch 
 
 ## Role Variables
 
-None.
+    redis_save_to_disk: true
+
+Incrementally save the redis database to disk. Default: true.
 
 ## Dependencies
 
