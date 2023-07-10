@@ -2,14 +2,13 @@
 ### REQUIRED
 namespace: performancecopilot
 name: metrics
-version: 2.2.8
+version: 2.2.9
 readme: README.md
 authors:
   - Jan Kurik <jkurik@redhat.com>
   - Nathan Scott <nathans@redhat.com>
-  - Noriko Hosoi <nhosoi@redhat.com>
   - Rich Megginson <rmeggins@redhat.com>
-  - Andreas Gerstmayr <agerstmayr@redhat.com>
+  - Sergei Petrosian <spetrosi@redhat.com>
 
 ### OPTIONAL
 description: Performance Co-Pilot Ansible collection
