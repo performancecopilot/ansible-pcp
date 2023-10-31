@@ -52,6 +52,20 @@
     - spark_metrics_provider == 'pcp'
     - spark_metrics_agent | d(false) | bool
 
+- name: Check if system is ostree
+  stat:
+    path: "{{ ostree_booted_file }}"
+  vars:
+    ostree_booted_file: /run/ostree-booted
+  register: __ostree_booted_stat
+
+- name: Ensure correct service path for ostree systems
+  when:
+    - __ostree_booted_stat.stat.exists
+    - __spark_service_path != "/etc/systemd/system"
+  set_fact:
+    __spark_service_path: /etc/systemd/system
+
 - name: Ensure PCP Spark export service exists
   template:
     src: pcp2spark.service.j2
