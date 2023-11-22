@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Test pmie webhook configuration
+  hosts: all
+
+  roles:
+    - role: performancecopilot.metrics.pcp
+      vars:
+        pcp_pmie_endpoint: https://example.com:12345/webhook
+
+  pre_tasks:
+    - name: Skip test if not supported by platform
+      meta: end_host
+      when: (ansible_distribution in ['RedHat', 'CentOS'] and
+             (ansible_facts['distribution_version'] is version('9.3', '<'))) or
+             ansible_distribution not in ['Fedora', 'RedHat', 'CentOS']
+
+    - name: Save state of services
+      import_tasks: get_services_state.yml
+
+  tasks:
+    - name: Check if configuring pmie webhook works
+      include_tasks: check_pmie_webhook.yml
+
+  post_tasks:
+    - name: Restore state of services
+      import_tasks: restore_services_state.yml
