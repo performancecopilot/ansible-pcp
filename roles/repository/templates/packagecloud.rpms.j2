@@ -1,0 +1,23 @@
+{{ ansible_managed | comment }}
+{{ "performancecopilot:ansible-pcp" | comment(prefix="", postfix="") }}
+[performancecopilot]
+name=Performance Co-Pilot
+baseurl=https://packagecloud.io/performancecopilot/pcp/{{ __repository_distro_name }}/$releasever/$basearch
+repo_gpgcheck=1
+enabled=1
+gpgcheck=0
+gpgkey=https://packagecloud.io/performancecopilot/pcp/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
+
+[performancecopilot-source]
+name=Performance Co-Pilot source
+baseurl=https://packagecloud.io/performancecopilot/pcp/{{ __repository_distro_name }}/$releasever/SRPMS
+repo_gpgcheck=1
+gpgcheck=0
+enabled=1
+gpgkey=https://packagecloud.io/performancecopilot/pcp/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
