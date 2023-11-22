@@ -19,6 +19,7 @@ __pcp_pmlogger_control_path: /etc/pcp/pmlogger/control
 
 __pcp_pmie_control_d_path: /etc/pcp/pmie/control.d
 __pcp_pmie_control_path: /etc/pcp/pmie/control
+__pcp_pmie_config_path: /var/lib/pcp/config/pmie
 
 __pcp_pmieconf_path: /etc/pcp/pmieconf
 __pcp_pmieconf_link_path: /var/lib/pcp/config/pmieconf

@@ -5,6 +5,7 @@ pcp_rest_api: false
 pcp_pmlogger_discard: 14
 pcp_pmlogger_interval: 60
 pcp_archive_dir: /var/log/pcp/pmlogger
+pcp_pmie_endpoint: ''
 pcp_pmcd_localonly: 0
 pcp_pmproxy_localonly: 0
 pcp_pmlogger_localonly: 1

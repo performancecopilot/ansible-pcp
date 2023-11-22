@@ -31,6 +31,58 @@
   loop: "{{ __pcp_pmieconf_rules | default([]) }}"
   register: __pcp_register_changed_rules_for_hosts
 
+- name: Ensure performance rule actions are installed for targeted hosts
+  set_fact:
+    local_pmie: "default"
+
+- name: Check if global pmie webhook action is configured
+  lineinfile:
+    state: absent
+    path: "{{ __pcp_pmie_config_path }}/config.{{ item }}"
+    regexp: "//.*global webhook_action = yes"
+  check_mode: true
+  changed_when: false
+  register: __pcp_global_webhook_action_status
+  loop: "{{ pcp_target_hosts + [local_pmie] }}"
+  when:
+    - pcp_pmie_endpoint | length > 0
+
+- name: Configure global webhook action
+  # yamllint disable rule:line-length
+  command: "pmieconf -f {{ __pcp_pmie_config_path }}/config.{{ item.item }} modify global webhook_action yes"
+  loop: "{{ __pcp_global_webhook_action_status.results }}"
+  changed_when:
+    - pcp_pmie_endpoint | length > 0
+    - item.found == 0
+  when:
+    - pcp_pmie_endpoint | length > 0
+    - item.found == 0
+  register: __pcp_register_changed_actions_for_hosts
+  # yamllint enable rule:line-length
+
+- name: Check if global webhook endpoint is configured
+  lineinfile:
+    state: absent
+    path: "{{ __pcp_pmie_config_path }}/config.{{ item }}"
+    regexp: "//.*global webhook_endpoint = \"{{ pcp_pmie_endpoint }}\""
+  check_mode: true
+  changed_when: false
+  register: __pcp_global_webhook_endpoint_status
+  loop: "{{ pcp_target_hosts + [local_pmie] }}"
+
+- name: Configure global webhook endpoint
+  # yamllint disable rule:line-length
+  command: "pmieconf -f {{ __pcp_pmie_config_path }}/config.{{ item.item }} modify global webhook_endpoint {{ pcp_pmie_endpoint }}"
+  loop: "{{ __pcp_global_webhook_endpoint_status.results }}"
+  changed_when:
+    - pcp_pmie_endpoint | length > 0
+    - item.found == 0
+  when:
+    - pcp_pmie_endpoint | length > 0
+    - item.found == 0
+  register: __pcp_register_changed_actions_for_hosts
+  # yamllint enable rule:line-length
+
 - name: Ensure extra rules symlinks have been created for targeted hosts
   file:
     src: "{{ __pcp_pmieconf_path }}/{{ item }}"
@@ -67,6 +119,7 @@
       __pcp_register_changed_group_dir is changed or
       __pcp_register_changed_group_link_dir is changed or
       __pcp_register_changed_rules_for_hosts is changed or
+      __pcp_register_changed_actions_for_hosts is changed or
       __pcp_register_changed_symlinks_for_hosts is changed or
       __pcp_register_changed_target_hosts_controld is changed or
       __pcp_register_changed_target_hosts_single is changed }}"
