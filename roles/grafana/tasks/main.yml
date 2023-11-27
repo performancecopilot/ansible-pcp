@@ -12,10 +12,24 @@
   when: item is file
 # yamllint enable rule:line-length
 
+- name: Determine if system is ostree and set flag
+  when: not __ansible_pcp_is_ostree is defined
+  block:
+    - name: Check if system is ostree
+      stat:
+        path: /run/ostree-booted
+      register: __ostree_booted_stat
+
+    - name: Set flag to indicate system is ostree
+      set_fact:
+        __ansible_pcp_is_ostree: "{{ __ostree_booted_stat.stat.exists }}"
+
 - name: Install Grafana packages
   package:
     name: "{{ __grafana_packages + __grafana_packages_extra }}"
     state: present
+    use: "{{ (__ansible_pcp_is_ostree | d(false)) |
+             ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
 
 - name: Get package facts now that Grafana is installed
   package_facts:
