@@ -13,10 +13,24 @@
     - name: Save state of services
       import_tasks: get_services_state.yml
 
+    - name: Determine if system is ostree and set flag
+      when: not __ansible_pcp_is_ostree is defined
+      block:
+        - name: Check if system is ostree
+          stat:
+            path: /run/ostree-booted
+          register: __ostree_booted_stat
+
+        - name: Set flag to indicate system is ostree
+          set_fact:
+            __ansible_pcp_is_ostree: "{{ __ostree_booted_stat.stat.exists }}"
+
     - name: Ensure Postfix is installed
       package:
         name: postfix
         state: present
+        use: "{{ (__ansible_pcp_is_ostree | d(false)) |
+                ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
 
   tasks:
     - name: Check Postfix functionality

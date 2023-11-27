@@ -46,4 +46,5 @@ build_ignore:
   - tests
   - tox.ini
 
-dependencies: {}
+dependencies:
+  ansible.posix: '*'  # for rpm-ostree
