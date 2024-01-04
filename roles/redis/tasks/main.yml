@@ -37,14 +37,14 @@
     state: directory
     owner: redis
     group: root
-    mode: 0750
+    mode: "0750"
 
 # yamllint disable rule:line-length
 - name: Ensure Redis service is configured
   template:
     src: "{{ item }}"
     dest: "{{ __redis_conf_path }}/{{ __redis_conf_file }}"
-    mode: 0640
+    mode: "0640"
     owner: redis
     group: root
   with_first_found:

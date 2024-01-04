@@ -5,7 +5,7 @@
   template:
     src: pmproxy.defaults.j2
     dest: "{{ __pcp_pmproxy_defaults_path }}"
-    mode: 0644
+    mode: "0644"
   notify: Restart pmproxy
 
 - name: Ensure REST API, proxy and log discovery is running and enabled on boot
