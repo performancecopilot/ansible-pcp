@@ -24,7 +24,7 @@
   file:
     path: "{{ __pcp_explicit_labels_path }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -32,7 +32,7 @@
   file:
     path: "{{ __pcp_implicit_labels_path }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -40,21 +40,21 @@
   template:
     src: pmcd.explicit.labels.j2
     dest: "{{ __pcp_explicit_labels_path }}/ansible-managed"
-    mode: 0644
+    mode: "0644"
   register: __pcp_register_changed_explicit_labels
 
 - name: Ensure any implicit metric labels are configured
   template:
     src: pmcd.implicit.labels.j2
     dest: "{{ __pcp_implicit_labels_path }}/ansible-managed"
-    mode: 0644
+    mode: "0644"
   register: __pcp_register_changed_implicit_labels
 
 - name: Ensure performance metric collector is configured
   template:
     src: pmcd.defaults.j2
     dest: "{{ __pcp_pmcd_defaults_path }}"
-    mode: 0644
+    mode: "0644"
   register: __pcp_register_changed_defaults_config
 
 - name: Ensure performance metric collector system accounts are configured
@@ -87,7 +87,7 @@
   template:
     src: pmcd.sasl2.conf.j2
     dest: "{{ __pcp_pmcd_saslconf_path }}"
-    mode: 0644
+    mode: "0644"
   register: __pcp_register_changed_authentication
   when: pcp_accounts | d([])
 

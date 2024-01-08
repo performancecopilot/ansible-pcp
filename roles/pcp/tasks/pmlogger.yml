@@ -13,14 +13,14 @@
   template:
     src: pmlogger.defaults.j2
     dest: "{{ __pcp_pmlogger_defaults_path }}"
-    mode: 0644
+    mode: "0644"
   register: __pcp_register_changed_config_pmlogger
 
 - name: Ensure performance metric logging retention period is set
   template:
     src: pmlogger.timers.j2
     dest: "{{ __pcp_pmlogger_timers_path }}"
-    mode: 0644
+    mode: "0644"
   register: __pcp_register_changed_logging_retention_period
   notify: Restart pmlogger
 
@@ -28,7 +28,7 @@
   template:
     src: pmlogger.controld.j2
     dest: "{{ __pcp_pmlogger_control_d_path }}/{{ item }}"
-    mode: 0644
+    mode: "0644"
   loop: "{{ pcp_target_hosts | default([]) }}"
   register: __pcp_register_changed_targeted_hosts_controld
   notify: Restart pmlogger
@@ -40,7 +40,7 @@
   template:
     src: pmlogger.control.j2
     dest: "{{ __pcp_pmlogger_control_path }}"
-    mode: 0644
+    mode: "0644"
   register: __pcp_register_changed_targeted_hosts_single
   when:
     - pcp_single_control | d(true) | bool

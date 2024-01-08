@@ -52,7 +52,7 @@
   file:
     path: "{{ __elasticsearch_conf_dir }}"
     state: directory
-    mode: 0755
+    mode: "0755"
   when: elasticsearch_metrics_provider == 'pcp'
 
 - name: Ensure PCP Elasticsearch agent is configured
@@ -60,7 +60,7 @@
     src: elasticsearch.conf.j2
     dest: "{{ __elasticsearch_conf }}"
     follow: true
-    mode: 0600
+    mode: "0600"
   when:
     - elasticsearch_metrics_provider == 'pcp'
     - elasticsearch_agent | d(false) | bool
@@ -76,7 +76,7 @@
   template:
     src: pcp2elasticsearch.service.j2
     dest: "{{ __elasticsearch_service_path }}/pcp2elasticsearch.service"
-    mode: 0600
+    mode: "0600"
   when:
     - elasticsearch_metrics_provider == 'pcp'
     - elasticsearch_export_metrics | d(false) | bool

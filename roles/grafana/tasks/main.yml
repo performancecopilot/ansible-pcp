@@ -42,7 +42,7 @@
   template:
     src: grafana_7.ini.j2
     dest: "{{ __grafana_conf }}"
-    mode: 0640
+    mode: "0640"
   notify: Restart grafana
   when: grafana_version is version('9.0.0', '<')
 
@@ -50,7 +50,7 @@
   template:
     src: grafana_9.ini.j2
     dest: "{{ __grafana_conf }}"
-    mode: 0640
+    mode: "0640"
   notify: Restart grafana
   when: grafana_version is version('9.0.0', '>=')
 
@@ -60,14 +60,13 @@
     state: directory
     group: grafana
     owner: root
-    mode: 0750
+    mode: "0750"
 
 - name: Ensure Grafana service is configured with datasources
   template:
     src: grafana-pcp-datasources.yaml.j2
     dest: "{{ __grafana_provisioning_path }}/datasources/grafana-pcp.yaml"
-
-    mode: 0644
+    mode: "0644"
   notify: Restart grafana
 
 - name: Ensure graphing service is running and enabled on boot
@@ -94,5 +93,5 @@
     dest: "{{ __grafana_provisioning_path }}/plugins/grafana-pcp.yaml"
     owner: root
     group: grafana
-    mode: '0640'
+    mode: "0640"
   when: grafana_version is version('7.5.0', '>=')

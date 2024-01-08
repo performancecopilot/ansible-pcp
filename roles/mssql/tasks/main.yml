@@ -41,7 +41,7 @@
   file:
     path: "{{ __mssql_conf_dir }}"
     state: directory
-    mode: 0755
+    mode: "0755"
   when: mssql_metrics_provider == 'pcp'
 
 - name: Ensure PCP SQL Server agent is configured
@@ -49,7 +49,7 @@
     src: mssql.conf.j2
     dest: "{{ __mssql_conf }}"
     follow: true
-    mode: 0600
+    mode: "0600"
   when: mssql_metrics_provider == 'pcp'
 
 - name: Ensure SQL Server performance rule group directory exists
@@ -58,7 +58,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: mssql_metrics_provider == 'pcp'
 
 - name: Ensure SQL Server performance rule group link directory exists
@@ -67,7 +67,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: mssql_metrics_provider == 'pcp'
 
 - name: Ensure SQL Server performance rules are installed for targeted hosts
@@ -76,7 +76,7 @@
     dest: "{{ __mssql_pmieconf_path }}/{{ item }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   loop: "{{ __mssql_pmieconf_rules | default([]) }}"
   when: mssql_metrics_provider == 'pcp'
 

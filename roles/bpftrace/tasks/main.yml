@@ -58,13 +58,13 @@
   file:
     path: "{{ __bpftrace_conf_dir }}"
     state: directory
-    mode: 0755
+    mode: "0755"
   when: bpftrace_metrics_provider == 'pcp'
 
 - name: Ensure PCP bpftrace agent is configured
   template:
     src: bpftrace.conf.j2
     dest: "{{ __bpftrace_conf }}"
-    mode: 0600
+    mode: "0600"
     follow: true
   when: bpftrace_metrics_provider == 'pcp'
