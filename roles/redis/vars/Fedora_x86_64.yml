@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with Fedora on x86_64 specific values.
+
+__redis_packages_extra:
+  - RediSearch
+
+__redis_loaded_modules:
+  - /usr/lib64/redis/modules/redisearch.so

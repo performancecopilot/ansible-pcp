@@ -2,8 +2,5 @@
 ---
 # Put internal variables here with Fedora specific values.
 
-__redis_packages_extra:
-  - RediSearch
-
-__redis_loaded_modules:
-  - /usr/lib64/redis/modules/redisearch.so
+__redis_packages_extra: []
+__redis_loaded_modules: []
