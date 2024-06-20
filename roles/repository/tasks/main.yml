@@ -14,7 +14,7 @@
 
 - name: Ensure PCP package repository is configured for RPMs
   template:
-    src: artifactory.rpms.j2
+    src: packagecloud.rpms.j2
     dest: /etc/yum.repos.d/performancecopilot.repo
     mode: "0600"
   when:
@@ -22,7 +22,7 @@
 
 - name: Ensure PCP package repository is configured for DEBs
   file:
-    src: artifactory.debs.j2
+    src: packagecloud.debs.j2
     dest: /etc/apt/sources.list.d/performancecopilot.sources
     mode: "0600"
   when:
