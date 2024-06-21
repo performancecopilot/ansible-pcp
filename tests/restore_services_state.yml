@@ -15,6 +15,7 @@
   when:
     - item + '.service' in final_state.ansible_facts.services
     - item + '.service' in initial_state.ansible_facts.services
+    - initial_state.ansible_facts.services[item + '.service'].status != "not-found"
   with_items:
     - pmcd
     - pmlogger
