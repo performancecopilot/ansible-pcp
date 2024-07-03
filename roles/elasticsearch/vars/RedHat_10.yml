@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with Red Hat Enterprise Linux 10 specific values.
+
+__elasticsearch_conf_dir: /etc/pcp/elasticsearch
+__elasticsearch_packages_export_pcp:
+  - pcp-export-pcp2elasticsearch
+  - pcp-system-tools
