@@ -33,3 +33,7 @@ galaxy_info:
     - lightweight
     - visualization
     - instrumentation
+    - el
+    - fedora
+    - debian
+    - ubuntu
