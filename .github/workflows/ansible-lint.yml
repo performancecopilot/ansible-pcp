@@ -11,10 +11,6 @@ on:  # yamllint disable-line rule:truthy
     branches:
       - main
   workflow_dispatch:
-env:
-  LSR_ROLE2COLL_NAMESPACE: performancecopilot
-  LSR_ROLE2COLL_NAME: metrics
-  TOX_WORK_DIR: .tox
 permissions:
   contents: read
 jobs:
@@ -23,15 +19,5 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      - name: Convert role to collection format
-        run: |
-          set -euxo pipefail
-          coll_dir="$TOX_WORK_DIR/ansible_collections/${{ env.LSR_ROLE2COLL_NAMESPACE }}/${{ env.LSR_ROLE2COLL_NAME }}"
-          bash scripts/lsrcollection.sh
-          # ansible-lint action requires a .git directory???
-          # https://github.com/ansible/ansible-lint/blob/main/action.yml#L45
-          mkdir -p "$coll_dir/.git"
       - name: Run ansible-lint
         uses: ansible/ansible-lint@v24
-        with:
-          working_directory: ${{ env.TOX_WORK_DIR }}/ansible_collections/${{ env.LSR_ROLE2COLL_NAMESPACE }}/${{ env.LSR_ROLE2COLL_NAME }}
