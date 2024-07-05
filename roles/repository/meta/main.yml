@@ -28,3 +28,7 @@ galaxy_info:
     - packaging
     - monitoring
     - performance
+    - el
+    - fedora
+    - debian
+    - ubuntu
