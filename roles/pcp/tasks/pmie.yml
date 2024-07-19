@@ -53,10 +53,10 @@
   loop: "{{ __pcp_global_webhook_action_status.results }}"
   changed_when:
     - pcp_pmie_endpoint | length > 0
-    - item.found == 0
+    - item.found is defined and item.found == 0
   when:
     - pcp_pmie_endpoint | length > 0
-    - item.found == 0
+    - item.found is defined and item.found == 0
   register: __pcp_register_changed_actions_for_hosts
   # yamllint enable rule:line-length
 
@@ -76,10 +76,10 @@
   loop: "{{ __pcp_global_webhook_endpoint_status.results }}"
   changed_when:
     - pcp_pmie_endpoint | length > 0
-    - item.found == 0
+    - item.found is defined and item.found == 0
   when:
     - pcp_pmie_endpoint | length > 0
-    - item.found == 0
+    - item.found is defined and item.found == 0
   register: __pcp_register_changed_actions_for_hosts
   # yamllint enable rule:line-length
 
