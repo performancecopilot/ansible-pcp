@@ -5,8 +5,8 @@ dependencies: []
 
 galaxy_info:
   author: performancecopilot
-  description: Performance Co-Pilot Grafana role
-  role_name: grafana
+  description: Performance Co-Pilot key server role
+  role_name: keyserver
   company: pcp.io
   license: "license (MIT)"
   min_ansible_version: "2.9"
@@ -18,16 +18,18 @@ galaxy_info:
     - name: Fedora
       versions:
         - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
   galaxy_tags:
     - pcp
-    - graph
     - redis
     - valkey
-    - vector
-    - grafana
     - metrics
     - analysis
-    - bpftrace
     - monitoring
     - timeseries
     - performance

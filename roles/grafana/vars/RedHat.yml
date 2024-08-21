@@ -2,5 +2,8 @@
 ---
 # Put internal variables here with Red Hat specific values.
 
+__grafana_keyserver_datasource_name: Valkey
+__grafana_keyserver_datasource_type: pcp-valkey-datasource
+__grafana_keyserver_datasource_alttype: performancecopilot-valkey-datasource
 __grafana_packages:
   - grafana

@@ -21,6 +21,6 @@
     - pmlogger
     - pmie
     - pmproxy
-    - redis
+    - "{{ __key_server_name }}"
     - grafana-server
 # yamllint enable rule:line-length

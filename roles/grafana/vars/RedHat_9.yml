@@ -2,5 +2,8 @@
 ---
 # Put internal variables here with Red Hat Enterprise Linux 9 specific values.
 
+__grafana_keyserver_datasource_name: Redis
+__grafana_keyserver_datasource_type: pcp-redis-datasource
+__grafana_keyserver_datasource_alttype: performancecopilot-redis-datasource
 __grafana_packages_extra:
   - grafana-pcp

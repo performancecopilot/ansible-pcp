@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Test the full PCP/Redis/Grafana stack
+- name: Test the full PCP/Grafana stack
   hosts: all
 
   roles:
@@ -8,7 +8,7 @@
       vars:
         pcp_rest_api: true
         pcp_pmproxy_localonly: 1
-    - role: performancecopilot.metrics.redis
+    - role: performancecopilot.metrics.keyserver
     - role: performancecopilot.metrics.grafana
 
   pre_tasks:
@@ -28,7 +28,7 @@
         - check_pcp.yml
         - check_pmlogger.yml
         - check_pmie.yml
-        - check_redis.yml
+        - check_keyserver.yml
         - check_pmproxy.yml
         - check_grafana.yml
         - check_grafana_pcp.yml

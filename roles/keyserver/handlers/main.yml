@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+
+- name: Restart key server
+  service:
+    name: "{{ __keyserver_name }}"
+    state: restarted

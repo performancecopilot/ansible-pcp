@@ -1,2 +1,2 @@
-roles/redis/templates/
+roles/keyserver/templates/
 roles/grafana/templates/

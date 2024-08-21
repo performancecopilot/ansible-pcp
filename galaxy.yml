@@ -29,6 +29,7 @@ tags:
   - instrumentation
   - observability
   - grafana
+  - valkey
   - redis
   - pcp
 build_ignore:

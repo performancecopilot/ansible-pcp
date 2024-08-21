@@ -6,7 +6,7 @@
 [![Github Release](https://img.shields.io/github/release/performancecopilot/ansible-pcp.svg)](https://github.com/performancecopilot/ansible-pcp/releases/latest)
 
 A collection containing roles for Performance Co-Pilot (PCP)
-and related software, such as Redis and Grafana.
+and related software, such as Valkey/Redis and Grafana.
 
 The collection is arranged as follows:
 
@@ -16,21 +16,21 @@ The collection is arranged as follows:
   analysis with a large base set of metrics from the kernel and
   system services, as well as data recording and rule inference.
 
-- performancecopilot.metrics.redis
-
-  A role for configuring a local Redis server, suitable for use
-  with a Performance Co-Pilot archive repository (for single or
-  many hosts) and fast, scalable querying of metrics.
-
 - performancecopilot.metrics.grafana
 
   A role for configuring a local Grafana server, providing web
   frontend visuals for Performance Co-Pilot metrics, both live
   and historically.
-  Data sources for Vector (live), Redis (historical) as well as
+  Data sources for Vector (live), Valkey/Redis (historical) and
   interactive bpftrace (eBPF) scripts can be configured by this
   role.  The PCP REST API service (from the core PCP role) must
   be configured in order to use this role.
+
+- performancecopilot.metrics.keyserver
+
+  A role for configuring a local key server (Valkey/Redis) that
+  is suitable for use with a Performance Co-Pilot installation
+  (for single or many hosts) with fast, scalable metric queries.
 
 - performancecopilot.metrics.repository
 

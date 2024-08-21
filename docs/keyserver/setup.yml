@@ -1,0 +1,5 @@
+---
+- name: Example of key server
+  hosts: all
+  roles:
+    - role: performancecopilot.metrics.keyserver

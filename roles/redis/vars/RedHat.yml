@@ -1,7 +1,0 @@
-# SPDX-License-Identifier: MIT
----
-# Put internal variables here with Red Hat specific values.
-
-__redis_packages:
-  - redis
-  - redis-doc

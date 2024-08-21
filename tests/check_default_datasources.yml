@@ -11,7 +11,7 @@
     method: GET
     status_code: 200
   loop:
-    - Redis
+    - "{{ __grafana_keyserver_datasource_name }}"
     - Vector
     - bpftrace
 # yamllint enable rule:line-length

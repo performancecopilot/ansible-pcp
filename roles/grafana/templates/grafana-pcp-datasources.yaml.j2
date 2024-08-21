@@ -10,8 +10,8 @@ datasources:
   url: http://{{ __grafana_pmproxy_server }}
   editable: true
   isDefault: true
-- name: PCP Redis
-  type: pcp-redis-datasource
+- name: PCP {{ __grafana_keyserver_datasource_name }}
+  type: {{ __grafana_keyserver_datasource_type }}
   access: proxy
   orgId: 1
   url: http://{{ __grafana_pmproxy_server }}
