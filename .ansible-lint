@@ -6,6 +6,7 @@ exclude_paths:
   - tests/roles/
   - .github/
   - examples/roles/
+  - .markdownlint.yaml
 kinds:
   - yaml: "**/meta/collection-requirements.yml"
   - yaml: "**/tests/collection-requirements.yml"
