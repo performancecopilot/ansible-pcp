@@ -88,9 +88,9 @@ Basic PCP setup with monitoring suited for a single host.
   roles:
     - role: performancecopilot.metrics.pcp
       vars:
-    ### pcp_pmlogger_interval: 10
-    ### pcp_optional_agents: [dm, nfsclient, openmetrics]
-    ### pcp_explicit_labels:
+        pcp_pmlogger_interval: 10
+        pcp_optional_agents: [dm, nfsclient, openmetrics]
+        pcp_explicit_labels:
           environment: production
 ```
 
@@ -101,10 +101,10 @@ Central PCP setup for monitoring of several remote hosts.
   roles:
     - role: performancecopilot.metrics.pcp
       vars:
-    ### pcp_pmlogger_interval: 10
-    ### pcp_pmlogger_discard: 5
-    ### pcp_target_hosts: [slip, slop, slap]
-    ### pcp_rest_api: true
+        pcp_pmlogger_interval: 10
+        pcp_pmlogger_discard: 5
+        pcp_target_hosts: [slip, slop, slap]
+        pcp_rest_api: true
 ```
 
 ## License

@@ -53,7 +53,7 @@ Setup export of PCP metrics to a Spark worker thread.
   roles:
     - role: performancecopilot.metrics.spark
       vars:
-    ### spark_export_port: 44388
+        spark_export_port: 44388
 ```
 
 ## License
