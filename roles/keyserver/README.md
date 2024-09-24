@@ -8,7 +8,7 @@ Requires a modern version of either Valkey or Redis (preferencing the open sourc
 
 ## Role Variables
 
-    keyserver_save_to_disk: true
+### keyserver_save_to_disk: true
 
 Incrementally save the database to disk. Default: true.
 
