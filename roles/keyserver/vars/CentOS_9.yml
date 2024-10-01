@@ -3,6 +3,7 @@
 # Put internal variables here with CentOS 9 specific values.
 
 __keyserver_name: redis
+__keyserver_packages: redis
 __keyserver_conf_path: /etc/redis
 __keyserver_conf_file: redis.conf
 __keyserver_packages_extra: []
