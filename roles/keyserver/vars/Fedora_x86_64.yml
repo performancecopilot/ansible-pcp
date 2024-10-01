@@ -1,9 +1,0 @@
-# SPDX-License-Identifier: MIT
----
-# Put internal variables here with Fedora on x86_64 specific values.
-
-__keyserver_packages_extra:
-  - ValkeySearch
-
-__keyserver_loaded_modules:
-  - /usr/lib64/valkey/modules/valkeysearch.so
