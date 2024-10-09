@@ -3,6 +3,8 @@
 # Put internal variables here with CentOS 10 specific values.
 
 __keyserver_name: valkey
+__keyserver_packages:
+  - valkey
 __keyserver_conf_path: /etc/valkey
 __keyserver_conf_file: valkey.conf
 __keyserver_packages_extra: []
