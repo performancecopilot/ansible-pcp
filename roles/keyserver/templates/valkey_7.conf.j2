@@ -333,7 +333,7 @@ daemonize no
 #
 # When the server runs non daemonized, no pid file is created if none is
 # specified in the configuration. When the server is daemonized, the pid file
-# is used even if not specified, defaulting to "/var/run/redis.pid".
+# is used even if not specified, defaulting to "/var/run/valkey.pid".
 #
 # Creating a pid file is best effort: if the server is not able to create it
 # nothing bad happens, the server will start and run normally.
@@ -361,7 +361,7 @@ logfile /var/log/valkey/valkey.log
 # syslog-enabled no
 
 # Specify the syslog identity.
-# syslog-ident redis
+# syslog-ident valkey
 
 # Specify the syslog facility. Must be USER or between LOCAL0-LOCAL7.
 # syslog-facility local0
@@ -439,6 +439,12 @@ locale-collate ""
 # You can set these explicitly by uncommenting the following line.
 #
 # save 3600 1 300 100 60 10000
+
+{% if keyserver_save_to_disk %}
+save 900 1 300 10 60 10000
+{% else %}
+save ""
+{% endif %}
 
 # By default the server will stop accepting writes if RDB snapshots are enabled
 # (at least one save point) and the latest background save failed.
@@ -2269,7 +2275,7 @@ jemalloc-bg-thread yes
 # the bgsave child process. The syntax to specify the cpu list is the same as
 # the taskset command:
 #
-# Set redis server/io threads to cpu affinity 0,2,4,6:
+# Set valkey server/io threads to cpu affinity 0,2,4,6:
 # server_cpulist 0-7:2
 #
 # Set bio threads to cpu affinity 1,3:
