@@ -46,7 +46,7 @@
   notify: Restart grafana
   when: grafana_version is version('9.0.0', '<')
 
-- name: Template Grafana v9 and later onfiguration
+- name: Template Grafana v9 and later configuration
   template:
     src: grafana_9.ini.j2
     dest: "{{ __grafana_conf }}"
