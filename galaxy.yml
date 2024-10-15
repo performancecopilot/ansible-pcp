@@ -2,7 +2,7 @@
 ### REQUIRED
 namespace: performancecopilot
 name: metrics
-version: 2.3.0
+version: 2.4.0
 readme: README.md
 authors:
   - Jan Kurik <jkurik@redhat.com>
