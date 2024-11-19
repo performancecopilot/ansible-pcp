@@ -7,4 +7,4 @@
     if set -o | grep -q pipefail; then
       set -o pipefail  # no pipefail on debian, some ubuntu
     fi
-    {{ __key_server_name }}-cli PING | grep PONG
+    {{ __keyserver_name }}-cli PING | grep PONG
