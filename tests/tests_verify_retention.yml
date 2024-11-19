@@ -6,6 +6,7 @@
     __test_retention: 137
 
   roles:
+    - role: performancecopilot.metrics.keyserver
     - role: performancecopilot.metrics.pcp
       vars:
         pcp_pmlogger_discard: "{{ __test_retention }}"

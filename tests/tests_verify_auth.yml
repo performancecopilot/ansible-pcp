@@ -8,6 +8,7 @@
 
   # yamllint disable rule:line-length
   roles:
+    - role: performancecopilot.metrics.keyserver
     - role: performancecopilot.metrics.pcp
       vars:
         pcp_accounts:

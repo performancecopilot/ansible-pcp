@@ -4,6 +4,7 @@
   hosts: all
 
   roles:
+    - role: performancecopilot.metrics.keyserver
     - role: performancecopilot.metrics.mssql
     - role: performancecopilot.metrics.pcp
       vars:

@@ -4,6 +4,7 @@
   hosts: all
 
   roles:
+    - role: performancecopilot.metrics.keyserver
     - role: performancecopilot.metrics.repository
     - role: performancecopilot.metrics.pcp
 
