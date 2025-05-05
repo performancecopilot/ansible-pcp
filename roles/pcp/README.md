@@ -89,6 +89,7 @@ Basic PCP setup with monitoring suited for a single host.
     - role: performancecopilot.metrics.pcp
       vars:
         pcp_pmlogger_interval: 10
+        # NOTE: No openmetrics on EL7
         pcp_optional_agents: [dm, nfsclient, openmetrics]
         pcp_explicit_labels:
           environment: production
