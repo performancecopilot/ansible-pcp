@@ -35,7 +35,7 @@
     state: present
     use: "{{ (__ansible_pcp_is_ostree | d(false)) |
              ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
-  when: __mssql_packages_extra | d([])
+  when: __mssql_packages_extra | d([]) | length > 0
 
 - name: Ensure PCP SQL Server agent configuration directory exists
   file:
