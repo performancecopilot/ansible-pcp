@@ -81,10 +81,23 @@
     - elasticsearch_metrics_provider == 'pcp'
     - elasticsearch_export_metrics | d(false) | bool
 
+- name: Determine if host is booted
+  # noqa command-instead-of-module
+  command: systemctl is-system-running
+  register: __system_running
+  changed_when: false
+  check_mode: false
+  failed_when: false
+
+- name: Require installed systemd
+  fail:
+    msg: "Error: This role requires systemd to be installed."
+  when: '"No such file or directory" in __system_running.msg | d("")'
+
 - name: Ensure PCP Elasticsearch export is running and enabled on boot
   service:
     name: pcp2elasticsearch
-    state: started
+    state: "{{ 'started' if __system_running.stdout != 'offline' else omit }}"
     enabled: true
   ignore_errors: true  # noqa ignore-errors
   # Elasticsearch server may be running remotely or presently down

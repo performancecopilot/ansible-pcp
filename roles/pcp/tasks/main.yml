@@ -24,6 +24,26 @@
       set_fact:
         __ansible_pcp_is_ostree: "{{ __ostree_booted_stat.stat.exists }}"
 
+- name: Determine if host is booted
+  when: __pcp_is_booted is not defined
+  block:
+    - name: Run systemctl
+      # noqa command-instead-of-module
+      command: systemctl is-system-running
+      register: __is_system_running
+      changed_when: false
+      check_mode: false
+      failed_when: false
+
+    - name: Require installed systemd
+      fail:
+        msg: "Error: This role requires systemd to be installed."
+      when: '"No such file or directory" in __is_system_running.msg | d("")'
+
+    - name: Set flag to indicate that systemd runtime operations are available
+      set_fact:
+        __pcp_is_booted: "{{ __is_system_running.stdout != 'offline' }}"
+
 - name: Install Performance Co-Pilot packages
   package:
     name: "{{ __pcp_packages + __pcp_packages_extra + pcp_optional_packages }}"

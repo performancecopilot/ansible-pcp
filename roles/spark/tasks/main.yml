@@ -84,10 +84,23 @@
     - spark_metrics_provider == 'pcp'
     - spark_export_metrics | d(false) | bool
 
+- name: Determine if host is booted
+  # noqa command-instead-of-module
+  command: systemctl is-system-running
+  register: __system_running
+  changed_when: false
+  check_mode: false
+  failed_when: false
+
+- name: Require installed systemd
+  fail:
+    msg: "Error: This role requires systemd to be installed."
+  when: '"No such file or directory" in __system_running.msg | d("")'
+
 - name: Ensure PCP Spark export is running and enabled on boot
   service:
     name: pcp2spark
-    state: started
+    state: "{{ 'started' if __system_running.stdout != 'offline' else omit }}"
     enabled: true
   # A given Spark server may be running remotely or presently down
   # but since a playbook has explicitly asked us for it, we end up

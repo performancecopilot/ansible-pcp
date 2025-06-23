@@ -11,5 +11,5 @@
 - name: Ensure REST API, proxy and log discovery is running and enabled on boot
   service:
     name: pmproxy
-    state: started
+    state: "{{ 'started' if __pcp_is_booted else omit }}"
     enabled: true
