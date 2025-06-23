@@ -5,3 +5,4 @@
   service:
     name: "{{ __keyserver_name }}"
     state: restarted
+  when: __keyserver_is_booted | bool

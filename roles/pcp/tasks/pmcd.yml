@@ -116,13 +116,13 @@
 - name: Ensure performance metric collector is running and enabled on boot
   service:
     name: pmcd
-    state: started
+    state: "{{ 'started' if __pcp_is_booted else omit }}"
     enabled: true
   when: not __pcp_restart_pmcd | bool
 
 - name: Ensure performance metric collector is restarted and enabled on boot
   service:
     name: pmcd
-    state: restarted
+    state: "{{ 'restarted' if __pcp_is_booted else omit }}"
     enabled: true
   when: __pcp_restart_pmcd | bool

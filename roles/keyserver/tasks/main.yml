@@ -28,6 +28,23 @@
       set_fact:
         __ansible_pcp_is_ostree: "{{ __ostree_booted_stat.stat.exists }}"
 
+- name: Determine if host is booted
+  # noqa command-instead-of-module
+  command: systemctl is-system-running
+  register: __is_system_running
+  changed_when: false
+  check_mode: false
+  failed_when: false
+
+- name: Require installed systemd
+  fail:
+    msg: "Error: This role requires systemd to be installed."
+  when: '"No such file or directory" in __is_system_running.msg | d("")'
+
+- name: Set flag to indicate that systemd runtime operations are available
+  set_fact:
+    __keyserver_is_booted: "{{ __is_system_running.stdout != 'offline' }}"
+
 - name: Install key server packages
   package:
     name: "{{ __keyserver_packages + __keyserver_packages_extra }}"
@@ -68,5 +85,5 @@
 - name: Ensure key server service is running and enabled on boot
   service:
     name: "{{ __keyserver_name }}"
-    state: started
+    state: "{{ 'started' if __keyserver_is_booted else omit }}"
     enabled: true

@@ -58,13 +58,13 @@
 - name: Ensure performance metric logging is running and enabled on boot
   service:
     name: pmlogger
-    state: started
+    state: "{{ 'started' if __pcp_is_booted else omit }}"
     enabled: true
   when: not __pcp_restart_pmlogger | bool
 
 - name: Ensure performance metric logging is restarted and enabled on boot
   service:
     name: pmlogger
-    state: restarted
+    state: "{{ 'restarted' if __pcp_is_booted else omit }}"
     enabled: true
   when: __pcp_restart_pmlogger | bool
