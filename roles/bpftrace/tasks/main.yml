@@ -30,7 +30,7 @@
                                 __bpftrace_packages_extra }}"
   when:
     - bpftrace_metrics_provider == 'pcp'
-    - __bpftrace_packages_pcp | d([])
+    - __bpftrace_packages_pcp | d([]) | length > 0
 
 - name: Establish bpftrace metrics package names
   set_fact:
@@ -38,7 +38,7 @@
                                 __bpftrace_packages_extra }}"
   when:
     - bpftrace_metrics_provider == 'pcp'
-    - __bpftrace_packages_pcp | d([])
+    - __bpftrace_packages_pcp | d([]) | length > 0
 
 - name: Install needed bpftrace metrics packages
   package:
@@ -46,7 +46,7 @@
     state: present
     use: "{{ (__ansible_pcp_is_ostree | d(false)) |
              ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
-  when: __bpftrace_packages_extra | d([])
+  when: __bpftrace_packages_extra | d([]) | length > 0
 
 - name: Extract allowed bpftrace user accounts
   set_fact:

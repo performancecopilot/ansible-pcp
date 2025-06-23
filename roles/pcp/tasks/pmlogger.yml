@@ -34,7 +34,7 @@
   notify: Restart pmlogger
   when:
     - not pcp_single_control | d(false) | bool
-    - pcp_target_hosts | d([])
+    - pcp_target_hosts | d([]) | length > 0
 
 - name: Enable performance metric logging for targeted hosts (single control)
   template:
@@ -44,7 +44,7 @@
   register: __pcp_register_changed_targeted_hosts_single
   when:
     - pcp_single_control | d(true) | bool
-    - pcp_target_hosts | d([])
+    - pcp_target_hosts | d([]) | length > 0
 
 - name: Set variable to do pmlogger restart if needed
   set_fact:

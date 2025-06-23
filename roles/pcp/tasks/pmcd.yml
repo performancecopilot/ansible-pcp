@@ -89,7 +89,7 @@
     dest: "{{ __pcp_pmcd_saslconf_path }}"
     mode: "0644"
   register: __pcp_register_changed_authentication
-  when: pcp_accounts | d([])
+  when: pcp_accounts | d([]) | length > 0
 
 - name: Set variable to do pmcd restart if needed
   set_fact:

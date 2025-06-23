@@ -38,8 +38,8 @@
     use: "{{ (__ansible_pcp_is_ostree | d(false)) |
              ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
   when:
-    - __pcp_sasl_packages | d([])
-    - pcp_accounts | d({})
+    - __pcp_sasl_packages | d([]) | length > 0
+    - pcp_accounts | d([]) | length > 0
 
 - name: Include pmcd
   include_tasks: pmcd.yml
