@@ -43,7 +43,7 @@
               - "{{ __pcp_pmie_control_d_path }}"
           register: __check_pmie_control_d
 
-        - name: Check headers for ansible_managed, fingerprint
+        - name: Check pmie.d headers for ansible_managed, fingerprint
           include_tasks: check_header.yml
           vars:
             __fingerprint: "performancecopilot:ansible-pcp"
@@ -61,7 +61,7 @@
               - "{{ __pcp_pmlogger_control_d_path }}"
           register: __check_pmlogger_control_d
 
-        - name: Check headers for ansible_managed, fingerprint
+        - name: Check pmlogger.d headers for ansible_managed, fingerprint
           include_tasks: check_header.yml
           vars:
             __fingerprint: "performancecopilot:ansible-pcp"
@@ -69,13 +69,13 @@
           loop_control:
             loop_var: __file
 
-    - name: Check headers for ansible_managed, fingerprint
+    - name: Check pmproxy headers for ansible_managed, fingerprint
       include_tasks: check_header.yml
       vars:
         __fingerprint: "performancecopilot:ansible-pcp"
         __file: "{{ __pcp_pmproxy_defaults_path }}"
 
-    - name: Check headers for ansible_managed, fingerprint
+    - name: Check pmie headers for ansible_managed, fingerprint
       include_tasks: check_header.yml
       vars:
         __fingerprint: "performancecopilot:ansible-pcp"
@@ -83,7 +83,7 @@
       # noqa no-handler
       when: __pcp_register_changed_target_hosts_single is changed
 
-    - name: Check headers for ansible_managed, fingerprint
+    - name: Check pmlogger headers for ansible_managed, fingerprint
       include_tasks: check_header.yml
       vars:
         __fingerprint: "performancecopilot:ansible-pcp"
