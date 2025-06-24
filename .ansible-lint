@@ -7,6 +7,8 @@ exclude_paths:
   - .github/
   - examples/roles/
   - .markdownlint.yaml
+  # downloaded, not ours
+  - .ansible/collections
 kinds:
   - yaml: "**/meta/collection-requirements.yml"
   - yaml: "**/tests/collection-requirements.yml"
