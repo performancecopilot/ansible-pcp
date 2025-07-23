@@ -52,7 +52,7 @@
   template:
     src: spark.url.j2
     dest: "{{ __spark_metrics_conf }}"
-    mode: "0600"
+    mode: "0644"
   when:
     - spark_metrics_provider == 'pcp'
     - spark_metrics_agent | d(false) | bool
