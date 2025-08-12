@@ -68,3 +68,27 @@ The collection is arranged as follows:
 
   A role that extends the core PCP role, exporting metrics from
   PCP into Apache Spark for further analysis.
+
+
+## Instructions for creating an ansible-pcp release:
+
+### On GitHub
+
+1. Pull down the performancecopilot org upstream ansible-pcp repo
+2. Bump the version to X.Y.Z in `galaxy.yml`
+3. `git add galaxy.yml`
+4. `git commit -m "Bump version to X.Y.Z ..."`
+5. `git tag -m vX.Y.Z vX.Y.Z`
+6. `git push && git push --tags`
+7. Navigate to the github web interface
+8. Create a new release for the tag vX.Y.Z and set the title to X.Y.Z
+
+### Ansible Galaxy
+
+Still in the performancecopilot ansible-pcp repo:
+
+1. Remove the old `*.tar.gz` file if present
+2. `ansible-galaxy collection build`
+3. Navigate to https://galaxy.ansible.com/ui/namespaces/performancecopilot/
+4. Click "upload collection" and upload the `tar.gz` file just created with the `ansible-galaxy collection build` command
+
