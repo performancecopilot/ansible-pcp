@@ -22,7 +22,7 @@
     fi
     pmieconf -f /var/lib/pcp/config/pmie/config.default list global webhook_endpoint | grep '"example"'
     pmieconf -f /var/lib/pcp/config/pmie/config.default list global webhook_action | grep '"yes"'
-  when: (ansible_distribution in ['RedHat', 'CentOS'] and
+  when: (ansible_facts['distribution'] in ['RedHat', 'CentOS'] and
          (ansible_facts['distribution_version'] is version('9.3', '<'))) or
-         ansible_distribution not in ['Fedora', 'RedHat', 'CentOS']
+         ansible_facts['distribution'] not in ['Fedora', 'RedHat', 'CentOS']
 # yamllint enable rule:line-length
