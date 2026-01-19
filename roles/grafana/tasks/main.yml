@@ -86,6 +86,24 @@
     mode: "0644"
   notify: Restart grafana
 
+- name: Ensure Grafana certificate is owned by grafana
+  file:
+    path: "{{ grafana_cert }}"
+    state: file
+    group: grafana
+    owner: grafana
+    mode: "0640"
+  when: grafana_cert | length > 0
+
+- name: Ensure Grafana private key is owned by grafana
+  file:
+    path: "{{ grafana_private_key }}"
+    state: file
+    group: grafana
+    owner: grafana
+    mode: "0600"
+  when: grafana_private_key | length > 0
+
 - name: Ensure graphing service is running and enabled on boot
   service:
     name: grafana-server

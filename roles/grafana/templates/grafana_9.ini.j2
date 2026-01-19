@@ -34,7 +34,11 @@ provisioning = {{ __grafana_provisioning_path }}
 #################################### Server ####################################
 [server]
 # Protocol (http, https, h2, socket)
+{% if grafana_cert | d("") | length > 0 and grafana_private_key | d("") | length > 0 %}
+protocol = https
+{% else %}
 ;protocol = http
+{% endif %}
 
 # The ip address to bind to, empty will bind to all interfaces
 ;http_addr =
@@ -66,8 +70,16 @@ provisioning = {{ __grafana_provisioning_path }}
 ;enable_gzip = false
 
 # https certs & key file
+{% if grafana_cert | d("") | length > 0 %}
+cert_file = {{ grafana_cert }}
+{% else %}
 ;cert_file =
+{% endif %}
+{% if grafana_private_key | d("") | length > 0 %}
+cert_key = {{ grafana_private_key }}
+{% else %}
 ;cert_key =
+{% endif %}
 
 # Unix socket path
 ;socket =
