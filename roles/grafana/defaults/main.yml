@@ -1,2 +1,4 @@
 # SPDX-License-Identifier: MIT
 ---
+grafana_cert: ""
+grafana_private_key: ""
