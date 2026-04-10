@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with AlmaLinux 10 specific values.
+
+__grafana_keyserver_datasource_name: Valkey
+__grafana_keyserver_datasource_type: pcp-valkey-datasource
+__grafana_keyserver_datasource_alttype: performancecopilot-valkey-datasource
+__grafana_packages_extra:
+  - grafana-pcp
