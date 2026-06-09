@@ -18,9 +18,3 @@
     name: pmproxy
     state: restarted
   when: __pcp_is_booted | bool
-
-- name: Restart pmlogger
-  service:
-    name: pmlogger
-    state: restarted
-  when: __pcp_is_booted | bool

@@ -22,7 +22,6 @@
     dest: "{{ __pcp_pmlogger_timers_path }}"
     mode: "0644"
   register: __pcp_register_changed_logging_retention_period
-  notify: Restart pmlogger
 
 - name: Enable performance metric logging for targeted hosts (with control.d)
   template:
@@ -31,7 +30,6 @@
     mode: "0644"
   loop: "{{ pcp_target_hosts | default([]) }}"
   register: __pcp_register_changed_targeted_hosts_controld
-  notify: Restart pmlogger
   when:
     - not pcp_single_control | d(false) | bool
     - pcp_target_hosts | d([]) | length > 0
