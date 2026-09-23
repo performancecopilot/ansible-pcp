@@ -5,3 +5,7 @@
     url: http://localhost:44322/series/ping
     method: GET
     status_code: 200
+  register: __pmproxy_result
+  until: __pmproxy_result is success
+  delay: "{{ __pmproxy_pcp_delay | d(2) }}"
+  retries: "{{ __pmproxy_pcp_retries | d(5) }}"

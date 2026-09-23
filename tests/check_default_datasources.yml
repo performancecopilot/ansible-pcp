@@ -3,15 +3,21 @@
 # yamllint disable rule:line-length
 - name: Check if grafana-pcp datasources are configured
   uri:
-    url: "http://admin:admin@localhost:3000/api/datasources/name/PCP%20{{ item }}"
+    url: "http://admin:admin@localhost:3000/api/datasources/name/PCP%20{{ __datasource }}"
     force_basic_auth: true
     headers:
       Content-Type: application/json
       Accept: application/json
     method: GET
     status_code: 200
+  register: __grafana_pcp_datasources_result
+  until: __grafana_pcp_datasources_result is success
+  delay: "{{ __grafana_pcp_delay | d(2) }}"
+  retries: "{{ __grafana_pcp_retries | d(5) }}"
   loop:
     - "{{ __grafana_keyserver_datasource_name }}"
     - Vector
     - bpftrace
+  loop_control:
+    loop_var: __datasource
 # yamllint enable rule:line-length
