@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check that invalid push settings are rejected
+  block:
+    - name: Validate intentionally invalid configuration
+      include_role:
+        name: performancecopilot.metrics.pcp
+        tasks_from: push_validate.yml
+      vars:
+        pcp_push_client: "{{ __push_rejection.client | default({}) }}"
+        pcp_push_collector: "{{ __push_rejection.collector | default({}) }}"
+
+    - name: Fail if invalid configuration was accepted
+      fail:
+        msg: Invalid configuration was accepted
+
+  rescue:
+    - name: Require the expected validation diagnostic
+      assert:
+        that: >-
+          __push_rejection.error in
+          (ansible_failed_result.msg ~ ' ' ~
+           (ansible_failed_result.results | default([]) |
+            map(attribute='msg', default='') | join(' ')))
+        quiet: true

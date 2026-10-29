@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: MIT
 ---
+- name: Validate the datasource connection to pmproxy
+  include_tasks: pmproxy.yml
+
 # yamllint disable rule:line-length
 - name: Set platform/version specific variables
   include_vars: "{{ item }}"

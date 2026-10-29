@@ -16,3 +16,8 @@ pcp_implicit_labels: {}
 pcp_single_control: 0
 pcp_target_hosts: []
 pcp_accounts: []
+
+# Empty dictionaries leave existing deployments untouched.
+pcp_push_client: {}
+pcp_push_collector: {}
+pcp_secure_logging: true

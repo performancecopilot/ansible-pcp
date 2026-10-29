@@ -1,0 +1,180 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Require push dictionaries
+  assert:
+    that:
+      - pcp_push_client is mapping
+      - pcp_push_collector is mapping
+    quiet: true
+
+- name: Check push fields and authentication policies
+  assert:
+    that:
+      - item.config.keys() | difference(item.fields) | length == 0
+      - item.config.enabled | default(false) is boolean
+      - >-
+        not item.config.enabled | default(false) or
+        item.config.auth | default('none') in ['none', 'basic', 'mtls']
+      - >-
+        not item.config.enabled | default(false) or
+        ((item.config.cert | default('') | length > 0) ==
+         (item.config.private_key | default('') | length > 0))
+      - >-
+        not item.config.enabled | default(false) or
+        item.config.auth | default('none') != 'mtls' or
+        (item.config.ca_cert | default('') | length > 0 and
+         item.config.cert | default('') | length > 0)
+    fail_msg: >-
+      Invalid pcp_push_{{ item.kind }} settings: use documented fields,
+      boolean enabled, auth none/basic/mtls, paired cert/private_key,
+      and ca_cert with mutual TLS.
+    quiet: true
+  loop:
+    - kind: client
+      config: "{{ pcp_push_client }}"
+      fields: [enabled, collector_url, auth, ca_cert, cert, private_key,
+               username, password]
+    - kind: collector
+      config: "{{ pcp_push_collector }}"
+      fields: [enabled, port, auth, ca_cert, cert, private_key]
+  loop_control:
+    label: "{{ item.kind }}"
+  no_log: "{{ pcp_secure_logging }}"
+  register: __pcp_push_fields
+  failed_when: false
+
+- name: Report invalid push fields
+  fail:
+    msg: >-
+      {{ __pcp_push_fields.results | selectattr('evaluated_to', 'defined') |
+         map(attribute='msg') | join('\n') }}
+  when: >-
+    __pcp_push_fields.results | selectattr('evaluated_to', 'defined') |
+    list | length > 0
+
+- name: Check push client transport and credentials
+  assert:
+    that:
+      - pcp_push_client.collector_url is string
+      - >-
+        pcp_push_client.auth | default('none') == 'none' or
+        pcp_push_client.collector_url is match('^https://')
+      - >-
+        pcp_push_client.collector_url is not match('^https://') or
+        pcp_push_client.ca_cert | default('') | length > 0
+      - >-
+        pcp_push_client.auth | default('none') != 'basic' or
+        (pcp_push_client.username | default('') is string and
+         pcp_push_client.username | default('') is
+         match('^[A-Za-z0-9_][A-Za-z0-9_.@-]*\Z') and
+         pcp_push_client.password | default('') is string and
+         pcp_push_client.password | default('') | length > 0 and
+         '\n' not in pcp_push_client.password and
+         '\r' not in pcp_push_client.password)
+      - >-
+        pcp_push_client.auth | default('none') == 'basic' or
+        (not pcp_push_client.username | default('') and
+         not pcp_push_client.password | default(''))
+      - >-
+        not pcp_push_client.cert | default('') or
+        pcp_push_client.auth | default('none') == 'mtls'
+    fail_msg: >-
+      Invalid pcp_push_client: supply one collector_url; Basic and mutual
+      TLS require HTTPS, HTTPS requires ca_cert, Basic requires username
+      and a nonempty single-line password, and client certificates require mtls.
+    quiet: true
+  when: pcp_push_client.enabled | default(false)
+  no_log: "{{ pcp_secure_logging }}"
+  register: __pcp_push_client_settings
+  failed_when: false
+
+- name: Report invalid client settings
+  fail:
+    msg: "{{ __pcp_push_client_settings.msg }}"
+  when: __pcp_push_client_settings.evaluated_to is defined
+
+- name: Check collector port and authentication authority
+  assert:
+    that:
+      - pcp_push_collector.port | default(44322) is integer
+      - pcp_push_collector.port | default(44322) is not boolean
+      - pcp_push_collector.port | default(44322) | int > 0
+      - pcp_push_collector.port | default(44322) | int <= 65535
+      - >-
+        pcp_push_collector.auth | default('none') == 'none' or
+        pcp_push_collector.cert | default('') | length > 0
+      - >-
+        pcp_push_collector.auth | default('none') != 'basic' or
+        pcp_accounts | selectattr('sasluser', 'defined') |
+        selectattr('sasluser') | selectattr('saslpassword', 'defined') |
+        selectattr('saslpassword') | list | length > 0
+    fail_msg: >-
+      Invalid pcp_push_collector: port must be an integer from 1 to 65535;
+      authenticated policies require cert/private_key and Basic requires
+      SASL credentials in pcp_accounts.
+    quiet: true
+  when: pcp_push_collector.enabled | default(false)
+  no_log: "{{ pcp_secure_logging }}"
+  register: __pcp_push_collector_settings
+  failed_when: false
+
+- name: Report invalid collector settings
+  fail:
+    msg: "{{ __pcp_push_collector_settings.msg }}"
+  when: __pcp_push_collector_settings.evaluated_to is defined
+
+- name: Check installed PCP version
+  when: >-
+    pcp_push_client.enabled | default(false) or
+    pcp_push_collector.enabled | default(false)
+  block:
+    - name: Read installed PCP version
+      command: pminfo -V
+      changed_when: false
+      failed_when: false
+      check_mode: false
+      register: __pcp_push_version
+
+    - name: Require PCP 7.2.2 for archive push
+      assert:
+        that:
+          - __pcp_push_version.rc == 0
+          - __pcp_push_detected_version != 'unknown'
+          - __pcp_push_detected_version is version('7.2.2', '>=')
+        fail_msg: >-
+          Detected PCP {{ __pcp_push_detected_version }}; push requires
+          PCP >= 7.2.2. Upgrade PCP from your distribution or the upstream
+          PCP repository before enabling push.
+      vars:
+        __pcp_push_detected_version: >-
+          {{ ((__pcp_push_version.stdout | default('')) ~
+              (__pcp_push_version.stderr | default(''))) |
+             regex_search('[0-9]+\.[0-9]+\.[0-9]+') |
+             default('unknown', true) }}
+
+- name: Validate caller managed TLS files
+  include_tasks: push_tls_validate.yml
+  loop: "{{ [pcp_push_client, pcp_push_collector] }}"
+  loop_control:
+    loop_var: __pcp_push_tls_config
+    label: TLS configuration
+  when: __pcp_push_tls_config.enabled | default(false)
+  no_log: "{{ pcp_secure_logging }}"
+
+- name: Check existing PCP configuration for conflicts
+  # Also loaded as a filesystem role by downstream consumers.
+  pcp_push:  # noqa fqcn[action]
+    action: validate
+    client: "{{ pcp_push_client | dict2items |
+                rejectattr('key', 'equalto', 'password') | items2dict }}"
+    collector: "{{ pcp_push_collector }}"
+    timers: "{{ __pcp_pmlogger_timers_path | dirname }}/pmproxy_timers"
+    discard: "{{ pcp_pmlogger_discard }}"
+  no_log: "{{ pcp_secure_logging }}"
+  register: __pcp_push_config_validation
+  failed_when: false
+
+- name: Report configuration conflicts without credentials
+  fail:
+    msg: "{{ __pcp_push_config_validation.msg }}"
+  when: __pcp_push_config_validation.msg is defined

@@ -61,6 +61,10 @@
     - __pcp_sasl_packages | d([]) | length > 0
     - pcp_accounts | d([]) | length > 0
 
+- name: Validate push configuration before changing services or logging
+  include_tasks: push_validate.yml
+  when: pcp_push_client | length > 0 or pcp_push_collector | length > 0
+
 - name: Include pmcd
   include_tasks: pmcd.yml
 
@@ -72,4 +76,14 @@
 
 - name: Include pmproxy
   include_tasks: pmproxy.yml
-  when: pcp_rest_api | d(false) | bool
+  when: pcp_rest_api | bool or pcp_push_collector | length > 0
+
+- name: Apply collector changes before probing from the same host
+  meta: flush_handlers
+  when:
+    - pcp_push_client.enabled | default(false) | bool
+    - pcp_push_collector.enabled | default(false) | bool
+
+- name: Configure the separate archive push service
+  include_tasks: push_client.yml
+  when: pcp_push_client | length > 0

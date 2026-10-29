@@ -1,0 +1,94 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Check runtime collector compatibility
+  when:
+    - pcp_push_client.enabled | default(false)
+    - __pcp_is_booted | bool
+    - not ansible_check_mode
+  block:
+    - name: Install the collector probe client
+      package:
+        name: curl
+        state: present
+        use: "{{ (__ansible_pcp_is_ostree | d(false)) |
+                 ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
+
+    - name: Probe collector with the selected TLS and authentication policy
+      command:
+        argv:
+          - curl
+          - -q
+          - --silent
+          - --show-error
+          - --max-time
+          - '5'
+          - --output
+          - /dev/null
+          - --write-out
+          - '%{http_code}'
+          - --config
+          - '-'
+          - "{{ __pcp_push_client_url }}/logger/ping"
+        stdin: |
+          {% if pcp_push_client.collector_url is match('^https://') %}
+          cacert = {{ pcp_push_client.ca_cert | to_json }}
+          {% endif %}
+          {% if pcp_push_client.auth | default('none') == 'mtls' %}
+          cert = {{ pcp_push_client.cert | to_json }}
+          key = {{ pcp_push_client.private_key | to_json }}
+          {% endif %}
+          {% if pcp_push_client.auth | default('none') == 'basic' %}
+          header = "Authorization: Basic {{
+          (pcp_push_client.username ~ ':' ~
+           pcp_push_client.password) | b64encode }}"
+          {% endif %}
+      changed_when: false
+      failed_when: false
+      register: __pcp_push_probe
+      until: __pcp_push_probe.rc == 0 and __pcp_push_probe.stdout != '503'
+      retries: 2
+      delay: 2
+      ignore_errors: true
+      no_log: "{{ pcp_secure_logging }}"
+
+    - name: Describe collector probe failure without credentials
+      set_fact:
+        __pcp_push_probe_error: >-
+          {% if __pcp_push_probe.rc != 0 %}
+          Collector connection/TLS verification failed:
+          {{ __pcp_push_probe.stderr }};
+          check availability, CA trust, certificate validity and URL hostname.
+          {% elif __pcp_push_probe.stdout in ['401', '403'] %}
+          Collector rejected authentication
+          (HTTP {{ __pcp_push_probe.stdout }});
+          check pcp_accounts, password or client certificate.
+          {% elif __pcp_push_probe.stdout == '503' %}
+          Collector authentication service unavailable (HTTP 503);
+          check local pmcd and SASL.
+          {% elif __pcp_push_probe.stdout is match('^3') %}
+          Collector redirected /logger/ping; use the direct collector URL.
+          No transport downgrade is allowed.
+          {% elif __pcp_push_probe.stdout != '200' %}
+          Collector /logger/ping returned HTTP {{ __pcp_push_probe.stdout }};
+          check push reception is enabled.
+          {% endif %}
+      when: not __pcp_push_probe.skipped | default(false)
+
+    - name: Report collector compatibility errors
+      fail:
+        msg: "{{ __pcp_push_probe_error | trim }}"
+      when:
+        - not __pcp_push_probe.skipped | default(false)
+        - __pcp_push_probe_error | trim | length > 0
+        - not __pcp_push_probe_allow_failure | default(false)
+
+- name: Report skipped runtime verification
+  debug:
+    msg: >-
+      Runtime collector compatibility remains unverified
+      (check mode or offline image build).
+  when:
+    - pcp_push_client.enabled | default(false)
+    - >-
+      ansible_check_mode or not __pcp_is_booted | bool or
+      __pcp_push_probe.skipped | default(false)
