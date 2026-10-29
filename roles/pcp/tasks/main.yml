@@ -52,11 +52,15 @@
              ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
 
 - name: Install authentication packages
+  # Basic push uses pmcd; Red Hat also needs server SASL support.
   package:
-    name: "{{ __pcp_sasl_packages }}"
+    name: >-
+      {{ __pcp_sasl_packages +
+         (['cyrus-sasl'] if ansible_facts['os_family'] == 'RedHat' else []) }}
     state: present
     use: "{{ (__ansible_pcp_is_ostree | d(false)) |
              ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
+  register: __pcp_sasl_packages_result
   when:
     - __pcp_sasl_packages | d([]) | length > 0
     - pcp_accounts | d([]) | length > 0
