@@ -223,16 +223,21 @@ pcp_accounts:
 
 The collector validates Basic credentials using its local pmcd SASL service.
 Keep pmcd running and its authentication mechanism packages installed. Distinct
-client accounts can be listed in `pcp_accounts`. Client passwords are stored in
-a root-owned, `pcp`-readable 0640 file; they are never placed in push URLs or
-arguments.
-`pcp_secure_logging: true` suppresses sensitive push task output. Validation and
+client accounts can be listed in `pcp_accounts`. Passwords are passed through
+standard input for SASL provisioning and stored in a root-owned, `pcp`-readable
+0640 client password file; they are never placed in push URLs or arguments.
+`pcp_secure_logging: true` suppresses authentication task output. Validation and
 probe errors are reported separately without credentials.
 
 SASL provisioning creates missing accounts; it does not rotate passwords for
 existing accounts. Changing `saslpassword` alone does not update an existing
 collector account. Coordinate password changes in the collector's SASL database
 with the client password configuration.
+
+The shared account provisioning also uses safe password input and suppresses
+sensitive output when push is not configured. Newly created accounts or installed
+authentication packages can trigger a pmcd restart. These authentication fixes
+are shared with existing `pcp_accounts` users.
 
 ### Mutual TLS
 

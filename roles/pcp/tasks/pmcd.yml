@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: MIT
 ---
 
+- name: Reset SASL change state for this role invocation
+  set_fact:
+    __pcp_sasl_changed: false
+
 - name: List optional metric collection agents to be enabled
   debug:
     msg: "NeedInstall agent: {{ item }} from {{ pcp_optional_agents }}"
@@ -63,25 +67,18 @@
     system: true
   when: item.user is defined
   with_items: "{{ pcp_accounts }}"
+  # Account loop items can contain passwords, even in this system-user task.
+  no_log: "{{ pcp_secure_logging }}"
+  register: __pcp_account_users_result
 
-# yamllint disable rule:line-length
-- name: Ensure performance metric collector SASL accounts are configured
-  shell: |
-    set -eu
-    if set -o | grep -q pipefail; then
-      set -o pipefail  # pipefail not supported on debian, some ubuntu
-    fi
-    if ! sasldblistusers2 -f "{{ __pcp_pmcd_sasldb_path }}" | grep -q "^{{ item.sasluser }}@"; then
-      echo "Creating new {{ item.sasluser }} user in {{ __pcp_pmcd_sasldb_path }}"
-      echo "{{ item.saslpassword }}" | saslpasswd2 -a pmcd "{{ item.sasluser }}"
-      chown root:pcp "{{ __pcp_pmcd_sasldb_path }}"
-      chmod 640 "{{ __pcp_pmcd_sasldb_path }}"
-    fi
-  register: ensure_sasl_configured
-  changed_when: "'Creating new SASL account' in ensure_sasl_configured.stdout"
-  when: item.sasluser is defined
-  with_items: "{{ pcp_accounts }}"
-# yamllint enable rule:line-length
+- name: Configure SASL accounts without exposing passwords to a shell
+  include_tasks: sasl.yml
+  loop: "{{ pcp_accounts }}"
+  loop_control:
+    loop_var: __pcp_account
+    label: SASL account
+  when: __pcp_account.sasluser is defined
+  no_log: "{{ pcp_secure_logging }}"
 
 - name: Ensure performance metric collector authentication is configured
   template:
@@ -92,12 +89,16 @@
   when: pcp_accounts | d([]) | length > 0
 
 - name: Set variable to do pmcd restart if needed
+  # Load authentication changes in pmcd before Basic push clients probe.
   set_fact:
     __pcp_restart_pmcd: "{{
       __pcp_register_changed_optional_agents is changed or
       __pcp_register_changed_explicit_labels is changed or
       __pcp_register_changed_implicit_labels is changed or
       __pcp_register_changed_defaults_config is changed or
+      __pcp_account_users_result is changed or
+      __pcp_sasl_changed | bool or
+      __pcp_sasl_packages_result | default({}) is changed or
       (__pcp_register_changed_authentication is defined and
        __pcp_register_changed_authentication is changed) }}"
 
