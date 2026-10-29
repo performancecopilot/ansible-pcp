@@ -1,0 +1,453 @@
+# SPDX-License-Identifier: MIT
+---
+# Requires one push_collectors host and at least two push_clients hosts.
+# Supply per-host pcp_push_test_client / pcp_push_test_collector dictionaries
+# to run HTTPS, Basic and mutual TLS cases with pre-provisioned certificates.
+- name: Prepare push collector first
+  hosts: push_collectors
+  become: true
+  vars:
+    pcp_push_collector: >-
+      {{ pcp_push_test_collector | default({'enabled': true}) }}
+    pcp_pmlogger_discard: 5
+  pre_tasks:
+    - name: Require a collector and two distinct clients
+      assert:
+        that:
+          - groups['push_collectors'] | length == 1
+          - groups['push_clients'] | length >= 2
+  roles:
+    - role: performancecopilot.metrics.pcp
+  tasks:
+    - name: Verify the local policy is available to later query roles
+      assert:
+        that:
+          - __pcp_push_collector_policy.enabled
+          - >-
+            __pcp_push_collector_policy.port | int ==
+            pcp_push_collector.port | default(44322) | int
+          - >-
+            __pcp_push_collector_policy.auth ==
+            pcp_push_collector.auth | default('none')
+
+    - name: Check invalid settings before configuration can change
+      include_tasks: check_push_rejection.yml
+      loop:
+        - client:
+            enabled: true
+            collector_url: http://collector
+            auth: basic
+            username: test
+            password: test
+          error: Invalid pcp_push_client
+        - client:
+            enabled: true
+            collector_url: https://collector
+          error: Invalid pcp_push_client
+        - client:
+            enabled: true
+            collector_url: https://collector
+            auth: basic
+            ca_cert: /ca
+            username: "test\n"
+            password: test
+          error: Invalid pcp_push_client
+        - client:
+            enabled: true
+            collector_url: http://collector/path
+          error: collector_url requires
+        - client:
+            enabled: true
+            collector_url: http://collector
+            auth: unsupported
+          error: Invalid pcp_push_client
+        - client:
+            enabled: true
+            collector_url: https://collector
+            auth: mtls
+            ca_cert: /ca
+            cert: /cert
+          error: Invalid pcp_push_client
+        - collector:
+            enabled: true
+            port: 70000
+          error: Invalid pcp_push_collector
+        - collector:
+            enabled: true
+            auth: basic
+          error: Invalid pcp_push_collector
+      loop_control:
+        loop_var: __push_rejection
+        label: "{{ __push_rejection.error }}"
+
+    - name: Verify collector settings are idempotent
+      include_role:
+        name: performancecopilot.metrics.pcp
+        tasks_from: push_collector.yml
+    - name: Assert collector configuration is stable
+      assert:
+        that:
+          - not __pcp_push_collector_result.changed
+          - not __pcp_push_collector_tls.changed
+          - not __pcp_push_collector_dropin.changed
+          - not __pcp_push_collector_timers.changed
+
+    - name: Read pushed archive maintenance settings
+      slurp:
+        src: "{{ __pcp_pmlogger_timers_path | dirname }}/pmproxy_timers"
+      register: __push_timers
+    - name: Verify retention and PCP maintenance defaults
+      assert:
+        that:
+          - '''--discard 5'' in (__push_timers.content | b64decode)'
+          - '''-E'' in (__push_timers.content | b64decode)'
+
+- name: Prepare client local logging before adding push
+  hosts: push_clients
+  become: true
+  vars:
+    pcp_pmlogger_interval: 1
+    pcp_push_client:
+      enabled: false
+  roles:
+    - role: performancecopilot.metrics.pcp
+  tasks:
+    - name: Record the existing primary logger
+      shell: |
+        . /etc/pcp.env
+        readlink "$PCP_TMP_DIR/pmlogger/primary"
+      changed_when: false
+      register: __push_local_primary
+      until: __push_local_primary.rc == 0
+      retries: 10
+      delay: 1
+
+    - name: Record the original main control file
+      slurp:
+        src: "{{ __pcp_pmlogger_control_path }}"
+      register: __push_original_control
+
+    - name: Find local primary archives
+      find:
+        paths: "{{ pcp_archive_dir }}/{{ ansible_facts.hostname }}"
+        patterns: '*.meta'
+      register: __push_local_archives
+      until: __push_local_archives.matched > 0
+      retries: 10
+      delay: 2
+
+    - name: Select the current local archive
+      set_fact:
+        __push_local_archive: >-
+          {{ (__push_local_archives.files |
+              sort(attribute='mtime', reverse=true) | first).path |
+              regex_replace('\\.meta$', '.0') }}
+
+    - name: Record initial local archive size
+      stat:
+        path: "{{ __push_local_archive }}"
+      register: __push_local_initial
+
+- name: Add push on distinct clients while local logging continues
+  hosts: push_clients
+  become: true
+  vars:
+    pcp_pmlogger_interval: 1
+    pcp_push_client: "{{ pcp_push_test_client }}"
+  roles:
+    - role: performancecopilot.metrics.pcp
+  tasks:
+    - name: Verify the original primary logger still runs
+      shell: |
+        . /etc/pcp.env
+        readlink "$PCP_TMP_DIR/pmlogger/primary"
+      changed_when: false
+      register: __push_current_primary
+      failed_when: __push_current_primary.stdout != __push_local_primary.stdout
+
+    - name: Verify local archives continue growing alongside push
+      stat:
+        path: "{{ __push_local_archive }}"
+      register: __push_local_during
+      until: __push_local_during.stat.size > __push_local_initial.stat.size
+      retries: 10
+      delay: 3
+
+    - name: Read the main control after enabling push
+      slurp:
+        src: "{{ __pcp_pmlogger_control_path }}"
+      register: __push_control_during
+
+    - name: Verify original logging entries remain unchanged
+      assert:
+        that: >-
+          (__push_original_control.content | b64decode) in
+          (__push_control_during.content | b64decode)
+
+    - name: Verify TLS validation works with minimal caller facts
+      when: pcp_push_client.collector_url is match('^https://')
+      block:
+        - name: Clear previously gathered client facts
+          meta: clear_facts
+
+        - name: Gather only the distribution facts used by metrics
+          setup:
+            gather_subset: ['!all', '!min', distribution]
+
+        - name: Verify the caller did not supply a date_time fact
+          assert:
+            that: ansible_facts.date_time is not defined
+
+        - name: Repeat PCP validation with minimal facts
+          include_role:
+            name: performancecopilot.metrics.pcp
+            tasks_from: push_validate.yml
+
+        - name: Gather client identity for archive verification
+          setup:
+            gather_subset: ['!all', '!min', platform]
+
+    - name: Verify client configuration is idempotent
+      include_role:
+        name: performancecopilot.metrics.pcp
+        tasks_from: push_client.yml
+    - name: Assert client configuration is stable
+      assert:
+        that: not __pcp_push_client_changed
+
+    - name: Verify managed push process count
+      command:
+        argv:
+          - python3
+          - -c
+          - |
+            import pathlib
+            import sys
+            count = 0
+            for entry in pathlib.Path('/proc').glob('[0-9]*/cmdline'):
+                try:
+                    args = entry.read_bytes().split(b'\0')
+                except (FileNotFoundError, PermissionError):
+                    continue
+                if (args and args[0].endswith(b'/pmlogger')
+                        and b"local:" in args):
+                    count += 1
+            assert count == int(sys.argv[2]), count
+          - "managed-push"
+          - "1"
+      changed_when: false
+
+    - name: Check Basic password file permissions
+      stat:
+        path: /etc/pcp/pmlogger/ansible-push.password
+      register: __push_password_file
+      when: pcp_push_client.auth | default('none') == 'basic'
+    - name: Assert Basic password is accessible only to root and pcp
+      assert:
+        that:
+          - __push_password_file.stat.exists
+          - __push_password_file.stat.mode == '0640'
+          - __push_password_file.stat.gr_name == 'pcp'
+      when: pcp_push_client.auth | default('none') == 'basic'
+
+    - name: Confirm Basic push rejects an incorrect password
+      include_role:
+        name: performancecopilot.metrics.pcp
+        tasks_from: push_probe.yml
+      vars:
+        pcp_push_client: >-
+          {{ pcp_push_test_client |
+             combine({'password': 'deliberately-wrong'}) }}
+        __pcp_push_probe_allow_failure: true
+      when: pcp_push_test_client.auth | default('none') == 'basic'
+    - name: Assert incorrect Basic credentials are rejected
+      assert:
+        that:
+          - '''rejected authentication'' in __pcp_push_probe_error'
+      when: pcp_push_client.auth | default('none') == 'basic'
+
+    - name: Confirm mutual TLS rejects a client without a certificate
+      include_role:
+        name: performancecopilot.metrics.pcp
+        tasks_from: push_probe.yml
+      vars:
+        pcp_push_client:
+          enabled: true
+          auth: none
+          collector_url: "{{ pcp_push_test_client.collector_url }}"
+          ca_cert: "{{ pcp_push_test_client.ca_cert }}"
+        __pcp_push_probe_allow_failure: true
+      when: pcp_push_test_client.auth | default('none') == 'mtls'
+    - name: Assert a missing client certificate is rejected
+      assert:
+        that: __pcp_push_probe_error | trim | length > 0
+      when: pcp_push_client.auth | default('none') == 'mtls'
+
+    - name: Confirm mutual TLS rejects plaintext requests
+      include_role:
+        name: performancecopilot.metrics.pcp
+        tasks_from: push_probe.yml
+      vars:
+        pcp_push_client:
+          enabled: true
+          collector_url: >-
+            {{ pcp_push_test_client.collector_url |
+               regex_replace('^https://', 'http://') }}
+        __pcp_push_probe_allow_failure: true
+      when: pcp_push_test_client.auth | default('none') == 'mtls'
+    - name: Assert plaintext requests are rejected
+      assert:
+        that: __pcp_push_probe_error | trim | length > 0
+      when: pcp_push_client.auth | default('none') == 'mtls'
+
+- name: Verify readable growing archives from both clients
+  hosts: push_collectors
+  become: true
+  tasks:
+    - name: Read remote archive root
+      shell: |
+        . /etc/pcp.env
+        printf '%s\n' "$PCP_REMOTE_ARCHIVE_DIR"
+      register: __push_root
+      changed_when: false
+    - name: Wait for archives from each source
+      find:
+        paths: "{{ __push_root.stdout | trim }}"
+        patterns: '*.meta'
+        recurse: true
+      register: __push_archives
+      until: __push_archives.matched >= groups['push_clients'] | length
+      retries: 12
+      delay: 5
+    - name: Verify every client has its own archive directory
+      assert:
+        that: >-
+          __push_archives.files | map(attribute='path') |
+          select('search', '/' ~ (hostvars[item].ansible_facts.hostname |
+          regex_escape) ~ '/') | list | length > 0
+      loop: "{{ groups['push_clients'] }}"
+    - name: Select the newest archive for each client
+      set_fact:
+        __push_active_archives: >-
+          {{ __push_active_archives | default([]) +
+             [(__push_archives.files |
+             selectattr('path', 'search',
+             '/' ~ (hostvars[item].ansible_facts.hostname |
+             regex_escape) ~ '/') |
+             sort(attribute='mtime', reverse=true) | first)] }}
+      loop: "{{ groups['push_clients'] }}"
+    - name: Verify readable metrics in each client's archive
+      command:
+        argv:
+          - pminfo
+          - -a
+          - "{{ item.path | regex_replace('\\.meta$', '') }}"
+          - -f
+          - kernel.all.load
+      loop: "{{ __push_active_archives }}"
+      changed_when: false
+      register: __push_metrics
+      until: __push_metrics.rc == 0
+      retries: 6
+      delay: 5
+    - name: Read initial archive data sizes
+      stat:
+        path: "{{ item.path | regex_replace('\\.meta$', '.0') }}"
+      loop: "{{ __push_active_archives }}"
+      register: __push_initial_data
+    - name: Read archive data sizes again
+      stat:
+        path: "{{ item.path | regex_replace('\\.meta$', '.0') }}"
+      loop: "{{ __push_active_archives }}"
+      register: __push_later
+      until: >-
+        __push_later.stat.size >
+        __push_initial_data.results[__push_archive_index].stat.size
+      retries: 18
+      delay: 5
+      loop_control:
+        index_var: __push_archive_index
+    - name: Verify archive data continues to grow
+      assert:
+        that: item.0.stat.size > item.1.stat.size
+      loop: >-
+        {{ __push_later.results | zip(__push_initial_data.results) | list }}
+
+- name: Disable only client push logging
+  hosts: push_clients
+  become: true
+  vars:
+    pcp_pmlogger_interval: 1
+    pcp_push_client:
+      enabled: false
+  roles:
+    - role: performancecopilot.metrics.pcp
+  tasks:
+    - name: Verify managed push process count
+      command:
+        argv:
+          - python3
+          - -c
+          - |
+            import pathlib
+            import sys
+            count = 0
+            for entry in pathlib.Path('/proc').glob('[0-9]*/cmdline'):
+                try:
+                    args = entry.read_bytes().split(b'\0')
+                except (FileNotFoundError, PermissionError):
+                    continue
+                if (args and args[0].endswith(b'/pmlogger')
+                        and b"local:" in args):
+                    count += 1
+            assert count == int(sys.argv[2]), count
+          - "managed-push"
+          - "0"
+      changed_when: false
+
+    - name: Verify the original primary survives disabling push
+      shell: |
+        . /etc/pcp.env
+        readlink "$PCP_TMP_DIR/pmlogger/primary"
+      changed_when: false
+      register: __push_final_primary
+      failed_when: __push_final_primary.stdout != __push_local_primary.stdout
+
+    - name: Verify local archiving continues after push is disabled
+      stat:
+        path: "{{ __push_local_archive }}"
+      register: __push_local_final
+      until: __push_local_final.stat.size > __push_local_during.stat.size
+      retries: 10
+      delay: 3
+
+    - name: Read the main control after disabling push
+      slurp:
+        src: "{{ __pcp_pmlogger_control_path }}"
+      register: __push_final_control
+
+    - name: Verify original logging configuration is preserved
+      assert:
+        that: __push_final_control.content == __push_original_control.content
+
+- name: Disable push while retaining independently requested REST service
+  hosts: push_collectors
+  become: true
+  vars:
+    pcp_rest_api: true
+    pcp_push_collector:
+      enabled: false
+  roles:
+    - role: performancecopilot.metrics.pcp
+  tasks:
+    - name: Verify stored archive metadata remains after disabling push
+      find:
+        paths: "{{ item.path | dirname }}"
+        patterns: "{{ item.path | basename }}*"
+        file_type: file
+      loop: "{{ __push_archives.files }}"
+      register: __push_preserved
+    - name: Assert archive preservation
+      assert:
+        that: item.matched > 0
+      loop: "{{ __push_preserved.results }}"
