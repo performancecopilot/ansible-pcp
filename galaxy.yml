@@ -49,3 +49,4 @@ build_ignore:
 
 dependencies:
   ansible.posix: '*'  # for rpm-ostree
+  community.general: '*'  # for zypper
