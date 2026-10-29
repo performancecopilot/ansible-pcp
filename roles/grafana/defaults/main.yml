@@ -2,3 +2,6 @@
 ---
 grafana_cert: ""
 grafana_private_key: ""
+
+# Outgoing datasource connection; independent of Grafana's web server TLS.
+grafana_pmproxy_url: "http://{{ __grafana_pmproxy_server }}"

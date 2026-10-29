@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Require an explicit HTTP or HTTPS pmproxy endpoint
+  assert:
+    that:
+      - grafana_pmproxy_url is string
+      - grafana_pmproxy_url is match(__grafana_pmproxy_url_pattern)
+      - __grafana_pmproxy_port | int > 0
+      - __grafana_pmproxy_port | int <= 65535
+    fail_msg: >-
+      grafana_pmproxy_url must be one http:// or https:// hostname/IP
+      with an optional port; credentials, paths, queries and fragments
+      are not supported.
+    quiet: true
+
+- name: Gather local host identity for the known push collector
+  setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - platform
+  when:
+    - __grafana_local_collector.enabled | default(false) | bool
+    - >-
+      ['hostname', 'fqdn'] | difference(ansible_facts.keys() | list) |
+      length > 0
+
+- name: Reject unsupported datasource access to a mutual TLS collector
+  assert:
+    that: __grafana_local_collector.auth | default('none') != 'mtls'
+    fail_msg: >-
+      The local pmproxy requires mutual TLS across its HTTP endpoints.
+      This role does not configure client certificates for Grafana
+      datasource requests. Select a separate query endpoint using
+      grafana_pmproxy_url or configure compatible datasources separately
+      before enabling mutual TLS on this collector.
+    quiet: true
+  when:
+    - __grafana_local_collector.enabled | default(false) | bool
+    - >-
+      grafana_pmproxy_url | urlsplit('hostname') | lower in
+      __grafana_local_names
+    - >-
+      __grafana_pmproxy_port | int ==
+      __grafana_local_collector.port | default(44322) | int

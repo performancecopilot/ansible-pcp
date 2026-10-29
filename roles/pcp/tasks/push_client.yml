@@ -1,0 +1,109 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Probe collector before starting push logging
+  include_tasks: push_probe.yml
+
+- name: Generate default metrics configuration if absent
+  command:
+    argv: [pmlogconf, -q, "{{ __pcp_push_config_path }}"]
+    creates: "{{ __pcp_push_config_path }}"
+  when:
+    - pcp_push_client.enabled | default(false) | bool
+    - not ansible_check_mode
+
+- name: Configure dedicated client TLS settings
+  template:
+    src: push_tls.conf.j2
+    dest: "{{ __pcp_push_tls_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    __pcp_push_tls_config: "{{ pcp_push_client }}"
+    __pcp_push_tls_server: false
+  when: pcp_push_client.enabled | default(false)
+  register: __pcp_push_client_tls
+
+- name: Store Basic password outside logger arguments
+  copy:
+    content: "{{ pcp_push_client.password }}\n"
+    dest: "{{ __pcp_push_password_path }}"
+    owner: root
+    group: pcp
+    mode: "0640"
+  when:
+    - pcp_push_client.enabled | default(false)
+    - pcp_push_client.auth | default('none') == 'basic'
+  no_log: "{{ pcp_secure_logging }}"
+  register: __pcp_push_client_password
+
+- name: Install the managed push service
+  template:
+    src: push_client.service.j2
+    dest: /etc/systemd/system/pcp-push.service
+    owner: root
+    group: root
+    mode: "0644"
+  when: pcp_push_client.enabled | default(false)
+  register: __pcp_push_service
+
+- name: Run the dedicated push logger
+  systemd:
+    name: pcp-push.service
+    daemon_reload: "{{ __pcp_push_service is changed }}"
+    enabled: true
+    state: >-
+      {{ ('restarted' if __pcp_push_service is changed or
+          __pcp_push_client_tls is changed or
+          __pcp_push_client_password is changed else 'started')
+         if __pcp_is_booted else omit }}
+  when:
+    - pcp_push_client.enabled | default(false)
+    - not ansible_check_mode or not __pcp_push_service.changed
+
+- name: Inspect the managed push service
+  stat:
+    path: /etc/systemd/system/pcp-push.service
+  register: __pcp_push_service_stat
+  when: not pcp_push_client.enabled | default(false)
+
+- name: Stop and disable the managed push logger
+  systemd:
+    name: pcp-push.service
+    enabled: false
+    state: "{{ 'stopped' if __pcp_is_booted else omit }}"
+  when:
+    - not pcp_push_client.enabled | default(false)
+    - __pcp_push_service_stat.stat.exists
+
+- name: Remove unused managed push files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop:
+    - path: /etc/systemd/system/pcp-push.service
+      remove: "{{ not pcp_push_client.enabled | default(false) }}"
+    - path: "{{ __pcp_push_tls_path }}"
+      remove: "{{ not pcp_push_client.enabled | default(false) }}"
+    - path: "{{ __pcp_push_password_path }}"
+      remove: >-
+        {{ not pcp_push_client.enabled | default(false) or
+           pcp_push_client.auth | default('none') != 'basic' }}
+  when: item.remove | bool
+  register: __pcp_push_client_cleanup
+
+- name: Reload systemd after removing the push service
+  systemd:
+    daemon_reload: true
+  when:
+    - __pcp_is_booted | bool
+    - __pcp_push_client_cleanup is changed
+    - not pcp_push_client.enabled | default(false)
+
+- name: Remember whether push configuration changed
+  set_fact:
+    __pcp_push_client_changed: >-
+      {{ __pcp_push_service is changed or
+         __pcp_push_client_tls is changed or
+         __pcp_push_client_password is changed or
+         __pcp_push_client_cleanup is changed }}

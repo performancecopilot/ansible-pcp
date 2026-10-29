@@ -4,6 +4,25 @@
 __grafana_user: admin
 __grafana_password: admin
 __grafana_server: localhost:3000
-__grafana_pmproxy_server: localhost:44322
+__grafana_pmproxy_server: >-
+  localhost:{{ __grafana_local_collector.port | default(44322)
+  if __grafana_local_collector.enabled | default(false) | bool else 44322 }}
 __grafana_conf: /etc/grafana/grafana.ini
 __grafana_provisioning_path: /etc/grafana/provisioning
+
+# PCP records this fact so task-scoped collector settings remain available
+# when another role, such as the metrics system role, includes Grafana later.
+__grafana_local_collector: >-
+  {{ __pcp_push_collector_policy | default(pcp_push_collector | default({})) }}
+__grafana_local_names: >-
+  {{ (['localhost', '127.0.0.1', '::1', inventory_hostname,
+       ansible_host | default(inventory_hostname)] +
+      [ansible_facts.hostname | default(''), ansible_facts.fqdn | default('')] +
+      (ansible_facts.all_ipv4_addresses | default([])) +
+      (ansible_facts.all_ipv6_addresses | default([]))) | map('lower') | list }}
+__grafana_pmproxy_port: >-
+  {{ (grafana_pmproxy_url | urlsplit('port'))
+     if (grafana_pmproxy_url | urlsplit('port')) is not none
+     else (443 if grafana_pmproxy_url is match('^https://') else 80) }}
+__grafana_pmproxy_url_pattern: >-
+  ^https?://(?:[A-Za-z0-9_.-]+|\[[0-9A-Fa-f:.]+\])(?::[0-9]+)?/?\Z

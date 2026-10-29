@@ -17,6 +17,22 @@ __pcp_agents_path: /var/lib/pcp/pmdas
 __pcp_pmlogger_control_d_path: /etc/pcp/pmlogger/control.d
 __pcp_pmlogger_control_path: /etc/pcp/pmlogger/control
 
+# Separate from the primary logger's archive and diagnostic directory.
+__pcp_push_tls_path: >-
+  {{ __pcp_pmlogger_control_path | dirname }}/ansible-push-tls.conf
+__pcp_push_password_path: >-
+  {{ __pcp_pmlogger_control_path | dirname }}/ansible-push.password
+__pcp_push_config_path: /var/lib/pcp/config/pmlogger/config.default
+__pcp_push_client_host: >-
+  {{ pcp_push_client.collector_url | urlsplit('hostname') }}
+__pcp_push_client_url: >-
+  {{ pcp_push_client.collector_url | urlsplit('scheme') }}://{{
+  ('[' ~ __pcp_push_client_host ~ ']') if ':' in __pcp_push_client_host
+  else __pcp_push_client_host }}:{{
+  (pcp_push_client.collector_url | urlsplit('port'))
+  if (pcp_push_client.collector_url | urlsplit('port')) is not none
+  else 44322 }}
+
 __pcp_pmie_control_d_path: /etc/pcp/pmie/control.d
 __pcp_pmie_control_path: /etc/pcp/pmie/control
 __pcp_pmie_config_path: /var/lib/pcp/config/pmie

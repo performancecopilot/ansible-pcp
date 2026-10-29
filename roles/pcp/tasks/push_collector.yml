@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Apply collector push settings and preserve unrelated options
+  # Also loaded as a filesystem role by downstream consumers.
+  pcp_push:  # noqa fqcn[action]
+    action: collector
+    collector: "{{ pcp_push_collector }}"
+    discard: "{{ pcp_pmlogger_discard }}"
+    timers: "{{ __pcp_pmlogger_timers_path | dirname }}/pmproxy_timers"
+  register: __pcp_push_collector_result
+  notify: Restart pmproxy
+
+- name: Configure dedicated collector TLS settings
+  template:
+    src: push_tls.conf.j2
+    dest: /etc/pcp/pmproxy/ansible-push-tls.conf
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    __pcp_push_tls_config: "{{ pcp_push_collector }}"
+    __pcp_push_tls_server: true
+  when: pcp_push_collector.enabled | default(false)
+  register: __pcp_push_collector_tls
+  notify: Restart pmproxy
+
+- name: Create pmproxy service override directory
+  file:
+    path: /etc/systemd/system/pmproxy.service.d
+    state: directory
+    mode: "0755"
+  when: pcp_push_collector.enabled | default(false)
+
+- name: Select dedicated collector TLS configuration
+  copy:
+    content: |
+      [Service]
+      Environment=PCP_TLSCONF_PATH=/etc/pcp/pmproxy/ansible-push-tls.conf
+    dest: /etc/systemd/system/pmproxy.service.d/ansible-push.conf
+    owner: root
+    group: root
+    mode: "0644"
+  when: pcp_push_collector.enabled | default(false)
+  register: __pcp_push_collector_dropin
+  notify: Restart pmproxy
+
+- name: Remove unused collector TLS configuration
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/systemd/system/pmproxy.service.d/ansible-push.conf
+    - /etc/pcp/pmproxy/ansible-push-tls.conf
+  when: not pcp_push_collector.enabled | default(false)
+  register: __pcp_push_collector_cleanup
+  notify: Restart pmproxy
+
+- name: Reload units after changing dedicated collector TLS environment
+  systemd:
+    daemon_reload: true
+  when:
+    - __pcp_is_booted | bool
+    - >-
+      __pcp_push_collector_dropin is changed or
+      __pcp_push_collector_cleanup is changed
+
+- name: Ensure packaged pushed archive maintenance timers run
+  systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: "{{ 'started' if __pcp_is_booted else omit }}"
+  loop:
+    - pmproxy_check.timer
+    - pmproxy_daily.timer
+  when: pcp_push_collector.enabled | default(false) | bool
+  register: __pcp_push_collector_timers
+
+- name: Record local collector policy for query consumers
+  set_fact:
+    __pcp_push_collector_policy:
+      enabled: "{{ pcp_push_collector.enabled | default(false) | bool }}"
+      port: "{{ pcp_push_collector.port | default(44322) }}"
+      auth: "{{ pcp_push_collector.auth | default('none') }}"

@@ -1,0 +1,18 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=PCP archive push logger
+After=network-online.target pmcd.service
+Wants=network-online.target
+Requires=pmcd.service
+
+[Service]
+Type=simple
+User=pcp
+Group=pcp
+Environment=PCP_TLSCONF_PATH={{ __pcp_push_tls_path }}
+ExecStart=/usr/bin/pmlogger -h local: -r -T24h10m -c {{ __pcp_push_config_path }} -v 100Mb -t {{ pcp_pmlogger_interval }}{% if pcp_push_client.auth | default('none') == 'basic' %} --push-user {{ pcp_push_client.username }} --push-password-file {{ __pcp_push_password_path }}{% endif %} {{ __pcp_push_client_url }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
