@@ -1,0 +1,133 @@
+# SPDX-License-Identifier: MIT
+# yamllint disable rule:line-length
+---
+# On demand integration test runs, triggered by a "/citest" pull request
+# comment or manually through workflow_dispatch.  Only repository owners,
+# members and collaborators may request a run.
+name: Integration tests on demand
+
+on:  # yamllint disable-line rule:truthy
+  issue_comment:
+    types:
+      - created
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: Space or comma separated platform ids, or "all" / "pr"
+        required: false
+        type: string
+        default: all
+      ref:
+        description: Git ref or SHA to test (defaults to the selected branch)
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  actions: read
+  contents: read
+  # required to post the acknowledgement/error comments on the pull request
+  issues: write
+  pull-requests: read
+  statuses: write
+
+jobs:
+  parse:
+    name: Parse request
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.pull_request &&
+       (github.event.comment.body == '/citest' || startsWith(github.event.comment.body, '/citest ')) &&
+       contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'),
+                github.event.comment.author_association))
+    runs-on: ubuntu-24.04
+    outputs:
+      platforms: ${{ steps.request.outputs.platforms }}
+      ref: ${{ steps.request.outputs.ref }}
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Parse request
+        id: request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          DISPATCH_PLATFORMS: ${{ inputs.platforms }}
+          DISPATCH_REF: ${{ inputs.ref }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq python3-yaml >/dev/null
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            request="$DISPATCH_PLATFORMS"
+            ref="$DISPATCH_REF"
+          else
+            request="${COMMENT_BODY%%$'\n'*}"
+            request="${request#/citest}"
+            ref=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')
+          fi
+          platforms=$(python3 - "$request" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          import yaml
+
+          tokens = sys.argv[1].replace(",", " ").split()
+          platforms_dir = pathlib.Path("build/ci/platforms")
+          known = sorted(path.stem for path in platforms_dir.glob("*.yml"))
+          if not tokens:
+              tokens = ["all"]
+          selected = []
+          for token in tokens:
+              if token == "all":
+                  selected.extend(known)
+              elif token == "pr":
+                  for name in known:
+                      data = yaml.safe_load((platforms_dir / f"{name}.yml").read_text()) or {}
+                      if "pr" in data.get("groups", []):
+                          selected.append(name)
+              elif token in known:
+                  selected.append(token)
+              else:
+                  sys.exit(f"Unknown platform: {token}. Known platforms: {', '.join(known)}")
+          print(json.dumps(list(dict.fromkeys(selected))))
+          PY
+          )
+          echo "platforms=$platforms" >> "$GITHUB_OUTPUT"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          python3 -c 'import json, sys; print("Platforms: " + ", ".join(json.loads(sys.argv[1])))' "$platforms"
+
+      - name: Report invalid request
+        if: failure() && github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh pr comment "$PR_NUMBER" --body \
+            "Could not parse the \`/citest\` request. Usage: \`/citest\`, \`/citest all\`, \`/citest pr\` or \`/citest PLATFORM [PLATFORM ...]\`."
+
+      - name: Acknowledge request
+        if: success() && github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          PLATFORMS: ${{ steps.request.outputs.platforms }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh pr comment "$PR_NUMBER" --body \
+            "Starting integration tests for: $(python3 -c 'import json, sys; print(", ".join(json.loads(sys.argv[1])))' "$PLATFORMS"). See the [workflow run]($RUN_URL)."
+
+  integration:
+    name: Integration
+    needs: parse
+    uses: ./.github/workflows/integration-tests.yml
+    with:
+      platforms: ${{ needs.parse.outputs.platforms }}
+      ref: ${{ needs.parse.outputs.ref }}
+      status_context_prefix: ci/containers

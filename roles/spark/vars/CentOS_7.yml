@@ -7,3 +7,4 @@ __spark_packages_export_pcp:
   - pcp-system-tools
 
 __spark_packages_pcp: []
+__spark_pcp_openmetrics: false

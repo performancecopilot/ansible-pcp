@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: MIT
+# yamllint disable rule:line-length
+---
+# Runs the integration testsuite for a small set of platforms on every pull
+# request.  The full matrix can be requested with the "/citest" pull request
+# command (see citest.yml) or by running this workflow manually.
+name: Integration tests
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  merge_group:
+    branches:
+      - main
+    types:
+      - checks_requested
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      group:
+        description: Platform group to test
+        required: true
+        type: choice
+        default: pr
+        options:
+          - pr
+          - all
+
+permissions:
+  contents: read
+  # the reusable workflow may publish commit statuses when it is called with
+  # a status_context_prefix; the permissions of the caller are the upper bound
+  statuses: write
+
+concurrency:
+  group: integration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    uses: ./.github/workflows/integration-tests.yml
+    with:
+      group: ${{ inputs.group || 'pr' }}

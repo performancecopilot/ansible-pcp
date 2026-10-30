@@ -21,9 +21,10 @@
     - ansible_facts['os_family'] == 'RedHat'
 
 - name: Ensure PCP package repository is configured for DEBs
-  file:
+  template:
     src: packagecloud.debs.j2
-    dest: /etc/apt/sources.list.d/performancecopilot.sources
-    mode: "0600"
+    # apt only parses the one-line format from *.list files
+    dest: /etc/apt/sources.list.d/performancecopilot.list
+    mode: "0644"
   when:
     - ansible_facts['os_family'] == 'Debian'

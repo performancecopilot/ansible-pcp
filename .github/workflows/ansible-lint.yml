@@ -19,5 +19,18 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ansible-lint
+        # The ansible/ansible-lint@v24 action installs the versions from its
+        # lock file, which pins ansible-core 2.19.  ansible-lint 24.12.2 does
+        # not work with that (ModuleNotFoundError: No module named
+        # 'ansible.parsing.yaml.constructor'), so install a compatible pair.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install \
+            "ansible-lint==24.12.2" "ansible-core>=2.17,<2.19"
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@v24
+        run: ansible-lint

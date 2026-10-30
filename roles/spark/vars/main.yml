@@ -2,6 +2,10 @@
 ---
 
 __spark_packages_extra: []
+# Whether the PCP OpenMetrics agent has to be configured for Spark.  The
+# package lists below are the historical way of detecting this; some
+# distributions ship the agent inside the main pcp package instead.
+__spark_pcp_openmetrics: true
 __spark_export_conf: /etc/pcp/pcp2spark.conf
 __spark_metrics_conf: /etc/pcp/openmetrics/spark.url
 __spark_metrics_symlink: /var/lib/pcp/pmdas/openmetrics/config.d/spark.url

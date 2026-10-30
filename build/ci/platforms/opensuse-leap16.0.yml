@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+---
+name: openSUSE Leap 16.0
+base_image: registry.opensuse.org/opensuse/leap:16.0
+groups:
+  - all
+  - pr
+skip:
+  # The collection has no openSUSE support yet: the pcp, keyserver, repository
+  # and spark roles have no vars/Suse.yml, so their tasks fail on undefined
+  # variables.  Remove these entries once SUSE support is implemented.
+  tests_default.yml: collection has no openSUSE support
+  tests_verify_basic.yml: collection has no openSUSE support
+  tests_verify_postfix.yml: collection has no openSUSE support
+  tests_verify_repository.yml: collection has no openSUSE support
+  tests_verify_retention.yml: collection has no openSUSE support
+  tests_verify_spark.yml: collection has no openSUSE support

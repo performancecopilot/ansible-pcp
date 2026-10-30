@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+---
+name: Fedora 45
+base_image: registry.fedoraproject.org/fedora:45
+# Fedora 45 ships Python 3.15 as python3, which ansible-core 2.21 does not
+# support as a target interpreter.  Drop this once 2.22 is the default.
+ansible_core: ">=2.22.0rc1"
+groups:
+  - all
+  - pr
