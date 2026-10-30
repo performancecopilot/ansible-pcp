@@ -145,6 +145,7 @@
           Detected PCP {{ __pcp_push_detected_version }}; push requires
           PCP >= 7.2.2. Upgrade PCP from your distribution or the upstream
           PCP repository before enabling push.
+      when: not ansible_check_mode or __pcp_push_version.rc | default(1) == 0
       vars:
         __pcp_push_detected_version: >-
           {{ ((__pcp_push_version.stdout | default('')) ~
