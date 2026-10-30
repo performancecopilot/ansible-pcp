@@ -38,21 +38,14 @@
   loop_control:
     label: "{{ item.item.value }}"
 
-- name: Remember TLS file checksums for certificate rotation
-  set_fact:
-    __pcp_push_tls_checksums: >-
-      {{ __pcp_push_tls_checksums | default({}) |
-         combine({item.item.value: item.stat.checksum}) }}
-  loop: "{{ __pcp_push_tls_files.results }}"
-  loop_control:
-    label: "{{ item.item.value }}"
-
 - name: Check TLS file readability as the PCP service user
-  command:
-    argv: [/usr/sbin/runuser, -u, pcp, --, test, -r, "{{ item.value }}"]
-  changed_when: false
-  failed_when: false
-  check_mode: false
+  stat:
+    path: "{{ item.value }}"
+    get_checksum: false
+    get_mime: false
+    get_attributes: false
+  become: true
+  become_user: pcp
   loop: "{{ __pcp_push_tls_paths }}"
   loop_control:
     label: "{{ item.value }}"
@@ -60,12 +53,21 @@
 
 - name: Require PCP service user access to TLS files
   assert:
-    that: item.rc == 0
+    that: item.stat.readable | default(false)
     fail_msg: >-
       {{ item.item.value }} is not readable by service user pcp;
       grant access without changing private key ownership.
     quiet: true
   loop: "{{ __pcp_push_tls_readable.results }}"
+  loop_control:
+    label: "{{ item.item.value }}"
+
+- name: Remember TLS file checksums for certificate rotation
+  set_fact:
+    __pcp_push_tls_checksums: >-
+      {{ __pcp_push_tls_checksums | default({}) |
+         combine({item.item.value: item.stat.checksum}) }}
+  loop: "{{ __pcp_push_tls_files.results }}"
   loop_control:
     label: "{{ item.item.value }}"
 
@@ -138,15 +140,12 @@
           - -noout
       changed_when: false
       check_mode: false
+      no_log: "{{ pcp_secure_logging }}"
       register: __pcp_push_certificate_key
 
     - name: Read private key public part as PCP
       command:
         argv:
-          - /usr/sbin/runuser
-          - -u
-          - pcp
-          - --
           - openssl
           - pkey
           - -in
@@ -156,6 +155,9 @@
           - -pubout
       changed_when: false
       check_mode: false
+      become: true
+      become_user: pcp
+      no_log: "{{ pcp_secure_logging }}"
       register: __pcp_push_private_key
 
     - name: Require matching certificate and key
