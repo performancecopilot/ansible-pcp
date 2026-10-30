@@ -110,6 +110,12 @@ Central PCP setup for monitoring of several remote hosts.
 
 ## Push archives to a collector (PCP 7.2.2 or newer)
 
+A host can be both a client and a collector. Configure both dictionaries in the
+same role invocation and point `pcp_push_client.collector_url` at that host's
+collector listener. For HTTPS, the URL hostname must match the certificate.
+The role applies collector changes before probing and starting the local push
+client; existing local logging continues alongside push.
+
 Deploy the collector first, then clients. Each client pushes its local metrics to
 exactly one collector. Use distinct client hostnames: the collector stores
 archives by source hostname under PCP's `PCP_REMOTE_ARCHIVE_DIR` (normally
