@@ -23,7 +23,9 @@
       - "{{ __pcp_account.sasluser }}"
     stdin: "{{ __pcp_account.saslpassword }}"
   when: >-
-    (__pcp_account.sasluser ~ '@') not in __pcp_sasl_users.stdout
+    __pcp_sasl_users.stdout_lines | default([]) |
+    select('match', '^' ~ (__pcp_account.sasluser | regex_escape) ~ '@') |
+    list | length == 0
   changed_when: true
   register: __pcp_sasl_provisioned
   # Ansible can otherwise expose the password through module inputs or results.

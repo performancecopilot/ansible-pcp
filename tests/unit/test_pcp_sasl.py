@@ -12,12 +12,26 @@ from test_pcp_role_loading import AnsibleTestCase, ROOT
 
 class SaslAccounts(AnsibleTestCase):
     def test_create_once_with_literal_password(self):
+        self.check_creation()
+
+    def test_existing_username_suffix_does_not_match(self):
+        self.check_creation(existing="notpush")
+
+    def test_existing_username_prefix_does_not_match(self):
+        self.check_creation(existing="pushother")
+
+    def test_username_regex_characters_are_literal(self):
+        self.check_creation(username="push.user", existing="pushXuser")
+
+    def check_creation(self, username="push", existing=None):
         role = self.root / "roles/pcp"
         shutil.copytree(ROOT / "roles/pcp", role)
         # Substitute the external SASL tools; keep the real provisioning tasks.
         bindir = self.root / "bin"
         bindir.mkdir()
         database = self.root / "accounts.json"
+        if existing is not None:
+            database.write_text(json.dumps({"user": existing, "password": "old"}))
         for name, body in {
             "sasldblistusers2": "print(json.loads(p.read_text())['user'] + '@test: userPassword') if p.exists() else None",
             "saslpasswd2": "p.write_text(json.dumps({'user': sys.argv[-1], 'password': sys.stdin.read()}))",
@@ -44,7 +58,7 @@ class SaslAccounts(AnsibleTestCase):
                         "set_fact": {
                             "__pcp_sasl_changed": False,
                             "__pcp_account": {
-                                "sasluser": "push",
+                                "sasluser": username,
                                 "saslpassword": "different",
                             },
                         }
@@ -66,7 +80,7 @@ class SaslAccounts(AnsibleTestCase):
                         "vars": {
                             "__pcp_pmcd_sasldb_path": str(database),
                             "__pcp_account": {
-                                "sasluser": "push",
+                                "sasluser": username,
                                 "saslpassword": password,
                             },
                         },
@@ -85,5 +99,5 @@ class SaslAccounts(AnsibleTestCase):
         )
         self.assertEqual(
             json.loads(database.read_text()),
-            {"user": "push", "password": password + "\n"},
+            {"user": username, "password": password + "\n"},
         )
