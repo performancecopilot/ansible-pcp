@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Read configured SASL account names
+  command:
+    argv: [sasldblistusers2, -f, "{{ __pcp_pmcd_sasldb_path }}"]
+  register: __pcp_sasl_users
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  no_log: "{{ pcp_secure_logging }}"
+
+- name: Create missing SASL credentials using standard input
+  # stdin preserves shell-special characters and keeps passwords out of argv.
+  command:
+    argv:
+      - saslpasswd2
+      - -p
+      - -c
+      - -a
+      - pmcd
+      - -f
+      - "{{ __pcp_pmcd_sasldb_path }}"
+      - "{{ __pcp_account.sasluser }}"
+    stdin: "{{ __pcp_account.saslpassword }}"
+  when: >-
+    __pcp_sasl_users.stdout_lines | default([]) |
+    select('match', '^' ~ (__pcp_account.sasluser | regex_escape) ~ '@') |
+    list | length == 0
+  changed_when: true
+  register: __pcp_sasl_provisioned
+  # Ansible can otherwise expose the password through module inputs or results.
+  no_log: "{{ pcp_secure_logging }}"
+
+- name: Restrict SASL database access to the service group
+  file:
+    path: "{{ __pcp_pmcd_sasldb_path }}"
+    owner: root
+    group: pcp
+    mode: "0640"
+  when:
+    - not ansible_check_mode
+    - __pcp_sasl_provisioned is changed
+
+- name: Remember when SASL accounts were created
+  set_fact:
+    __pcp_sasl_changed: >-
+      {{ __pcp_sasl_changed | default(false) or
+         __pcp_sasl_provisioned is changed }}

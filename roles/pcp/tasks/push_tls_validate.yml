@@ -1,0 +1,169 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Select configured TLS file paths
+  set_fact:
+    __pcp_push_tls_paths: >-
+      {{ __pcp_push_tls_config | dict2items |
+         selectattr('key', 'in', ['ca_cert', 'cert', 'private_key']) |
+         selectattr('value') | list }}
+
+- name: Check certificate and private key paths
+  assert:
+    that:
+      - item.value is string
+      - item.value is match('^/')
+      - item.value is not search('[\x00-\x1f]')
+    fail_msg: "{{ item.key }} must be an absolute managed-host file path."
+    quiet: true
+  loop: "{{ __pcp_push_tls_paths }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Inspect caller managed TLS files
+  stat:
+    path: "{{ item.value }}"
+    checksum_algorithm: sha256
+  loop: "{{ __pcp_push_tls_paths }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: __pcp_push_tls_files
+
+- name: Require existing regular TLS files
+  assert:
+    that: item.stat.isreg | default(false)
+    fail_msg: >-
+      TLS file does not exist or is not a regular file: {{ item.item.value }}
+    quiet: true
+  loop: "{{ __pcp_push_tls_files.results }}"
+  loop_control:
+    label: "{{ item.item.value }}"
+
+- name: Check TLS file readability as the PCP service user
+  stat:
+    path: "{{ item.value }}"
+    get_checksum: false
+    get_mime: false
+    get_attributes: false
+  become: true
+  become_user: pcp
+  loop: "{{ __pcp_push_tls_paths }}"
+  loop_control:
+    label: "{{ item.value }}"
+  register: __pcp_push_tls_readable
+
+- name: Require PCP service user access to TLS files
+  assert:
+    that: item.stat.readable | default(false)
+    fail_msg: >-
+      {{ item.item.value }} is not readable by service user pcp;
+      grant access without changing private key ownership.
+    quiet: true
+  loop: "{{ __pcp_push_tls_readable.results }}"
+  loop_control:
+    label: "{{ item.item.value }}"
+
+- name: Remember TLS file checksums for certificate rotation
+  set_fact:
+    __pcp_push_tls_checksums: >-
+      {{ __pcp_push_tls_checksums | default({}) |
+         combine({item.item.value: item.stat.checksum}) }}
+  loop: "{{ __pcp_push_tls_files.results }}"
+  loop_control:
+    label: "{{ item.item.value }}"
+
+- name: Check certificate expiry and format
+  command:
+    argv: [openssl, x509, -in, "{{ item.value }}", -noout, -checkend, '0']
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  loop: "{{ __pcp_push_tls_paths }}"
+  loop_control:
+    label: "{{ item.value }}"
+  when: item.key != 'private_key'
+  register: __pcp_push_tls_expiry
+
+- name: Require current valid certificates
+  assert:
+    that: item.rc == 0
+    fail_msg: "Certificate is expired or invalid: {{ item.item.value }}"
+    quiet: true
+  loop: >-
+    {{ __pcp_push_tls_expiry.results | selectattr('rc', 'defined') | list }}
+  loop_control:
+    label: "{{ item.item.value }}"
+
+- name: Read certificate activation dates
+  command:
+    argv: [openssl, x509, -in, "{{ item.value }}", -noout, -startdate]
+  changed_when: false
+  check_mode: false
+  loop: "{{ __pcp_push_tls_paths }}"
+  loop_control:
+    label: "{{ item.value }}"
+  when: item.key != 'private_key'
+  register: __pcp_push_tls_dates
+
+- name: Read current UTC time on the managed host
+  command: date -u +%Y-%m-%dT%H:%M:%SZ
+  changed_when: false
+  check_mode: false
+  when: >-
+    __pcp_push_tls_paths | rejectattr('key', 'equalto', 'private_key') |
+    list | length > 0
+  register: __pcp_push_tls_now
+
+- name: Reject certificates that are not yet valid
+  assert:
+    that: >-
+      (item.stdout | regex_replace('^notBefore=', '') |
+       to_datetime('%b %d %H:%M:%S %Y %Z')) <=
+      (__pcp_push_tls_now.stdout | to_datetime('%Y-%m-%dT%H:%M:%SZ'))
+    fail_msg: "Certificate is not yet valid: {{ item.item.value }}"
+    quiet: true
+  loop: >-
+    {{ __pcp_push_tls_dates.results | selectattr('rc', 'defined') | list }}
+  loop_control:
+    label: "{{ item.item.value }}"
+
+- name: Verify certificate and private key match
+  when: __pcp_push_tls_config.cert | default('') | length > 0
+  block:
+    - name: Read certificate public key
+      command:
+        argv:
+          - openssl
+          - x509
+          - -in
+          - "{{ __pcp_push_tls_config.cert }}"
+          - -pubkey
+          - -noout
+      changed_when: false
+      check_mode: false
+      no_log: "{{ pcp_secure_logging }}"
+      register: __pcp_push_certificate_key
+
+    - name: Read private key public part as PCP
+      command:
+        argv:
+          - openssl
+          - pkey
+          - -in
+          - "{{ __pcp_push_tls_config.private_key }}"
+          - -passin
+          - 'pass:'
+          - -pubout
+      changed_when: false
+      check_mode: false
+      become: true
+      become_user: pcp
+      no_log: "{{ pcp_secure_logging }}"
+      register: __pcp_push_private_key
+
+    - name: Require matching certificate and key
+      assert:
+        that: __pcp_push_certificate_key.stdout == __pcp_push_private_key.stdout
+        fail_msg: >-
+          Certificate and private key do not match:
+          {{ __pcp_push_tls_config.cert }}
+        quiet: true

@@ -7,18 +7,18 @@ datasources:
   type: pcp-vector-datasource
   access: proxy
   orgId: 1
-  url: http://{{ __grafana_pmproxy_server }}
+  url: {{ grafana_pmproxy_url | regex_replace('/$', '') | to_json }}
   editable: true
   isDefault: true
 - name: PCP {{ __grafana_keyserver_datasource_name }}
   type: {{ __grafana_keyserver_datasource_type }}
   access: proxy
   orgId: 1
-  url: http://{{ __grafana_pmproxy_server }}
+  url: {{ grafana_pmproxy_url | regex_replace('/$', '') | to_json }}
   editable: true
 - name: PCP bpftrace
   type: pcp-bpftrace-datasource
   access: proxy
   orgId: 1
-  url: http://{{ __grafana_pmproxy_server }}
+  url: {{ grafana_pmproxy_url | regex_replace('/$', '') | to_json }}
   editable: true

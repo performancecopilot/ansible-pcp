@@ -52,14 +52,22 @@
              ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
 
 - name: Install authentication packages
+  # Basic push uses pmcd; Red Hat also needs server SASL support.
   package:
-    name: "{{ __pcp_sasl_packages }}"
+    name: >-
+      {{ __pcp_sasl_packages +
+         (['cyrus-sasl'] if ansible_facts['os_family'] == 'RedHat' else []) }}
     state: present
     use: "{{ (__ansible_pcp_is_ostree | d(false)) |
              ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
+  register: __pcp_sasl_packages_result
   when:
     - __pcp_sasl_packages | d([]) | length > 0
     - pcp_accounts | d([]) | length > 0
+
+- name: Validate push configuration before changing services or logging
+  include_tasks: push_validate.yml
+  when: pcp_push_client | length > 0 or pcp_push_collector | length > 0
 
 - name: Include pmcd
   include_tasks: pmcd.yml
@@ -72,4 +80,14 @@
 
 - name: Include pmproxy
   include_tasks: pmproxy.yml
-  when: pcp_rest_api | d(false) | bool
+  when: pcp_rest_api | bool or pcp_push_collector | length > 0
+
+- name: Apply collector changes before probing from the same host
+  include_tasks: restart_pmproxy.yml
+  when:
+    - pcp_push_client.enabled | default(false) | bool
+    - pcp_push_collector.enabled | default(false) | bool
+
+- name: Configure the separate archive push service
+  include_tasks: push_client.yml
+  when: pcp_push_client | length > 0

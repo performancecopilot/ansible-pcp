@@ -1,0 +1,10 @@
+{{ ansible_managed | comment }}
+{% for key, option in [('ca_cert', 'tls-ca-cert-file'), ('cert', 'tls-cert-file'), ('private_key', 'tls-key-file')] %}
+{% if __pcp_push_tls_config[key] | default('') %}
+# {{ key }} sha256={{ __pcp_push_tls_checksums[__pcp_push_tls_config[key]] }}
+{{ option }} = {{ __pcp_push_tls_config[key] }}
+{% endif %}
+{% endfor %}
+{% if __pcp_push_tls_config.auth | default('none') == 'mtls' and __pcp_push_tls_server | default(false) %}
+tls-verify-clients = true
+{% endif %}

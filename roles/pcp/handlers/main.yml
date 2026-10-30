@@ -14,7 +14,4 @@
   when: __pcp_is_booted | bool
 
 - name: Restart pmproxy
-  service:
-    name: pmproxy
-    state: restarted
-  when: __pcp_is_booted | bool
+  include_tasks: tasks/restart_pmproxy.yml
