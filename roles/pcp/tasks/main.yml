@@ -83,7 +83,7 @@
   when: pcp_rest_api | bool or pcp_push_collector | length > 0
 
 - name: Apply collector changes before probing from the same host
-  meta: flush_handlers
+  include_tasks: restart_pmproxy.yml
   when:
     - pcp_push_client.enabled | default(false) | bool
     - pcp_push_collector.enabled | default(false) | bool

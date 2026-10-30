@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: MIT
+---
+# Run on a booted host with PCP >= 7.2.2. Supply both test dictionaries for TLS.
+- name: Verify a combined push client and collector
+  hosts: all
+  become: true
+  vars:
+    pcp_pmlogger_interval: 1
+    pcp_push_collector: >-
+      {{ pcp_push_test_collector | default({'enabled': true}) }}
+    pcp_push_client: >-
+      {{ pcp_push_test_client | default({
+        'enabled': true, 'collector_url': 'http://localhost:44322'}) }}
+  roles:
+    - role: performancecopilot.metrics.pcp
+  tasks:
+    - name: Inspect running services
+      service_facts:
+
+    - name: Require both collector and client to be running
+      assert:
+        that:
+          - ansible_facts.services['pmproxy.service'].state == 'running'
+          - ansible_facts.services['pcp-push.service'].state == 'running'
+
+    - name: Record service identities before repeating the role
+      # Read service identities without changing service state.
+      # noqa command-instead-of-module
+      command: systemctl show -p MainPID pmproxy pcp-push
+      changed_when: false
+      register: __push_same_host_pids
+
+    - name: Find the archive pushed by this host
+      find:
+        paths: /var/log/pcp/pmproxy
+        patterns: '*.0'
+        recurse: true
+      register: __push_same_host_archives
+      until: __push_same_host_archives.matched > 0
+      retries: 15
+      delay: 2
+
+    - name: Select the newest pushed archive
+      set_fact:
+        __push_same_host_archive: >-
+          {{ (__push_same_host_archives.files |
+              sort(attribute='mtime', reverse=true) | first).path }}
+
+    - name: Record pushed archive size
+      stat:
+        path: "{{ __push_same_host_archive }}"
+      register: __push_same_host_initial
+
+    - name: Require the pushed archive to keep growing
+      stat:
+        path: "{{ __push_same_host_archive }}"
+      register: __push_same_host_later
+      until: >-
+        __push_same_host_later.stat.size > __push_same_host_initial.stat.size
+      retries: 15
+      delay: 2
+
+    - name: Apply the same configuration again
+      include_role:
+        name: performancecopilot.metrics.pcp
+
+    - name: Verify unchanged configuration did not restart either service
+      # Read service identities without changing service state.
+      # noqa command-instead-of-module
+      command: systemctl show -p MainPID pmproxy pcp-push
+      changed_when: false
+      register: __push_same_host_repeated_pids
+      failed_when: >-
+        __push_same_host_repeated_pids.stdout != __push_same_host_pids.stdout
