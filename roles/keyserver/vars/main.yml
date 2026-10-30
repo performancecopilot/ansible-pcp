@@ -1,2 +1,4 @@
 # SPDX-License-Identifier: MIT
 ---
+
+__keyserver_service: "{{ __keyserver_name }}"
