@@ -5,4 +5,6 @@ __spark_packages_extra: []
 __spark_export_conf: /etc/pcp/pcp2spark.conf
 __spark_metrics_conf: /etc/pcp/openmetrics/spark.url
 __spark_metrics_symlink: /var/lib/pcp/pmdas/openmetrics/config.d/spark.url
+__spark_pmcd_conf: /etc/pcp/pmcd/pmcd.conf
+__spark_agent_path: /var/lib/pcp/pmdas/openmetrics
 __spark_packages_export_pcp: []
