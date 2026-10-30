@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT
+---
+# Called directly before a same-host probe and by the deferred handler.
+# Consuming pending changes here prevents the handler restarting it again.
+- name: Restart pmproxy when configuration changes require it
+  service:
+    name: pmproxy
+    state: restarted
+  when:
+    - __pcp_is_booted | bool
+    - __pcp_pmproxy_restart_pending | default(true) | bool
+
+- name: Record that pending pmproxy changes have been applied
+  set_fact:
+    __pcp_pmproxy_restart_pending: false
