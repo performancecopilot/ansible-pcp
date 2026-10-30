@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: MIT
+---
+name: Ubuntu 26.04 LTS
+base_image: docker.io/library/ubuntu:26.04
+groups:
+  - all
+skip:
+  # the distribution pcp package does not ship the postfix PMDA
+  tests_verify_postfix.yml: postfix PMDA is not packaged
+  # the spark role enables PCP agents using the RPM .NeedInstall mechanism,
+  # which the Debian packaging does not have
+  tests_verify_spark.yml: PCP agents are not registered with pmcd

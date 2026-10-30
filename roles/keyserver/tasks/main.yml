@@ -84,6 +84,6 @@
 
 - name: Ensure key server service is running and enabled on boot
   service:
-    name: "{{ __keyserver_name }}"
+    name: "{{ __keyserver_service_name | default(__keyserver_name) }}"
     state: "{{ 'started' if __keyserver_is_booted else omit }}"
     enabled: true

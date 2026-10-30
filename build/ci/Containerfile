@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: MIT
+# Generic systemd-enabled container image used by the ansible-pcp CI.
+#
+# The image intentionally contains only what is needed to run Ansible against
+# the container: a real init (systemd), an SSH server and a Python
+# interpreter.  Everything else (PCP, Grafana, ...) is installed by the
+# collection roles themselves, exactly as on a real host.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+ARG EXTRA_PACKAGES=""
+
+ENV container=podman
+
+# Install systemd, sshd and python.  The package manager differs per family.
+RUN set -eux; \
+    if command -v dnf >/dev/null 2>&1; then \
+        dnf -y --setopt=install_weak_deps=False install \
+            systemd openssh-server python3 sudo which hostname iproute \
+            procps-ng tar gzip shadow-utils findutils; \
+        dnf -y clean all; \
+    elif command -v apt-get >/dev/null 2>&1; then \
+        export DEBIAN_FRONTEND=noninteractive; \
+        apt-get update; \
+        apt-get -y --no-install-recommends install \
+            systemd systemd-sysv openssh-server python3 python3-apt \
+            sudo hostname iproute2 procps tar gzip passwd \
+            findutils dbus; \
+        rm -rf /var/lib/apt/lists/*; \
+    elif command -v zypper >/dev/null 2>&1; then \
+        zypper --non-interactive refresh; \
+        zypper --non-interactive install \
+            systemd openssh-server python3 sudo which \
+            hostname iproute2 procps tar gzip shadow findutils dbus-1; \
+        zypper clean --all; \
+    else \
+        echo "Unsupported base image: no supported package manager" >&2; \
+        exit 1; \
+    fi
+
+# Python bindings used by the ansible package/dnf modules.
+RUN set -eux; \
+    if command -v dnf5 >/dev/null 2>&1; then \
+        dnf -y install python3-libdnf5 || true; \
+    elif command -v dnf >/dev/null 2>&1; then \
+        dnf -y install python3-dnf python3-rpm || true; \
+    fi
+
+# Optional extra packages required by a specific platform.
+RUN set -eux; \
+    if [ -n "${EXTRA_PACKAGES}" ]; then \
+        if command -v dnf >/dev/null 2>&1; then dnf -y install ${EXTRA_PACKAGES}; \
+        elif command -v apt-get >/dev/null 2>&1; then \
+            export DEBIAN_FRONTEND=noninteractive; \
+            apt-get update; \
+            apt-get -y --no-install-recommends install ${EXTRA_PACKAGES}; \
+            rm -rf /var/lib/apt/lists/*; \
+        elif command -v zypper >/dev/null 2>&1; then zypper --non-interactive install ${EXTRA_PACKAGES}; \
+        fi; \
+    fi
+
+# Newer systemd releases do not ship the historical /usr/sbin/init link.
+RUN set -eux; if [ ! -e /usr/sbin/init ]; then ln -s /usr/lib/systemd/systemd /usr/sbin/init; fi
+
+EXPOSE 22
+VOLUME ["/sys/fs/cgroup"]
+STOPSIGNAL SIGRTMIN+3
+CMD ["/usr/sbin/init"]

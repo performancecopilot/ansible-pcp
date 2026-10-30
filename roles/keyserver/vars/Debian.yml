@@ -3,6 +3,10 @@
 # Put internal variables here with Debian specific values.
 
 __keyserver_name: valkey
+# The valkey-server package ships valkey-server.service with an Alias of
+# valkey.service; systemctl enable refuses the alias when it does not exist
+# yet, so use the canonical name for service operations.
+__keyserver_service_name: valkey-server
 __keyserver_conf_path: /etc/valkey
 __keyserver_conf_file: valkey.conf
 

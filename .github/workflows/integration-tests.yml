@@ -1,0 +1,154 @@
+# SPDX-License-Identifier: MIT
+# yamllint disable rule:line-length
+---
+# Reusable integration test workflow.
+#
+# Every platform from build/ci/platforms is started as a systemd-enabled
+# container and all tests/tests_*.yml playbooks from the collection are run
+# against it with Ansible.  See build/ci/README.md for details.
+name: Integration tests (containers)
+
+on:  # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      platforms:
+        description: JSON array of platform ids, overrides "group"
+        required: false
+        type: string
+        default: ""
+      group:
+        description: Platform group to run when "platforms" is empty
+        required: false
+        type: string
+        default: pr
+      ref:
+        description: Git ref or SHA to test (needed for pull requests from forks)
+        required: false
+        type: string
+        default: ""
+      status_context_prefix:
+        description: Publish commit statuses as "<prefix>/<platform>"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  prepare:
+    name: Prepare matrix
+    runs-on: ubuntu-24.04
+    outputs:
+      platforms: ${{ steps.matrix.outputs.platforms }}
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - name: Resolve platforms
+        id: matrix
+        env:
+          PLATFORMS: ${{ inputs.platforms }}
+          GROUP: ${{ inputs.group }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq python3-yaml >/dev/null
+          if [[ -n "$PLATFORMS" ]]; then
+            platforms="$PLATFORMS"
+          else
+            platforms=$(python3 build/ci/ci-run.py list --json --group "$GROUP")
+          fi
+          echo "platforms=$platforms" >> "$GITHUB_OUTPUT"
+          python3 -c 'import json, sys; print("Platforms: " + ", ".join(json.loads(sys.argv[1])))' "$platforms"
+
+  test:
+    name: ${{ matrix.platform }}
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJSON(needs.prepare.outputs.platforms) }}
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - name: Set commit status as pending
+        if: inputs.status_context_prefix != ''
+        # the token is read-only for pull requests from forks
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ inputs.ref || github.sha }}
+          CONTEXT: ${{ inputs.status_context_prefix }}/${{ matrix.platform }}
+          TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
+            -f state=pending \
+            -f context="${CONTEXT}" \
+            -f description="Integration tests are running" \
+            -f target_url="${TARGET_URL}"
+
+      - name: Set up the Ansible controller Python
+        # ansible-core 2.22 (needed for targets such as Fedora 45 with
+        # Python 3.15) requires Python 3.13 or newer, while the python3 of the
+        # hosted runner is 3.12.
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install test dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq podman python3-venv python3-yaml >/dev/null
+          # PyYAML for the controller interpreter set up above
+          python3 -m pip install -q pyyaml
+
+      - name: Set up the container
+        run: python3 build/ci/ci-run.py setup '${{ matrix.platform }}'
+
+      - name: Run the testsuite
+        run: python3 build/ci/ci-run.py test '${{ matrix.platform }}'
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts-${{ matrix.platform }}
+          path: artifacts/test/${{ matrix.platform }}
+          if-no-files-found: ignore
+
+      - name: Set final commit status
+        if: always() && inputs.status_context_prefix != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ inputs.ref || github.sha }}
+          CONTEXT: ${{ inputs.status_context_prefix }}/${{ matrix.platform }}
+          TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          case "$JOB_STATUS" in
+            success) state=success ;;
+            cancelled) state=error ;;
+            *) state=failure ;;
+          esac
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/statuses/${SHA}" \
+            -f state="$state" \
+            -f context="${CONTEXT}" \
+            -f description="Integration tests finished: ${JOB_STATUS}" \
+            -f target_url="${TARGET_URL}"
+
+      - name: Tear down the container
+        if: always()
+        run: python3 build/ci/ci-run.py destroy '${{ matrix.platform }}'
