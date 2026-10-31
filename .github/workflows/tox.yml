@@ -17,10 +17,13 @@ jobs:
     strategy:
       matrix:
         pyver_os:
+          # Python 3.8 and 3.9 are end of life, so actions/setup-python only
+          # provides builds for Ubuntu 24.04 and older, not for 26.04 which
+          # "ubuntu-latest" is being migrated to.
           - ver: '3.8'
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - ver: '3.9'
-            os: ubuntu-latest
+            os: ubuntu-24.04
     runs-on: ${{ matrix.pyver_os.os }}
     steps:
       - name: checkout PR
