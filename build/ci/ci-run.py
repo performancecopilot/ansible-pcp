@@ -54,9 +54,12 @@ DEFAULT_TIMEOUT = int(os.environ.get("CI_TEST_TIMEOUT", "1800"))
 # ansible-core version used unless a platform pins a different one.  EL8 still
 # ships Python 3.6 as the system interpreter, which requires ansible-core 2.16.
 DEFAULT_ANSIBLE_CORE = os.environ.get("CI_ANSIBLE_CORE", ">=2.19,<2.23")
-# ansible-core does not support every brand new Python release; prefer a
-# slightly older interpreter for the controller virtualenv when one exists.
-CONTROLLER_PYTHONS = ("python3.14", "python3.13", "python3.12", "python3.11", "python3.10")
+# ansible-core does not support every brand new Python release and drops
+# support for old ones: 2.19 and newer, which is the default below, need Python
+# 3.11.  Prefer the newest interpreter ansible-core supports for the
+# controller virtualenv when one exists.
+CONTROLLER_PYTHONS = ("python3.14", "python3.13", "python3.12", "python3.11")
+MIN_CONTROLLER_PYTHON = (3, 11)
 DEFAULT_COLLECTIONS = {
     "ansible.posix": "*",
     # provides the zypper backend used by the package module on SUSE
@@ -81,7 +84,9 @@ def controller_python() -> str:
 
     Some ansible-core versions do not run on the newest
     Python of the host, so pick the newest interpreter ansible-core supports
-    instead of blindly using the default python3.
+    instead of blindly using the default python3.  ``CI_PYTHON`` overrides the
+    search and is not checked, so a platform that pins an ansible-core release
+    with different requirements can point at any interpreter it likes.
     """
     requested = os.environ.get("CI_PYTHON")
     if requested:
@@ -90,7 +95,16 @@ def controller_python() -> str:
         path = shutil.which(name)
         if path:
             return path
-    return sys.executable
+    # The default ansible-core range (2.19 and newer) needs Python 3.11 or
+    # newer.  Falling back to an older interpreter would only make pip fail
+    # later with a "no matching distribution" error for ansible-core, so say
+    # what is actually missing.
+    if sys.version_info[:2] >= MIN_CONTROLLER_PYTHON:
+        return sys.executable
+    raise SystemExit(
+        "No Python 3.11 or newer found for the ansible-core controller; "
+        "install python3.11+ or set CI_PYTHON to a suitable interpreter"
+    )
 
 
 # ---------------------------------------------------------------------------
