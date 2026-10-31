@@ -27,6 +27,22 @@
         __file: /etc/yum.repos.d/performancecopilot.repo
       when: ansible_facts["os_family"] == "RedHat"
 
+    # Fails when the repository is not signed by a key apt trusts, which is
+    # what the role must guarantee before anything installs from it.
+    - name: Check that apt accepts the configured repository
+      # noqa command-instead-of-module
+      command: apt-get update
+      register: __pcp_register_apt_update
+      changed_when: false
+      # The apt module only fails on apt 3.0 and newer; older releases just
+      # warn and silently keep the previous index, so read the warning from the
+      # raw output as well.
+      failed_when: >
+        __pcp_register_apt_update.rc != 0 or
+        'NO_PUBKEY' in __pcp_register_apt_update.stderr or
+        'is not signed' in __pcp_register_apt_update.stderr
+      when: ansible_facts["os_family"] == "Debian"
+
   post_tasks:
     - name: Restore state of services
       import_tasks: restore_services_state.yml
