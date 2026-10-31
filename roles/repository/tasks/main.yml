@@ -20,11 +20,31 @@
   when:
     - ansible_facts['os_family'] == 'RedHat'
 
+# Debian 11 and Ubuntu 20.04 ship apt 2.2 and older, which have no
+# /etc/apt/keyrings yet, so create it before downloading the key into it.
+- name: Ensure the APT keyring directory exists
+  file:
+    path: "{{ __repository_keyring | dirname }}"
+    state: directory
+    mode: "0755"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+
 - name: Ensure PCP package repository signing key is installed
   get_url:
     url: https://packagecloud.io/performancecopilot/pcp/gpgkey
     dest: "{{ __repository_keyring }}"
     mode: "0644"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+
+# apt refuses to read two sources for the same URI and suite that carry
+# different Signed-By values, so a host set up by Packagecloud's own install
+# script would make every apt-get update fail until its source list is gone.
+- name: Ensure the source list of the Packagecloud install script is removed
+  file:
+    path: /etc/apt/sources.list.d/performancecopilot_pcp.list
+    state: absent
   when:
     - ansible_facts['os_family'] == 'Debian'
 
