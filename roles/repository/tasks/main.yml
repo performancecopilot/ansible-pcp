@@ -20,11 +20,31 @@
   when:
     - ansible_facts['os_family'] == 'RedHat'
 
+- name: Ensure PCP package repository signing key is installed
+  get_url:
+    url: https://packagecloud.io/performancecopilot/pcp/gpgkey
+    dest: "{{ __repository_keyring }}"
+    mode: "0644"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+
 - name: Ensure PCP package repository is configured for DEBs
   template:
     src: packagecloud.debs.j2
     # apt only parses the one-line format from *.list files
     dest: /etc/apt/sources.list.d/performancecopilot.list
     mode: "0644"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+
+# A plain task and not a handler: the handler would run at the end of the play,
+# after other roles have already installed packages, and apt would still use
+# the indexes from before the repository was added.
+- name: Refresh the APT package cache
+  apt:
+    update_cache: true
+  # Refreshing the index is not a configuration change, and reporting it as
+  # changed on every run would make the role look non-idempotent.
+  changed_when: false
   when:
     - ansible_facts['os_family'] == 'Debian'
