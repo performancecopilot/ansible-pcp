@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with Ubuntu 22.04 specific values.
+
+# Ubuntu 22.04 still ships Redis instead of Valkey.
+__keyserver_name: redis
+# systemctl enable refuses the redis.service alias, use the unit name.
+__keyserver_service_name: redis-server
+__keyserver_conf_path: /etc/redis
+__keyserver_conf_file: redis.conf
+
+__keyserver_packages:
+  - redis-tools
+  - redis-server
+
+__keyserver_packages_extra: []
+__keyserver_loaded_modules: []

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+name: CentOS Stream 10
+base_image: quay.io/centos/centos:stream10
+groups:
+  - all
+  - pr

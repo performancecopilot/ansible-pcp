@@ -3,3 +3,7 @@
 # Put internal variables here with Debian specific values.
 
 __repository_distro_name: "{{ ansible_facts['distribution'] | lower }}"
+# apt refuses to use a repository that is not signed by a key it trusts.
+# Pin the key to this repository with signed-by instead of adding it to the
+# global trusted keyring.
+__repository_keyring: /etc/apt/keyrings/performancecopilot-pcp.asc

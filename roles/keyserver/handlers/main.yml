@@ -3,6 +3,6 @@
 
 - name: Restart key server
   service:
-    name: "{{ __keyserver_name }}"
+    name: "{{ __keyserver_service_name | default(__keyserver_name) }}"
     state: restarted
   when: __keyserver_is_booted | bool

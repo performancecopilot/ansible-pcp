@@ -3,4 +3,8 @@
 - name: Check if pcp2spark is running
   # noqa command-instead-of-module
   command: systemctl is-active pcp2spark
+  register: __pcp2spark_status
+  until: __pcp2spark_status.stdout == 'active'
+  retries: 30
+  delay: 2
   changed_when: false

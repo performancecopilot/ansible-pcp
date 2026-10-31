@@ -6,4 +6,4 @@ __spark_service_path: /lib/systemd/system
 __spark_packages_pcp:
   - pcp
 __spark_packages_export_pcp:
-  - pcp
+  - pcp-export-pcp2spark

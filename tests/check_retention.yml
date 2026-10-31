@@ -2,6 +2,6 @@
 ---
 # yamllint disable rule:line-length
 - name: Check if retention period is set
-  command: grep -e '--discard {{ __test_retention }}' /etc/sysconfig/pmlogger_timers
+  command: grep -e '--discard {{ __test_retention }}' {{ __pcp_pmlogger_timers_path }}
   changed_when: false
 # yamllint enable rule:line-length

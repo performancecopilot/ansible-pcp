@@ -1,6 +1,7 @@
 # Ansible Collection - performancecopilot.metrics
 
 ![CI Testing](https://github.com/performancecopilot/ansible-pcp/workflows/tox/badge.svg)
+![Integration Tests](https://github.com/performancecopilot/ansible-pcp/actions/workflows/ci.yml/badge.svg)
 [![Mailing List](https://img.shields.io/badge/Mailing%20List-pcp-blue.svg)](https://groups.io/g/pcp)
 [![Slack Team](https://img.shields.io/badge/Slack-pcp-blue.svg)](https://h7zo83mvt1.execute-api.us-west-2.amazonaws.com/Express/)
 [![IRC #pcp](https://img.shields.io/badge/IRC-pcp-blue.svg)](https://web.libera.chat/#pcp)
@@ -69,8 +70,7 @@ The collection is arranged as follows:
   A role that extends the core PCP role, exporting metrics from
   PCP into Apache Spark for further analysis.
 
-
-## Instructions for creating an ansible-pcp release:
+## Instructions for creating an ansible-pcp release
 
 ### On GitHub
 
@@ -89,6 +89,5 @@ Still in the performancecopilot ansible-pcp repo:
 
 1. Remove the old `*.tar.gz` file if present
 2. `ansible-galaxy collection build`
-3. Navigate to https://galaxy.ansible.com/ui/namespaces/performancecopilot/
+3. Navigate to <https://galaxy.ansible.com/ui/namespaces/performancecopilot/>
 4. Click "upload collection" and upload the `tar.gz` file just created with the `ansible-galaxy collection build` command
-
