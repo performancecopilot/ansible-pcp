@@ -12,12 +12,15 @@ ARG EXTRA_PACKAGES=""
 
 ENV container=podman
 
-# Install systemd, sshd and python.  The package manager differs per family.
+# Install systemd, sshd and python.  ca-certificates is installed as well: the
+# minimal images ship no CA bundle, so anything that fetches over HTTPS from
+# inside the container fails with CERTIFICATE_VERIFY_FAILED.  The package
+# manager differs per family.
 RUN set -eux; \
     if command -v dnf >/dev/null 2>&1; then \
         dnf -y --setopt=install_weak_deps=False install \
             systemd openssh-server python3 sudo which hostname iproute \
-            procps-ng tar gzip shadow-utils findutils; \
+            procps-ng tar gzip shadow-utils findutils ca-certificates; \
         dnf -y clean all; \
     elif command -v apt-get >/dev/null 2>&1; then \
         export DEBIAN_FRONTEND=noninteractive; \
@@ -25,13 +28,14 @@ RUN set -eux; \
         apt-get -y --no-install-recommends install \
             systemd systemd-sysv openssh-server python3 python3-apt \
             sudo hostname iproute2 procps tar gzip passwd \
-            findutils dbus; \
+            findutils dbus ca-certificates; \
         rm -rf /var/lib/apt/lists/*; \
     elif command -v zypper >/dev/null 2>&1; then \
         zypper --non-interactive refresh; \
         zypper --non-interactive install \
             systemd openssh-server python3 sudo which \
-            hostname iproute2 procps tar gzip shadow findutils dbus-1; \
+            hostname iproute2 procps tar gzip shadow findutils dbus-1 \
+            ca-certificates; \
         zypper clean --all; \
     else \
         echo "Unsupported base image: no supported package manager" >&2; \
