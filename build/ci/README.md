@@ -52,7 +52,8 @@ reported as `SKIP` in the summary and never fail the job:
 |-------------|--------------|--------|
 | Debian, Ubuntu | `tests_verify_postfix.yml` | the distribution `pcp` package does not ship the postfix PMDA |
 | Debian, Ubuntu | `tests_verify_spark.yml` | the `spark` role enables PCP agents using the RPM `.NeedInstall` mechanism, which the Debian packaging does not have |
-| openSUSE Leap | everything that uses the `pcp`, `keyserver`, `repository` or `spark` roles | the collection has no `vars/Suse.yml` yet, so those tasks fail on undefined variables |
+| openSUSE Leap | `tests_verify_postfix.yml` | the distribution `perl-PCP-PMDA` 6.2.0 cannot load its `PMDA.so` (undefined symbol `pmdaFetch`), so the postfix PMDA does not install |
+| openSUSE Leap | `tests_verify_repository.yml` | the `repository` role has no `vars/Suse.yml` yet, so its tasks fail on undefined variables |
 
 openSUSE Leap 15.6 still ships Python 3.6 as `python3`, which current
 `ansible-core` releases refuse to use as a target interpreter; the platform
