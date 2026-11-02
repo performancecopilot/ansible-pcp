@@ -127,6 +127,7 @@ class PushProbe(AnsibleTestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             timeout=45,
+            check=False,
         )
         if error:
             self.assertNotEqual(result.returncode, 0, result.stdout)
