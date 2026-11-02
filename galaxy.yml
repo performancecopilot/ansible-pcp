@@ -33,6 +33,7 @@ tags:
   - redis
   - pcp
 build_ignore:
+  - .ansible
   - .ansible-lint
   - .github
   - .gitignore
@@ -40,6 +41,7 @@ build_ignore:
   - .yamllint.yml
   - .yamllint_defaults.yml
   - ansible_pytest_extra_requirements.txt
+  - build
   - custom_requirements.txt
   - molecule_extra_requirements.txt
   - pylint_extra_requirements.txt
