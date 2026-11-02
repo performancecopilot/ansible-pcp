@@ -82,11 +82,8 @@
   include_tasks: pmproxy.yml
   when: pcp_rest_api | bool or pcp_push_collector | length > 0
 
-- name: Apply collector changes before probing from the same host
-  include_tasks: restart_pmproxy.yml
-  when:
-    - pcp_push_client.enabled | default(false) | bool
-    - pcp_push_collector.enabled | default(false) | bool
+- name: Apply pmproxy service changes before configuring push clients
+  include_tasks: pmproxy_service.yml
 
 - name: Configure the separate archive push service
   include_tasks: push_client.yml

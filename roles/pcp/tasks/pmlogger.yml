@@ -7,13 +7,6 @@
     regexp: '^PCP_ARCHIVE_DIR='
     line: PCP_ARCHIVE_DIR={{ pcp_archive_dir }}
   register: __pcp_register_changed_log_location
-  notify: Restart pmproxy
-
-- name: Remember pending pmproxy configuration changes
-  set_fact:
-    __pcp_pmproxy_restart_pending: >-
-      {{ __pcp_pmproxy_restart_pending | default(false) | bool or
-         __pcp_register_changed_log_location is changed }}
 
 - name: Ensure performance metric logging is configured
   template:
