@@ -30,6 +30,7 @@
           - '-'
           - "{{ __pcp_push_client_url }}/logger/ping"
         stdin: |
+          # config for push probe
           {% if pcp_push_client.collector_url is match('^https://') %}
           cacert = {{ pcp_push_client.ca_cert | to_json }}
           {% endif %}
@@ -79,6 +80,7 @@
         msg: "{{ __pcp_push_probe_error | trim }}"
       when:
         - not __pcp_push_probe.skipped | default(false)
+        - __pcp_push_probe_error is not none
         - __pcp_push_probe_error | trim | length > 0
         - not __pcp_push_probe_allow_failure | default(false)
 
