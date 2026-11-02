@@ -141,7 +141,7 @@ module.exit_json(changed=False)
         self.assertTrue(calls[0]["enabled"])
         self.assertIsNone(calls[1]["enabled"])
 
-    def test_disabling_collector_applies_cleanup_without_enabling_service(self):
+    def test_disabling_collector_stops_and_disables_service(self):
         calls = self.run_scenarios(
             [
                 {
@@ -150,8 +150,60 @@ module.exit_json(changed=False)
                 },
             ]
         )
-        self.assertEqual(calls[0]["state"], "restarted")
-        self.assertIsNone(calls[0]["enabled"])
+        self.assertEqual(calls[0]["state"], "stopped")
+        self.assertFalse(calls[0]["enabled"])
+
+    def test_disabled_collector_remains_stopped_when_cleanup_is_unchanged(self):
+        calls = self.run_scenarios(
+            [
+                {
+                    "pcp_push_collector": {"enabled": False},
+                    "__pcp_push_collector_cleanup": {"changed": False},
+                },
+            ]
+        )
+        self.assertEqual(calls[0]["state"], "stopped")
+        self.assertFalse(calls[0]["enabled"])
+
+    def test_disabling_collector_preserves_requested_rest_service(self):
+        calls = self.run_scenarios(
+            [
+                {
+                    "pcp_rest_api": True,
+                    "pcp_push_collector": {"enabled": False},
+                    "__pcp_push_collector_cleanup": {"changed": True},
+                },
+                {
+                    "pcp_rest_api": True,
+                    "pcp_push_collector": {"enabled": False},
+                    "__pcp_push_collector_cleanup": {"changed": False},
+                },
+            ]
+        )
+        self.assertEqual([call["state"] for call in calls], ["restarted", "started"])
+        self.assertTrue(all(call["enabled"] for call in calls))
+
+    def test_offline_disable_only_disables_on_boot(self):
+        calls = self.run_scenarios(
+            [
+                {
+                    "__pcp_is_booted": False,
+                    "pcp_push_collector": {"enabled": False},
+                },
+            ]
+        )
+        self.assertIsNone(calls[0]["state"])
+        self.assertFalse(calls[0]["enabled"])
+
+    def test_explicit_disable_in_check_mode(self):
+        calls = self.run_scenarios(
+            [
+                {"pcp_push_collector": {"enabled": False}},
+            ],
+            check=True,
+        )
+        self.assertEqual(calls[0]["state"], "stopped")
+        self.assertFalse(calls[0]["enabled"])
 
     def test_unmanaged_invocation_ignores_stale_collector_results(self):
         calls = self.run_scenarios(

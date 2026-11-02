@@ -17,13 +17,21 @@
   service:
     name: pmproxy
     state: >-
-      {{ ('restarted' if __pcp_restart_pmproxy | bool else 'started')
+      {{ ('stopped' if __pcp_pmproxy_disable | bool else
+          ('restarted' if __pcp_restart_pmproxy | bool else 'started'))
          if __pcp_is_booted | bool else omit }}
-    enabled: "{{ true if __pcp_pmproxy_enabled | bool else omit }}"
+    enabled: >-
+      {{ false if __pcp_pmproxy_disable | bool else
+         (true if __pcp_pmproxy_enabled | bool else omit) }}
   vars:
     __pcp_pmproxy_enabled: >-
       {{ pcp_rest_api | bool or
          pcp_push_collector.enabled | default(false) | bool }}
+    __pcp_pmproxy_disable: >-
+      {{ not pcp_rest_api | bool and
+         pcp_push_collector | length > 0 and
+         not pcp_push_collector.enabled | default(false) | bool }}
   when: >-
     __pcp_pmproxy_enabled | bool or
+    __pcp_pmproxy_disable | bool or
     (__pcp_is_booted | bool and __pcp_restart_pmproxy | bool)
