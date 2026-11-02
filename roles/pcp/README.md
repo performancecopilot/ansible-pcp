@@ -276,8 +276,9 @@ keeps persistent archive storage enabled, sets pushed retention from
 Set `pcp_push_client: {enabled: false}` to stop the managed push logger and remove
 its systemd unit and password/TLS files. Local logging continues. Set
 `pcp_push_collector: {enabled: false}` to disable push reception and remove
-role-managed push authentication/TLS configuration. Independently requested
-pmproxy REST functionality, unrelated configuration and stored archives remain.
+role-managed push authentication/TLS configuration. When `pcp_rest_api` is false,
+pmproxy is stopped and disabled on boot. Independently requested pmproxy REST
+functionality, unrelated configuration and stored archives remain.
 
 Clients probe `/logger/ping` using curl before starting the push logger,
 with three attempts and five-second timeouts. The role installs curl for
