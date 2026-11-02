@@ -8,13 +8,6 @@
     discard: "{{ pcp_pmlogger_discard }}"
     timers: "{{ __pcp_pmlogger_timers_path | dirname }}/pmproxy_timers"
   register: __pcp_push_collector_result
-  notify: Restart pmproxy
-
-- name: Remember pending pmproxy configuration changes
-  set_fact:
-    __pcp_pmproxy_restart_pending: >-
-      {{ __pcp_pmproxy_restart_pending | default(false) | bool or
-         __pcp_push_collector_result is changed }}
 
 - name: Configure dedicated collector TLS settings
   template:
@@ -28,13 +21,6 @@
     __pcp_push_tls_server: true
   when: pcp_push_collector.enabled | default(false)
   register: __pcp_push_collector_tls
-  notify: Restart pmproxy
-
-- name: Remember pending pmproxy configuration changes
-  set_fact:
-    __pcp_pmproxy_restart_pending: >-
-      {{ __pcp_pmproxy_restart_pending | default(false) | bool or
-         __pcp_push_collector_tls is changed }}
 
 - name: Create pmproxy service override directory
   file:
@@ -54,13 +40,6 @@
     mode: "0644"
   when: pcp_push_collector.enabled | default(false)
   register: __pcp_push_collector_dropin
-  notify: Restart pmproxy
-
-- name: Remember pending pmproxy configuration changes
-  set_fact:
-    __pcp_pmproxy_restart_pending: >-
-      {{ __pcp_pmproxy_restart_pending | default(false) | bool or
-         __pcp_push_collector_dropin is changed }}
 
 - name: Remove unused collector TLS configuration
   file:
@@ -71,13 +50,6 @@
     - /etc/pcp/pmproxy/ansible-push-tls.conf
   when: not pcp_push_collector.enabled | default(false)
   register: __pcp_push_collector_cleanup
-  notify: Restart pmproxy
-
-- name: Remember pending pmproxy configuration changes
-  set_fact:
-    __pcp_pmproxy_restart_pending: >-
-      {{ __pcp_pmproxy_restart_pending | default(false) | bool or
-         __pcp_push_collector_cleanup is changed }}
 
 - name: Reload units after changing dedicated collector TLS environment
   systemd:

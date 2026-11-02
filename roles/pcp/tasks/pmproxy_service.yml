@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Determine whether pmproxy configuration requires a restart
+  set_fact:
+    __pcp_restart_pmproxy: >-
+      {{ __pcp_register_changed_log_location | default({}) is changed or
+         ((pcp_rest_api | bool or pcp_push_collector | length > 0) and
+          (__pcp_pmproxy_defaults | default({}) is changed or
+           __pcp_pmproxy_local | default({}) is changed or
+           (pcp_push_collector | length > 0 and
+            (__pcp_push_collector_result | default({}) is changed or
+             __pcp_push_collector_tls | default({}) is changed or
+             __pcp_push_collector_dropin | default({}) is changed or
+             __pcp_push_collector_cleanup | default({}) is changed)))) }}
+
+- name: Apply pmproxy service configuration
+  service:
+    name: pmproxy
+    state: >-
+      {{ ('restarted' if __pcp_restart_pmproxy | bool else 'started')
+         if __pcp_is_booted | bool else omit }}
+    enabled: "{{ true if __pcp_pmproxy_enabled | bool else omit }}"
+  vars:
+    __pcp_pmproxy_enabled: >-
+      {{ pcp_rest_api | bool or
+         pcp_push_collector.enabled | default(false) | bool }}
+  when: >-
+    __pcp_pmproxy_enabled | bool or
+    (__pcp_is_booted | bool and __pcp_restart_pmproxy | bool)
