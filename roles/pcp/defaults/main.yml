@@ -21,3 +21,6 @@ pcp_accounts: []
 pcp_push_client: {}
 pcp_push_collector: {}
 pcp_secure_logging: true
+
+# Fail on unsupported PCP; tests may end the host's play instead.
+pcp_fail_if_too_old: true

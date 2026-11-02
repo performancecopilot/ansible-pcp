@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Skip the scenario when any participant has an unsupported PCP version
+  meta: end_host
+  when: >-
+    (groups['push_collectors'] + groups['push_clients']) | unique |
+    map('extract', hostvars) |
+    selectattr('__pcp_push_version_too_old', 'defined') |
+    selectattr('__pcp_push_version_too_old') | list | length > 0

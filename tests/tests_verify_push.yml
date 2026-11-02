@@ -3,14 +3,36 @@
 # Requires one push_collectors host and at least two push_clients hosts.
 # Supply per-host pcp_push_test_client / pcp_push_test_collector dictionaries
 # to run HTTPS, Basic and mutual TLS cases with pre-provisioned certificates.
+- name: Check PCP versions before configuring any push participants
+  hosts: push_collectors:push_clients
+  become: true
+  vars:
+    pcp_fail_if_too_old: false
+  tasks:
+    - name: Install PCP for the push version preflight
+      package:
+        name: pcp
+        state: present
+
+    - name: Check whether this host supports archive push
+      include_role:
+        name: performancecopilot.metrics.pcp
+        tasks_from: push_version.yml
+      vars:
+        pcp_push_collector:
+          enabled: true
+
 - name: Prepare push collector first
   hosts: push_collectors
   become: true
   vars:
+    pcp_fail_if_too_old: false
     pcp_push_collector: >-
       {{ pcp_push_test_collector | default({'enabled': true}) }}
     pcp_pmlogger_discard: 5
   pre_tasks:
+    - name: Skip the scenario if any participant lacks push support
+      include_tasks: check_push_versions.yml
     - name: Require a collector and two distinct clients
       assert:
         that:
@@ -105,7 +127,11 @@
 - name: Prepare client local logging before adding push
   hosts: push_clients
   become: true
+  pre_tasks:
+    - name: Skip the scenario if any participant lacks push support
+      include_tasks: check_push_versions.yml
   vars:
+    pcp_fail_if_too_old: false
     pcp_pmlogger_interval: 1
     pcp_push_client:
       enabled: false
@@ -151,7 +177,11 @@
 - name: Add push on distinct clients while local logging continues
   hosts: push_clients
   become: true
+  pre_tasks:
+    - name: Skip the scenario if any participant lacks push support
+      include_tasks: check_push_versions.yml
   vars:
+    pcp_fail_if_too_old: false
     pcp_pmlogger_interval: 1
     pcp_push_client: "{{ pcp_push_test_client }}"
   roles:
@@ -303,6 +333,11 @@
 - name: Verify readable growing archives from both clients
   hosts: push_collectors
   become: true
+  pre_tasks:
+    - name: Skip the scenario if any participant lacks push support
+      include_tasks: check_push_versions.yml
+  vars:
+    pcp_fail_if_too_old: false
   tasks:
     - name: Read remote archive root
       shell: |
@@ -376,7 +411,11 @@
 - name: Disable only client push logging
   hosts: push_clients
   become: true
+  pre_tasks:
+    - name: Skip the scenario if any participant lacks push support
+      include_tasks: check_push_versions.yml
   vars:
+    pcp_fail_if_too_old: false
     pcp_pmlogger_interval: 1
     pcp_push_client:
       enabled: false
@@ -433,7 +472,11 @@
 - name: Disable push while retaining independently requested REST service
   hosts: push_collectors
   become: true
+  pre_tasks:
+    - name: Skip the scenario if any participant lacks push support
+      include_tasks: check_push_versions.yml
   vars:
+    pcp_fail_if_too_old: false
     pcp_rest_api: true
     pcp_push_collector:
       enabled: false

@@ -110,6 +110,13 @@ Central PCP setup for monitoring of several remote hosts.
 
 ## Push archives to a collector (PCP 7.2.2 or newer)
 
+`pcp_fail_if_too_old` defaults to `true`: enabling push on PCP older than 7.2.2
+fails with upgrade instructions. Tests can set it to `false` to report the
+unsupported version and end the current play for that host without failure.
+This ends the host's play, including tasks after the role. Unknown versions and
+failed version probes still fail validation, except unavailable probes in
+check mode.
+
 A host can be both a client and a collector. Configure both dictionaries in the
 same role invocation and point `pcp_push_client.collector_url` at that host's
 collector listener. For HTTPS, the URL hostname must match the certificate.

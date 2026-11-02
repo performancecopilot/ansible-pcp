@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: MIT
 ---
-# Run on a booted host with PCP >= 7.2.2. Supply both test dictionaries for TLS.
+# Run on a booted host; older PCP versions are reported and skipped.
+# Supply both test dictionaries for TLS.
 - name: Verify a combined push client and collector
   hosts: all
   become: true
   vars:
+    pcp_fail_if_too_old: false
     pcp_pmlogger_interval: 1
     pcp_push_collector: >-
       {{ pcp_push_test_collector | default({'enabled': true}) }}
