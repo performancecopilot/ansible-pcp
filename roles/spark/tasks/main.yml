@@ -87,6 +87,7 @@
     - spark_metrics_provider == 'pcp'
     - spark_metrics_agent | d(false) | bool
     - __spark_pcp_openmetrics | bool
+    - "'pcp-pmda-openmetrics' in __spark_packages_pcp"
   block:
     - name: Extract metric collection configuration file content
       slurp:
@@ -98,6 +99,8 @@
         path: "{{ __spark_metrics_symlink | dirname | dirname }}/.NeedInstall"
         mode: u=rw,g=r,o=r
         state: touch
+        access_time: preserve
+        modification_time: preserve
       when: __spark_pmcd_conf_content.content | b64decode is
         not search('^[ \\t]*openmetrics\\s', multiline=True)
       register: __spark_register_changed_agent
