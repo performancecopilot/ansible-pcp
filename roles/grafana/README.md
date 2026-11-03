@@ -8,7 +8,7 @@ Uses features of Grafana v6+.  All available PCP datasources will be installed f
 
 ## Role Variables
 
-### grafana_pmproxy_url: http://localhost:44322
+### grafana_pmproxy_url: `http://localhost:44322`
 
 The outgoing pmproxy URL used by the provisioned PCP datasources. The default
 uses the port of a known local role-managed push collector, or 44322 otherwise.
