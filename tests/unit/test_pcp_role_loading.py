@@ -46,6 +46,7 @@ class AnsibleTestCase(unittest.TestCase):
             stderr=subprocess.STDOUT,
             text=True,
             timeout=45,
+            check=False,
         )
         self.assertEqual(result.returncode, 0, result.stdout)
         return result.stdout
