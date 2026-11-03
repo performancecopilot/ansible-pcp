@@ -16,61 +16,185 @@
   roles:
     - role: performancecopilot.metrics.pcp
   tasks:
-    - name: Inspect running services
-      service_facts:
+    - name: Check unchanged configuration without scheduled archive maintenance
+      # Rotation closes push connections and can change the logger PID.
+      # The role has already checked PCP support before creating test overrides.
+      block:
+        - name: Create the runtime maintenance timer override directory
+          file:
+            path: /run/systemd/system/{{ item }}.timer.d
+            state: directory
+            mode: "0755"
+          loop: [pmproxy_check, pmproxy_daily]
 
-    - name: Require both collector and client to be running
-      assert:
-        that:
-          - ansible_facts.services['pmproxy.service'].state == 'running'
-          - ansible_facts.services['pcp-push.service'].state == 'running'
+        - name: Postpone collector maintenance during the PID comparison
+          copy:
+            dest: >-
+              /run/systemd/system/{{ item }}.timer.d/ansible-pcp-test.conf
+            content: |
+              [Timer]
+              OnBootSec=
+              OnCalendar=
+              OnActiveSec=1h
+            mode: "0644"
+          loop: [pmproxy_check, pmproxy_daily]
 
-    - name: Record service identities before repeating the role
-      # Read service identities without changing service state.
-      # noqa command-instead-of-module
-      command: systemctl show -p MainPID pmproxy pcp-push
-      changed_when: false
-      register: __push_same_host_pids
+        - name: Apply the temporary maintenance schedule
+          systemd:
+            name: "{{ item }}.timer"
+            daemon_reload: true
+            state: restarted
+          loop: [pmproxy_check, pmproxy_daily]
 
-    - name: Find the archive pushed by this host
-      find:
-        paths: /var/log/pcp/pmproxy
-        patterns: '*.0'
-        recurse: true
-      register: __push_same_host_archives
-      until: __push_same_host_archives.matched > 0
-      retries: 15
-      delay: 2
+        - name: Wait for any existing collector maintenance to finish
+          # Read service state without starting or stopping maintenance.
+          # noqa command-instead-of-module
+          command: systemctl show -p ActiveState --value {{ item }}.service
+          loop: [pmproxy_check, pmproxy_daily]
+          changed_when: false
+          register: __push_same_host_maintenance
+          until: >-
+            __push_same_host_maintenance.stdout not in
+            ['active', 'activating', 'deactivating', 'reloading']
+          retries: 30
+          delay: 2
 
-    - name: Select the newest pushed archive
-      set_fact:
-        __push_same_host_archive: >-
-          {{ (__push_same_host_archives.files |
-              sort(attribute='mtime', reverse=true) | first).path }}
+        - name: Require successful maintenance completion
+          assert:
+            that: item.stdout == 'inactive'
+            fail_msg: Archive maintenance failed before the idempotency check.
+          loop: "{{ __push_same_host_maintenance.results }}"
+          loop_control:
+            label: "{{ item.item }}"
 
-    - name: Record pushed archive size
-      stat:
-        path: "{{ __push_same_host_archive }}"
-      register: __push_same_host_initial
+        - name: Wait for collector and push services to settle after rotation
+          # Closing push connections is asynchronous; allow automatic recovery
+          # before recording PIDs. The interval exceeds RestartSec=5.
+          # noqa command-instead-of-module
+          shell: |
+            set -e
+            before=$(systemctl show -p MainPID pmproxy.service pcp-push.service)
+            sleep 6
+            systemctl is-active --quiet pmproxy.service
+            systemctl is-active --quiet pcp-push.service
+            after=$(systemctl show -p MainPID pmproxy.service pcp-push.service)
+            test "$before" = "$after"
+          changed_when: false
+          register: __push_same_host_active
+          until: __push_same_host_active.rc == 0
+          retries: 10
+          delay: 2
 
-    - name: Require the pushed archive to keep growing
-      stat:
-        path: "{{ __push_same_host_archive }}"
-      register: __push_same_host_later
-      until: >-
-        __push_same_host_later.stat.size > __push_same_host_initial.stat.size
-      retries: 15
-      delay: 2
+        - name: Inspect running services
+          service_facts:
 
-    - name: Apply the same configuration again
-      include_role:
-        name: performancecopilot.metrics.pcp
+        - name: Require both collector and client to be running
+          assert:
+            that:
+              - ansible_facts.services['pmproxy.service'].state == 'running'
+              - ansible_facts.services['pcp-push.service'].state == 'running'
 
-    - name: Verify unchanged configuration did not restart either service
-      # Read service identities without changing service state.
-      # noqa command-instead-of-module
-      command: systemctl show -p MainPID pmproxy pcp-push
-      changed_when: false
-      register: __push_same_host_repeated_pids
-      failed_when: >-
-        __push_same_host_repeated_pids.stdout != __push_same_host_pids.stdout
+        - name: Record service identities before repeating the role
+          # Read service identities without changing service state.
+          # noqa command-instead-of-module
+          command: systemctl show -p MainPID pmproxy pcp-push
+          changed_when: false
+          register: __push_same_host_pids
+
+        - name: Find the archive pushed by this host
+          find:
+            paths: "/var/log/pcp/pmproxy/{{ ansible_facts.hostname }}"
+            patterns: '*.0'
+            recurse: true
+          register: __push_same_host_archives
+          until: __push_same_host_archives.matched > 0
+          retries: 15
+          delay: 2
+
+        - name: Select the newest pushed archive
+          set_fact:
+            __push_same_host_archive: >-
+              {{ (__push_same_host_archives.files |
+                  sort(attribute='mtime', reverse=true) | first).path }}
+
+        - name: Record pushed archive size
+          stat:
+            path: "{{ __push_same_host_archive }}"
+          register: __push_same_host_initial
+
+        - name: Require the pushed archive to keep growing
+          stat:
+            path: "{{ __push_same_host_archive }}"
+          register: __push_same_host_later
+          until: >-
+            __push_same_host_later.stat.size >
+            __push_same_host_initial.stat.size
+          retries: 15
+          delay: 2
+
+        - name: Apply the same configuration again
+          include_role:
+            name: performancecopilot.metrics.pcp
+
+        - name: Verify unchanged configuration did not restart either service
+          # Read service identities without changing service state.
+          # noqa command-instead-of-module
+          command: systemctl show -p MainPID pmproxy pcp-push
+          changed_when: false
+          register: __push_same_host_repeated_pids
+          failed_when: >-
+            __push_same_host_repeated_pids.stdout !=
+            __push_same_host_pids.stdout
+
+      rescue:
+        - name: Read service identities and automatic restart counts
+          # noqa command-instead-of-module
+          command: >-
+            systemctl show -p Id -p MainPID -p NRestarts -p Result
+            -p ExecMainStatus pmproxy.service pcp-push.service
+            pmproxy_check.service pmproxy_daily.service
+          changed_when: false
+          failed_when: false
+          register: __push_same_host_diagnostics
+
+        - name: Show service diagnostics
+          debug:
+            var: __push_same_host_diagnostics.stdout_lines
+
+        - name: Read recent collector and logger journal entries
+          command: >-
+            journalctl --no-pager --since=-5min
+            --grep='^[^[:space:]]' -u pmproxy.service
+            -u pcp-push.service -u pmproxy_check.service
+            -u pmproxy_daily.service
+          changed_when: false
+          failed_when: false
+          register: __push_same_host_journal
+
+        - name: Show recent journal entries
+          debug:
+            var: __push_same_host_journal.stdout_lines
+
+        - name: Report the same-host test failure
+          fail:
+            msg: >-
+              Same-host push verification failed:
+              {{ ansible_failed_result.msg | default('see diagnostics above') }}
+
+      always:
+        - name: Remove the test-only maintenance timer override
+          file:
+            path: >-
+              /run/systemd/system/{{ item }}.timer.d/ansible-pcp-test.conf
+            state: absent
+          loop: [pmproxy_check, pmproxy_daily]
+          register: __push_same_host_override_removed
+
+        - name: Restore the normal maintenance timer schedule
+          # Cleanup must apply immediately, even when the test failed.
+          systemd:
+            name: "{{ item }}.timer"
+            daemon_reload: true
+            state: restarted
+          loop: [pmproxy_check, pmproxy_daily]
+          when: __push_same_host_override_removed is changed  # noqa no-handler
