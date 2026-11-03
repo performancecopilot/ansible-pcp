@@ -89,28 +89,20 @@
     - __spark_pcp_openmetrics | bool
     - "'pcp-pmda-openmetrics' in __spark_packages_pcp"
   block:
-    - name: Extract metric collection configuration file content
-      slurp:
-        src: "{{ __spark_pmcd_conf }}"
-      register: __spark_pmcd_conf_content
-
     - name: Ensure PCP OpenMetrics agent is marked for installation
-      file:
-        path: "{{ __spark_metrics_symlink | dirname | dirname }}/.NeedInstall"
-        mode: u=rw,g=r,o=r
-        state: touch
-        access_time: preserve
-        modification_time: preserve
-      when: __spark_pmcd_conf_content.content | b64decode is
-        not search('^[ \\t]*openmetrics\\s', multiline=True)
-      register: __spark_register_changed_agent
+      include_role:
+        # noqa role-name[path]
+        name: "{{ role_path }}/../pcp"
+        tasks_from: pmcd_agents.yml
+      vars:
+        pcp_optional_agents: [openmetrics]
 
     - name: Ensure performance metric collector is restarted for the agent
       service:
         name: pmcd
         state: restarted
       when:
-        - __spark_register_changed_agent is changed
+        - __pcp_register_changed_optional_agents is changed
         - __system_running.stdout != 'offline'
 
 - name: Ensure correct service path for ostree systems

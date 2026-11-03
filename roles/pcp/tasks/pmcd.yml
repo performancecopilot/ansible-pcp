@@ -5,24 +5,8 @@
   set_fact:
     __pcp_sasl_changed: false
 
-- name: List optional metric collection agents to be enabled
-  debug:
-    msg: "NeedInstall agent: {{ item }} from {{ pcp_optional_agents }}"
-  loop: "{{ pcp_optional_agents | default([]) }}"
-
-- name: Extract metric collection configuration file content
-  command: "cat {{ __pcp_pmcd_conf }}"
-  register: pmcd_conf
-  changed_when: false
-
 - name: Ensure optional metric collection agents are enabled
-  file:
-    path: "{{ __pcp_agents_path }}/{{ item }}/.NeedInstall"
-    mode: u=rw,g=r,o=r
-    state: touch
-  loop: "{{ pcp_optional_agents | default([]) }}"
-  when: pmcd_conf.stdout.find(item) == -1
-  register: __pcp_register_changed_optional_agents
+  include_tasks: pmcd_agents.yml
 
 - name: Ensure explicit metric label path exists
   file:
