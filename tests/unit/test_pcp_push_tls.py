@@ -95,6 +95,7 @@ class TLSValidation(AnsibleTestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             timeout=45,
+            check=False,
         )
         self.assertNotIn("BEGIN PUBLIC KEY", result.stdout)
         self.assertNotIn("BEGIN PRIVATE KEY", result.stdout)
