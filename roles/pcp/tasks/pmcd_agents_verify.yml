@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT
+# Assisted by Codex model GPT-6-Sol medium
+---
+
+- name: Wait for optional agent installation to complete
+  slurp:
+    src: "{{ __pcp_pmcd_conf }}"
+  register: __pcp_agent_conf_after_restart
+  until: __pcp_agent_conf_after_restart.content | b64decode is
+    search('^[ \\t]*' ~ item ~ '\\s', multiline=True)
+  retries: 30
+  delay: 2
+  loop: "{{ __pcp_agents_to_verify }}"

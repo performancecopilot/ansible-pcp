@@ -6,19 +6,20 @@
     msg: "NeedInstall agent: {{ item }} from {{ pcp_optional_agents }}"
   loop: "{{ pcp_optional_agents | default([]) }}"
 
+- name: Reset optional agent installation state
+  set_fact:
+    __pcp_agents_need_restart: false
+    __pcp_agents_to_verify: []
+
 - name: Extract metric collection configuration file content
-  command: "cat {{ __pcp_pmcd_conf }}"
-  register: pmcd_conf
-  changed_when: false
+  slurp:
+    src: "{{ __pcp_pmcd_conf }}"
+  register: __pcp_pmcd_conf_content
 
 - name: Ensure optional metric collection agents are enabled
-  file:
-    path: "{{ __pcp_agents_path }}/{{ item }}/.NeedInstall"
-    mode: u=rw,g=r,o=r
-    state: touch
-    access_time: preserve
-    modification_time: preserve
+  include_tasks: pmcd_agent.yml
   loop: "{{ pcp_optional_agents | default([]) }}"
-  when: pmcd_conf.stdout is
-    not search('^[ \\t]*' ~ item ~ '\\s', multiline=True)
-  register: __pcp_register_changed_optional_agents
+  loop_control:
+    loop_var: __pcp_agent
+  when: __pcp_pmcd_conf_content.content | b64decode is
+    not search('^[ \\t]*' ~ __pcp_agent ~ '\\s', multiline=True)

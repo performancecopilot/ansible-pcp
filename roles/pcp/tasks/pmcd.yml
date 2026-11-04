@@ -76,7 +76,7 @@
   # Load authentication changes in pmcd before Basic push clients probe.
   set_fact:
     __pcp_restart_pmcd: "{{
-      __pcp_register_changed_optional_agents is changed or
+      __pcp_agents_need_restart | bool or
       __pcp_register_changed_explicit_labels is changed or
       __pcp_register_changed_implicit_labels is changed or
       __pcp_register_changed_defaults_config is changed or
@@ -90,7 +90,7 @@
 - name: Report performance metric collector restart state
   debug:
     msg:
-      - "optional_agents: {{ __pcp_register_changed_optional_agents is changed }}"
+      - "optional_agents: {{ __pcp_agents_need_restart | bool }}"
       - "explicit_labels: {{ __pcp_register_changed_explicit_labels is changed }}"
       - "implicit_labels: {{ __pcp_register_changed_implicit_labels is changed }}"
       - "defaults_config: {{ __pcp_register_changed_defaults_config is changed }}"
@@ -111,3 +111,10 @@
     state: "{{ 'restarted' if __pcp_is_booted else omit }}"
     enabled: true
   when: __pcp_restart_pmcd | bool
+
+- name: Verify optional metric collection agents are installed
+  include_tasks: pmcd_agents_verify.yml
+  when:
+    - __pcp_is_booted | bool
+    - not ansible_check_mode
+    - __pcp_agents_to_verify | length > 0

@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT
+# Assisted by Codex model GPT-6-Sol medium
+---
+
+- name: Check whether optional agent installation is pending
+  stat:
+    path: "{{ __pcp_agents_path }}/{{ __pcp_agent }}/.NeedInstall"
+  register: __pcp_agent_pending
+
+- name: Check whether optional agent installation failed
+  stat:
+    path: "{{ __pcp_agents_path }}/{{ __pcp_agent }}/.NeedInstall.failed"
+  register: __pcp_agent_failed
+
+- name: Mark optional agent for installation
+  file:
+    path: "{{ __pcp_agents_path }}/{{ __pcp_agent }}/.NeedInstall"
+    mode: u=rw,g=r,o=r
+    state: touch
+  when:
+    - not __pcp_agent_pending.stat.exists
+    - not __pcp_agent_failed.stat.exists
+
+- name: Request collector restart to install optional agent
+  set_fact:
+    __pcp_agents_need_restart: true
+    __pcp_agents_to_verify: "{{ __pcp_agents_to_verify + [__pcp_agent] }}"
