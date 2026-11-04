@@ -91,8 +91,7 @@
   block:
     - name: Ensure PCP OpenMetrics agent is marked for installation
       include_role:
-        # noqa role-name[path]
-        name: "{{ role_path }}/../pcp"
+        name: performancecopilot.metrics.pcp
         tasks_from: pmcd_agents.yml
       vars:
         pcp_optional_agents: [openmetrics]
@@ -102,8 +101,18 @@
         name: pmcd
         state: restarted
       when:
-        - __pcp_register_changed_optional_agents is changed
+        - __pcp_agents_need_restart | bool
         - __system_running.stdout != 'offline'
+
+    - name: Verify PCP OpenMetrics agent is installed
+      include_role:
+        # noqa role-name[path]
+        name: "{{ role_path }}/../pcp"
+        tasks_from: pmcd_agents_verify.yml
+      when:
+        - __system_running.stdout != 'offline'
+        - not ansible_check_mode
+        - __pcp_agents_to_verify | length > 0
 
 - name: Ensure correct service path for ostree systems
   when:
