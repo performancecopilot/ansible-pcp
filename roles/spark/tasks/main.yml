@@ -106,8 +106,7 @@
 
     - name: Verify PCP OpenMetrics agent is installed
       include_role:
-        # noqa role-name[path]
-        name: "{{ role_path }}/../pcp"
+        name: performancecopilot.metrics.pcp
         tasks_from: pmcd_agents_verify.yml
       when:
         - __system_running.stdout != 'offline'
